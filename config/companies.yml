@@ -1,0 +1,74 @@
+# ATS targets. Slug = the board token in the provider's public API.
+# Greenhouse: https://boards-api.greenhouse.io/v1/boards/{slug}/jobs
+# Lever:      https://api.lever.co/v0/postings/{slug}?mode=json
+# Ashby:      https://api.ashbyhq.com/posting-api/job-board/{slug}
+# Slugs are best-effort; `python -m src.run` logs any that 404 so we can fix them here.
+
+greenhouse:
+  - anthropic
+  - databricks
+  - stripe
+  - figma
+  - coinbase
+  - robinhood
+  - airbnb
+  - pinterest
+  - doordash
+  - instacart
+  - dropbox
+  - reddit
+  - discord
+  - benchling
+  - plaid
+  - brex
+  - gusto
+  - asana
+  - samsara
+  - affirm
+  - twitch
+  - lyft
+
+lever:
+  - palantir
+  - attentive
+  - veracode
+
+bamboohr:
+  # Subdomain of {slug}.bamboohr.com. Mostly auto-harvested into harvested.yml.
+  - berkshiregrey
+
+ashby:
+  - openai
+  - notion
+  - linear
+  - vercel
+  - replit
+  - mistral
+  - cohere
+  - perplexity-ai
+  - runway
+  - ramp
+
+# Community-maintained internship aggregators.
+# kind=simplify_json parses the structured listings.json; kind=readme parses markdown tables.
+repos:
+  - name: SimplifyJobs/Summer2026-Internships
+    kind: simplify_json
+    url: https://raw.githubusercontent.com/SimplifyJobs/Summer2026-Internships/dev/.github/scripts/listings.json
+  - name: vanshb03/Summer2026-Internships
+    kind: simplify_json
+    url: https://raw.githubusercontent.com/vanshb03/Summer2026-Internships/dev/.github/scripts/listings.json
+  # JobRight AI — markdown-table READMEs. Links route through jobright.ai (no slug harvest),
+  # but fresh + long-tail company coverage the Simplify repos miss.
+  - name: jobright-ai/2026-Software-Engineer-Internship
+    kind: readme
+    url: https://raw.githubusercontent.com/jobright-ai/2026-Software-Engineer-Internship/master/README.md
+  - name: jobright-ai/2026-Product-Management-Internship
+    kind: readme
+    url: https://raw.githubusercontent.com/jobright-ai/2026-Product-Management-Internship/master/README.md
+  - name: jobright-ai/2026-Data-Analysis-Internship
+    kind: readme
+    url: https://raw.githubusercontent.com/jobright-ai/2026-Data-Analysis-Internship/master/README.md
+  - name: jobright-ai/2026-Engineer-Internship
+    kind: readme
+    url: https://raw.githubusercontent.com/jobright-ai/2026-Engineer-Internship/master/README.md

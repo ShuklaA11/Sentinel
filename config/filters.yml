@@ -1,0 +1,57 @@
+# Matching rules. A listing is kept if it looks like an internship, matches a track,
+# matches the season window, and (if locations set) matches a location.
+
+# Must contain one of these to count as an internship.
+intern_terms:
+  - intern
+  - internship
+  - co-op
+  - coop
+
+# Season targeting. Fall 2026 is the current test; switch to summer + 2027 for the real run.
+seasons:
+  - fall 2026
+  - fall 2025      # some boards label off-cycle roles by the year they post
+  - "2026"
+# Years that, if present in the title, are allowed through.
+allowed_years: ["2026", "2027"]
+
+# Tracks: a listing is tagged with the first track whose keywords match its title.
+tracks:
+  ml:
+    - machine learning
+    - ml
+    - ai
+    - artificial intelligence
+    - deep learning
+    - research scientist
+    - applied scientist
+    - ml engineer
+    - research engineer
+  swe:
+    - software engineer
+    - software engineering
+    - swe
+    - backend
+    - frontend
+    - full stack
+    - full-stack
+    - developer
+    - infrastructure
+    - platform engineer
+  product:
+    - product manager
+    - product management
+    - "apm"
+    - associate product
+
+# Locations: leave empty to accept all. Add substrings (case-insensitive) to restrict.
+locations: []
+
+# Drop listings clearly aimed at non-students.
+exclude_terms:
+  - senior
+  - staff
+  - principal
+  - manager, engineering
+  - phd required

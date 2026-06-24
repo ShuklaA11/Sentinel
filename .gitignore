@@ -1,0 +1,18 @@
+# Private planning + working docs (per global hygiene rules)
+CLAUDE.md
+plan.md
+plan-*.md
+PLAN.md
+planning.md
+plans/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+
+# Local secrets / profile (contains personal data)
+profile/profile.yml
+secrets.yml
