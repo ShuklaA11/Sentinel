@@ -1,0 +1,40 @@
+# Curated baseline question bank. Company-specific DSA is pulled live from the
+# LeetCode company-wise repos; these are the track-general verbal + behavioral sets.
+
+behavioral:
+  - "Tell me about yourself."
+  - "Why this company and this role?"
+  - "Walk me through a project you're proud of — what was your specific contribution?"
+  - "Tell me about a time a project failed or didn't work as expected."
+  - "Describe a technical disagreement on a team and how you resolved it."
+  - "Tell me about a time you had to learn something difficult quickly."
+  - "Describe a time you received hard critical feedback — what did you do?"
+  - "Tell me about a time you made a mistake. How did you handle it?"
+  - "How do you prioritize when you have more to do than time?"
+  - "What are you looking for in an internship / what does success look like for you?"
+
+# 'verbal' = the technical-knowledge / conceptual round (asked out loud, not coding).
+technical:
+  ml:
+    - "Bias–variance tradeoff: explain it and how you'd diagnose which you have."
+    - "How does backpropagation work? What causes vanishing/exploding gradients?"
+    - "Precision vs recall — when do you optimize each? Where does F1/PR-AUC fit?"
+    - "Explain attention and the transformer architecture."
+    - "How do you detect and prevent overfitting?"
+    - "How would you handle severe class imbalance?"
+    - "Explain a two-tower / dual-encoder retrieval model and when to use it."
+    - "How do you evaluate a RAG system end to end (retrieval + generation)?"
+    - "ML system design: design a recommendation (or detection) system for X — data, model, serving, metrics."
+    - "Walk through training a model end to end on messy real-world data."
+  swe:
+    - "Analyze the time and space complexity of your last solution."
+    - "How does a hash map work under the hood? Collisions, resizing?"
+    - "Processes vs threads; what is a race condition and how do you prevent one?"
+    - "System design: design a URL shortener / rate limiter."
+    - "What happens, end to end, when you type a URL and press enter?"
+    - "How would you debug a slow API endpoint in production?"
+  product:
+    - "How would you improve product X? Walk me through your reasoning."
+    - "How do you prioritize a backlog of features?"
+    - "Define a success metric for feature Y and how you'd measure it."
+    - "How would you decide whether to build, buy, or kill a feature?"
