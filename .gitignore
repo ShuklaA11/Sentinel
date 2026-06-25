@@ -15,4 +15,6 @@ venv/
 
 # Local secrets / profile (contains personal data)
 profile/profile.yml
+profile/resume.tex
+tailored/
 secrets.yml

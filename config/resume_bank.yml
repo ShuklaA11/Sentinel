@@ -1,0 +1,87 @@
+# Resume bullet reference bank for the tailoring engine (src/tailor.py).
+#
+# HONESTY: these are BEST-PRACTICE exemplars (Google XYZ formula + quantified impact),
+# NOT a scraped "this bullet got the offer at Company X" dataset — no one can truthfully
+# claim that. They encode the patterns recruiters consistently reward, organized by
+# track/theme and by company ARCHETYPE (which actually shifts emphasis; a company name
+# does not). The tailoring engine uses these as few-shot reference + style guardrails.
+
+principles:
+  - "XYZ formula: accomplished [X] by doing [Y], measured by [Z]. Lead with impact or a strong verb."
+  - "One bullet = one line. Target <= ~115 characters so it never wraps."
+  - "Whole resume = ONE page. Cut the weakest bullets first; depth beats breadth."
+  - "Past-tense action verb first. No 'I', no 'responsible for', no 'helped with'."
+  - "Quantify everything plausible: %, latency, scale, accuracy, $, time saved, users."
+  - "Name tools in the context of what they achieved — never a bare tool dump."
+  - "NEVER fabricate. Reorder, emphasize, and reword real work only."
+
+line_budget_chars: 115        # hard guideline: a bullet over this wraps to 2 lines
+max_pages: 1                  # hard constraint enforced after compile
+
+action_verbs:
+  build:    [Built, Engineered, Designed, Developed, Implemented, Architected, Shipped]
+  improve:  [Optimized, Reduced, Accelerated, Increased, Cut, Boosted, Scaled]
+  lead:     [Led, Drove, Owned, Coordinated, Mentored, Spearheaded]
+  research: [Researched, Benchmarked, Validated, Co-authored, Investigated, Analyzed]
+
+# How emphasis should shift by the kind of company a role is at.
+company_archetype_emphasis:
+  big_tech:     "Scale, measurable impact, system design, cross-team work. Quantify users / QPS / latency."
+  startup:      "Ownership and breadth, shipping fast, end-to-end. Show you built whole things yourself."
+  quant:        "Rigor, performance, math/stats depth, low latency. Precise metrics; competition/research signal."
+  research_lab: "Novelty, methodology, publications, benchmarks. Cite venues and datasets."
+  product:      "User impact and metrics moved, prioritization, cross-functional. Frame outcomes, not features."
+
+# Strong one-line exemplars by track -> theme. Reference patterns, not claims of attribution.
+examples:
+  ml:
+    computer_vision:
+      - "Built a two-stage YOLO+ResNet detection pipeline, hitting 94% precision over 250+ hrs of video"
+      - "Cut tracking ID-switch errors 60% under occlusion using ByteTrack with gap interpolation"
+    nlp_llm_rag:
+      - "Built a RAG pipeline over 15K docs with section-aware retrieval, raising answer accuracy 40%"
+      - "Benchmarked retrieval + NLI claim verification on QASPER/SciFact, beating BM25 by 22% nDCG@10"
+    recsys:
+      - "Built a two-tower retrieval recommender, lifting nDCG@10 69% over a BM25 baseline"
+      - "Added Thompson-sampling exploration to reduce filter-bubble bias, raising coverage 25%"
+    timeseries_signals:
+      - "Built LSTM models forecasting bearing faults, reaching 93% accuracy across 100K sensor samples"
+      - "Engineered FFT frequency-domain features from multi-sensor streams to isolate fault harmonics"
+    mlops_deployment:
+      - "Deployed models on AWS SageMaker serving 100K samples at sub-2s end-to-end latency"
+      - "Automated extraction + confidence logging, cutting manual review effort 80%"
+    research:
+      - "Co-authored a paper on DLPFC decision-making; built the real-time analysis toolbox behind it"
+      - "Cut experiment iteration time 42% by enabling semi-real-time feedback during live recordings"
+  swe:
+    backend:
+      - "Built a FastAPI service handling 2K req/s with p99 latency under 80 ms"
+      - "Designed a Redis caching layer that cut average response time 60% under peak load"
+    frontend:
+      - "Built a React dashboard with optimistic updates, cutting perceived load time 40%"
+    infra:
+      - "Containerized the pipeline with Docker + CI, cutting deploy time from 30 min to 3"
+    fullstack:
+      - "Shipped an end-to-end app (FastAPI + React + Postgres) used by 500+ users weekly"
+  product:
+    general:
+      - "Defined the activation metric and drove a 15% lift via an onboarding redesign"
+      - "Prioritized a roadmap by impact/effort and shipped the top 3 features in one cycle"
+
+# Before -> after rewrites: the highest-signal few-shot reference for the tailoring LLM.
+rewrites:
+  - weak:   "Worked on a machine learning model for detecting objects in videos"
+    strong: "Built a YOLO+ResNet detection pipeline hitting 94% precision over 250+ hrs of video"
+    why:    "Adds an action verb, the specific tech, and a quantified result with scale."
+  - weak:   "Responsible for deploying models to the cloud"
+    strong: "Deployed models on AWS SageMaker serving 100K samples at sub-2s latency"
+    why:    "Kills 'responsible for', names the platform, quantifies scale and latency."
+  - weak:   "Helped improve a recommendation system"
+    strong: "Lifted recommender nDCG@10 69% over a BM25 baseline via two-tower retrieval"
+    why:    "Owns the work, states the metric AND its baseline, names the method."
+  - weak:   "Did research in a neuroscience lab and contributed to a paper"
+    strong: "Co-authored a paper on DLPFC decision-making; built the real-time analysis toolbox"
+    why:    "Shows a concrete contribution (the toolbox) alongside the authorship."
+  - weak:   "Used various tools like Python, PyTorch, Docker, and AWS"
+    strong: "(delete — tool lists belong in the Skills section, not as a bullet)"
+    why:    "A bare tool list carries no impact; one line per bullet must earn its space."
