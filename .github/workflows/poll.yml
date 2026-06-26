@@ -25,6 +25,13 @@ jobs:
 
       - run: pip install -r requirements.txt
 
+      - name: Materialize profile for fit-scoring
+        env:
+          PROFILE_YML: ${{ secrets.PROFILE_YML }}
+        run: |
+          mkdir -p profile
+          printf '%s' "$PROFILE_YML" > profile/profile.yml   # gitignored; never committed
+
       - name: Poll + notify
         env:
           SMTP_USER: ${{ secrets.SMTP_USER }}
