@@ -28,6 +28,12 @@ PATTERNS = {
 }
 # Slugs that are ATS plumbing, not companies.
 BLOCK = {"embed", "job_app", "job-boards", "boards"}
+# Confirmed-dead slugs (404 on their ATS endpoint) — don't let the harvester
+# silently re-add them from stale repo URLs. Verified via `python -m src.run`.
+KNOWN_DEAD = {
+    "ether", "flagright", "hippocratic", "rivianvw", "super", "memphismeats",
+    "aifund", "anysignal", "mbrdna", "symmetrysystems",
+}
 
 
 def harvest(companies: dict) -> dict:
@@ -39,7 +45,7 @@ def harvest(companies: dict) -> dict:
                 m = rx.search(url)
                 if m:
                     slug = m.group(1).lower()
-                    if slug not in BLOCK:
+                    if slug not in BLOCK and slug not in KNOWN_DEAD:
                         found[prov].add(slug)
     return {k: sorted(v) for k, v in found.items()}
 

@@ -13,13 +13,11 @@ greenhouse:
   - robinhood
   - airbnb
   - pinterest
-  - doordash
+  - doordashusa
   - instacart
   - dropbox
   - reddit
   - discord
-  - benchling
-  - plaid
   - brex
   - gusto
   - asana
@@ -27,11 +25,12 @@ greenhouse:
   - affirm
   - twitch
   - lyft
+  - attentive
+  - veracode
 
 lever:
   - palantir
-  - attentive
-  - veracode
+  - mistral
 
 bamboohr:
   # Subdomain of {slug}.bamboohr.com. Mostly auto-harvested into harvested.yml.
@@ -43,11 +42,12 @@ ashby:
   - linear
   - vercel
   - replit
-  - mistral
   - cohere
-  - perplexity-ai
+  - perplexity
   - runway
   - ramp
+  - plaid
+  - benchling
 
 # Community-maintained internship aggregators.
 # kind=simplify_json parses the structured listings.json; kind=readme parses markdown tables.
