@@ -3,10 +3,10 @@
 ashby:
 - 1password
 - adaption
-- allium
 - anima
 - anterior
 - apex-technology-inc
+- applied
 - astera
 - astronomer
 - atomicsemi
@@ -20,7 +20,6 @@ ashby:
 - d-matrix
 - dandy
 - dryft
-- eightsleep
 - elicit
 - ellipsislabs
 - eloquentai
@@ -29,7 +28,6 @@ ashby:
 - faculty
 - fundwell
 - gen-digital
-- gimlet
 - greatquestion
 - hcompany
 - heron-power
@@ -40,7 +38,6 @@ ashby:
 - lambda
 - lunon
 - mach
-- mach9
 - marianaminerals
 - mechanize
 - melotech
@@ -52,6 +49,7 @@ ashby:
 - output
 - pebl
 - periodic-labs
+- persona
 - phia
 - physicalintelligence
 - poshmark
@@ -60,7 +58,6 @@ ashby:
 - regent
 - root-access
 - sandboxaq
-- scientech-research
 - simular
 - skydio
 - solink
@@ -146,7 +143,6 @@ greenhouse:
 - optiverprivate
 - podium81
 - point72
-- pvminc
 - queracomputinginc
 - rackner
 - radixuniversity
@@ -163,7 +159,6 @@ greenhouse:
 - spacex
 - technergetics
 - tenstorrentuniversity
-- thenewyorktimes
 - togetherai
 - tpcengineeringholdingsllc
 - transmarketgroup
@@ -177,12 +172,12 @@ greenhouse:
 - walleyecapital-external-students
 - wheely
 - workato
+- xairatherapeutics
 - xpengmotors
 - zone5technologies
 lever:
 - alertus
 - crestoperations
-- drivetrain
 - ekimetrics
 - evrealty-us
 - field-ai
