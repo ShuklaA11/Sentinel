@@ -80,3 +80,16 @@ def score_listings(new: list[dict], profile: dict) -> list[dict]:
             scored.append({**l, "score": score, "fit_reason": reason})
     log.info("scored %d listings", len(scored))
     return scored
+
+
+def partition_by_fit(listings: list[dict], threshold: int) -> tuple[list[dict], list[dict]]:
+    """Split into (high_fit >= threshold, rest). Unscored listings ('' score) go to rest.
+
+    The isinstance check matters: an unscored listing has score == "" (str), and
+    "" >= 85 raises TypeError in Python 3 — so the guard both avoids the crash and
+    correctly keeps unknown-fit listings out of the high-fit alert.
+    """
+    high = [l for l in listings if isinstance(l.get("score"), int) and l["score"] >= threshold]
+    high_ids = {l["id"] for l in high}
+    rest = [l for l in listings if l["id"] not in high_ids]
+    return high, rest

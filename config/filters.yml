@@ -1,6 +1,11 @@
 # Matching rules. A listing is kept if it looks like an internship, matches a track,
 # matches the season window, and (if locations set) matches a location.
 
+# Fit-score (0-100) at/above which a NEW listing fires an immediate "high-fit" alert
+# email instead of waiting for the regular digest. Needs scoring active
+# (ANTHROPIC_API_KEY + a filled profile); unscored listings never count as high-fit.
+high_fit_threshold: 85
+
 # Must contain one of these to count as an internship.
 intern_terms:
   - intern

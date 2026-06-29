@@ -89,8 +89,12 @@ def main() -> None:
     store.save_seen(seen)
     print(f"\nwrote {len(new)} new rows -> data/listings.csv · seen-set now {len(seen)}")
 
-    if notify.send_digest(new):
-        print(f"emailed digest of {len(new)} new listings")
+    threshold = filters.get("high_fit_threshold", 85)
+    high, rest = rank.partition_by_fit(new, threshold)
+    if high and notify.send_high_fit_alert(high):
+        print(f"🔥 alerted {len(high)} high-fit (score >= {threshold})")
+    if rest and notify.send_digest(rest):
+        print(f"emailed digest of {len(rest)} new listings")
 
 
 if __name__ == "__main__":

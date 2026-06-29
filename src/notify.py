@@ -32,14 +32,14 @@ def _digest_text(new: list[dict]) -> str:
     return "\n".join(lines)
 
 
-def send_digest(new: list[dict]) -> bool:
-    """Send the digest. Returns True if sent, False if skipped/failed."""
+def _send(subject: str, new: list[dict]) -> bool:
+    """Email `new` under `subject`. Returns True if sent, False if skipped/failed."""
     if not new:
         return False
     user = os.environ.get("SMTP_USER")
     password = os.environ.get("SMTP_PASS")
     if not user or not password:
-        log.warning("SMTP_USER/SMTP_PASS unset — skipping email (%d new listings)", len(new))
+        log.warning("SMTP_USER/SMTP_PASS unset — skipping email (%d listings)", len(new))
         return False
 
     host = os.environ.get("SMTP_HOST", "smtp.gmail.com")
@@ -47,7 +47,7 @@ def send_digest(new: list[dict]) -> bool:
     to_addr = os.environ.get("ALERT_TO", user)
 
     msg = EmailMessage()
-    msg["Subject"] = f"[internships] {len(new)} new listing(s)"
+    msg["Subject"] = subject
     msg["From"] = user
     msg["To"] = to_addr
     msg.set_content(_digest_text(new))
@@ -59,5 +59,15 @@ def send_digest(new: list[dict]) -> bool:
     except Exception as exc:  # noqa: BLE001 — surface any SMTP failure, don't crash the run
         log.error("email send failed: %s", exc)
         return False
-    log.info("emailed %d new listings to %s", len(new), to_addr)
+    log.info("emailed %d listings to %s — %s", len(new), to_addr, subject)
     return True
+
+
+def send_digest(new: list[dict]) -> bool:
+    """Regular digest of new (sub-threshold) listings."""
+    return _send(f"[internships] {len(new)} new listing(s)", new)
+
+
+def send_high_fit_alert(new: list[dict]) -> bool:
+    """Immediate alert for high-fit listings (score >= high_fit_threshold)."""
+    return _send(f"\U0001F525 {len(new)} high-fit internship(s) — apply now", new)
