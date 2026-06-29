@@ -10,7 +10,7 @@ SEEN_PATH = os.path.join(DATA_DIR, "seen.json")
 CSV_PATH = os.path.join(DATA_DIR, "listings.csv")
 PENDING_PATH = os.path.join(DATA_DIR, "pending.csv")  # outbox: sub-threshold listings awaiting the next batch digest
 
-CSV_FIELDS = ["first_seen", "score", "track", "company", "title", "location", "fit_reason", "source", "url", "status", "id"]
+CSV_FIELDS = ["first_seen", "score", "track", "company", "title", "location", "fit_reason", "source", "url", "posted_at", "status", "id"]
 
 
 def load_seen() -> set:
@@ -50,6 +50,7 @@ def _write_rows(path: str, new_listings: list[dict], now_iso: str) -> None:
                 "fit_reason": l.get("fit_reason", ""),
                 "source": l.get("source", ""),
                 "url": l.get("url", ""),
+                "posted_at": l.get("posted_at", ""),
                 "status": "new",
                 "id": l.get("id", ""),
             })
