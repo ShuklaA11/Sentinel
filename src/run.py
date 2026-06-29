@@ -93,8 +93,9 @@ def main() -> None:
     high, rest = rank.partition_by_fit(new, threshold)
     if high and notify.send_high_fit_alert(high):
         print(f"🔥 alerted {len(high)} high-fit (score >= {threshold})")
-    if rest and notify.send_digest(rest):
-        print(f"emailed digest of {len(rest)} new listings")
+    if rest:
+        store.enqueue_pending(rest, now)
+        print(f"queued {len(rest)} for the next batch digest")
 
 
 if __name__ == "__main__":

@@ -36,3 +36,26 @@ def test_append_csv_writes_header_once_and_appends(tmp_path, monkeypatch):
     # Appending again adds a row without a duplicate header.
     store.append_csv(rows, "2026-06-26T01:00:00")
     assert len(list(csv.DictReader(open(p)))) == 2
+
+
+def test_pending_queue_enqueue_load_clear(tmp_path, monkeypatch):
+    monkeypatch.setattr(store, "DATA_DIR", str(tmp_path))
+    monkeypatch.setattr(store, "PENDING_PATH", str(tmp_path / "pending.csv"))
+
+    assert store.load_pending() == []   # missing file -> empty
+
+    store.enqueue_pending([
+        {"id": "a", "company": "X", "title": "ML Intern", "track": "ml",
+         "score": 92, "location": "SF", "url": "u1", "fit_reason": "good"},
+        {"id": "b", "company": "Y", "title": "SWE Intern", "track": "swe",
+         "score": "", "location": "", "url": "u2", "fit_reason": ""},
+    ], "2026-06-29T00:00:00")
+
+    pend = store.load_pending()
+    assert len(pend) == 2
+    assert pend[0]["score"] == 92    # coerced back to int for sorting
+    assert pend[1]["score"] == ""    # unscored stays ""
+    assert pend[0]["company"] == "X"
+
+    store.clear_pending()
+    assert store.load_pending() == []

@@ -1,0 +1,42 @@
+name: digest-internships
+
+on:
+  schedule:
+    - cron: "0 0,13,18 * * *"   # ~7pm / 8am / 1pm Central (UTC-fixed; shifts 1h in winter)
+  workflow_dispatch: {}          # manual "Run workflow" button
+
+permissions:
+  contents: write                # to commit the cleared queue
+
+concurrency:
+  group: sentinel-data           # shared with poll.yml so the two never race on data/
+  cancel-in-progress: false
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Send batched digest
+        env:
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          ALERT_TO: ${{ secrets.ALERT_TO }}
+        run: python -m src.digest
+
+      - name: Commit cleared queue
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/
+          git diff --cached --quiet || git commit -m "chore: digest $(date -u +%FT%TZ)"
+          git pull --rebase origin main
+          git push
