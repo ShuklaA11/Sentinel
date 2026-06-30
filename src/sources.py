@@ -6,11 +6,16 @@ A dead slug or network blip must never crash the run — fetchers log and return
 """
 from __future__ import annotations
 
+import datetime as dt
 import logging
 import re
 from concurrent.futures import ThreadPoolExecutor
 
 import requests
+
+# Epoch values at/above this are milliseconds, not seconds (1e12 s ≈ year 33658,
+# so any real date in ms is >= 1e12 while a date in seconds is < 1e12).
+_EPOCH_MS_CUTOFF = 1_000_000_000_000
 
 log = logging.getLogger("sources")
 
@@ -36,6 +41,36 @@ def _get(url: str, method: str = "GET", json_body: dict | None = None):
         return None
 
 
+def _iso(ts) -> str:
+    """Normalize a source timestamp to an ISO-8601 UTC string, or '' if it
+    isn't a real instant.
+
+    Fetchers emit four shapes: ISO strings (greenhouse/ashby/smartrecruiters),
+    epoch milliseconds (lever), epoch seconds (simplify repos), and relative
+    text like 'Jun 23' (jobright readme). Storing one contract — ISO or '' —
+    lets the digest render 'posted Nd ago' and makes detection-latency math
+    possible downstream.
+    """
+    if ts is None or ts == "" or ts == 0:
+        return ""
+    s = str(ts).strip()
+    if s.lstrip("-").isdigit():  # epoch seconds or milliseconds
+        n = int(s)
+        if abs(n) >= _EPOCH_MS_CUTOFF:
+            n /= 1000
+        try:
+            return dt.datetime.fromtimestamp(n, tz=dt.timezone.utc).isoformat()
+        except (OverflowError, OSError, ValueError):
+            return ""
+    try:
+        d = dt.datetime.fromisoformat(s)
+    except ValueError:
+        return ""  # relative/unparseable text — not a real timestamp
+    if d.tzinfo is None:
+        d = d.replace(tzinfo=dt.timezone.utc)
+    return d.astimezone(dt.timezone.utc).isoformat()
+
+
 def _norm(id_, source, company, title, location, url, posted_at):
     return {
         "id": f"{source}:{id_}",
@@ -44,7 +79,7 @@ def _norm(id_, source, company, title, location, url, posted_at):
         "title": (title or "").strip(),
         "location": (location or "").strip(),
         "url": url or "",
-        "posted_at": posted_at or "",
+        "posted_at": _iso(posted_at),
     }
 
 
