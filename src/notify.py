@@ -18,7 +18,7 @@ import smtplib
 from datetime import datetime, timezone
 from email.message import EmailMessage
 
-TRACK_ORDER = ["ml", "swe", "product"]
+TRACK_ORDER = ["ml", "data", "swe", "product"]
 SOURCE_LABELS = {
     "greenhouse": "Greenhouse", "lever": "Lever", "ashby": "Ashby",
     "smartrecruiters": "SmartRecruiters", "workable": "Workable",

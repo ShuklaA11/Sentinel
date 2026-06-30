@@ -33,6 +33,18 @@ tracks:
     - applied scientist
     - ml engineer
     - research engineer
+    - reinforcement learning
+    - computer vision
+    - nlp
+    - autonomy
+    - perception
+  # Data science as its own track. Scientist-only — 'data analyst'/'analytics'
+  # is intentionally excluded (sprawls into business/ops, low precision).
+  # 'data engineer' lives under swe. ml is matched first, so ML-flavored DS
+  # titles still tag ml.
+  data:
+    - data scientist
+    - data science
   swe:
     - software engineer
     - software engineering
@@ -41,9 +53,13 @@ tracks:
     - frontend
     - full stack
     - full-stack
+    - fullstack
     - developer
     - infrastructure
     - platform engineer
+    - data engineer
+    - mobile
+    - integration engineer
   product:
     - product manager
     - product management
@@ -54,9 +70,14 @@ tracks:
 locations: []
 
 # Drop listings clearly aimed at non-students.
+# Degree gates are title-only (the JD isn't fetched). 'ms' is intentionally NOT
+# excluded — it almost always appears as "BS/MS", which accepts undergrads.
 exclude_terms:
   - senior
   - staff
   - principal
   - manager, engineering
-  - phd required
+  - phd
+  - ph.d
+  - masters
+  - master's

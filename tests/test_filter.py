@@ -71,3 +71,59 @@ def test_apply_filters_adds_track_and_drops_non_matches():
     kept = filt.apply_filters([L("ML Intern"), L("Accountant")], FILTERS)
     assert len(kept) == 1
     assert kept[0]["track"] == "ml"
+
+
+# --- Live config regression: roles the widened keywords must recover ---------
+# These titles (Tesla's naming + RL/CV/etc.) were silently dropped before the
+# keyword widening. Loads the real config so a keyword removal trips the test.
+import os
+
+import pytest
+import yaml
+
+_CFG = os.path.join(os.path.dirname(os.path.dirname(__file__)), "config", "filters.yml")
+LIVE_FILTERS = yaml.safe_load(open(_CFG))
+
+
+@pytest.mark.parametrize("title,track", [
+    ("Reinforcement Learning Engineer Intern", "ml"),
+    ("Computer Vision Engineer Intern", "ml"),
+    ("Perception Intern", "ml"),
+    ("Digital Ship NLP Intern", "ml"),
+    ("Fullstack C++ Engineer Intern", "swe"),
+    ("Data Engineer Intern - Multiple Teams", "swe"),
+    ("Software Integration Engineer Intern", "swe"),
+    ("Mobile Applications Engineering Intern", "swe"),
+])
+def test_widened_keywords_recover_dropped_roles(title, track):
+    assert filt.matches(L(title), LIVE_FILTERS) == track
+
+
+@pytest.mark.parametrize("title", [
+    "ML PhD Intern - LLMs & Generative AI",
+    "Research Scientist Intern (PhD)",
+    "Software Engineering Masters Intern",
+    "Data Science Intern, Master's",
+])
+def test_grad_required_roles_excluded(title):
+    assert filt.matches(L(title), LIVE_FILTERS) is None
+
+
+@pytest.mark.parametrize("title,track", [
+    # "BS/MS" accepts undergrads — must NOT be excluded by the degree gate.
+    ("Software Engineer Intern - Security-Data - BS/MS", "swe"),
+    ("Machine Learning Engineer Intern - Ads, BS/MS", "ml"),
+])
+def test_bs_ms_roles_survive_degree_gate(title, track):
+    assert filt.matches(L(title), LIVE_FILTERS) == track
+
+
+@pytest.mark.parametrize("title,expected", [
+    ("Data Scientist Intern", "data"),
+    ("Applied Data Science Intern", "data"),
+    ("Machine Learning Data Scientist Intern", "ml"),   # ml matched first
+    ("Data Analyst Intern", None),                       # analyst intentionally excluded
+    ("Data Analytics Intern", None),
+])
+def test_data_science_track(title, expected):
+    assert filt.matches(L(title), LIVE_FILTERS) == expected
