@@ -20,6 +20,7 @@ ashby:
 - d-matrix
 - dandy
 - dryft
+- eightsleep
 - ellipsislabs
 - eloquentai
 - espa
@@ -33,11 +34,11 @@ ashby:
 - heron-power
 - hiverge
 - homebase
+- human-computer-lab
 - interplay
 - kognitos
 - kos
 - lambda
-- lunon
 - mach
 - maxima
 - mechanize
@@ -46,6 +47,7 @@ ashby:
 - meshy
 - nash
 - niural
+- nox-metals
 - npx
 - outmarket
 - output
@@ -53,6 +55,7 @@ ashby:
 - periodic-labs
 - phia
 - physicalintelligence
+- pika
 - poshmark
 - prior-labs
 - reacher
@@ -98,11 +101,12 @@ greenhouse:
 - cc
 - celonis
 - clarityinnovates
+- cloudflare
 - cresta
+- didi
 - digs
 - docugami
 - eulerity
-- evolver
 - faire
 - fccincinnati
 - figureai
@@ -123,7 +127,6 @@ greenhouse:
 - integrainterns
 - ispottv
 - jobsatphamily
-- jumpcrypto
 - kensingtontours
 - later
 - lightmatter
@@ -133,7 +136,6 @@ greenhouse:
 - medicalinformaticsengineering
 - merqube
 - msfcareers
-- mthreerecruitingportal
 - neuralink
 - newsbreak
 - octaura
@@ -152,6 +154,7 @@ greenhouse:
 - samsungresearchamericainternship
 - scaleai
 - scminternships
+- sevenresearch
 - sezzle
 - sharkninjaoperatingllc
 - shein
@@ -166,7 +169,6 @@ greenhouse:
 - transmarketgroup
 - tribalscale
 - truveta
-- vardaspace
 - verkada
 - vikingglobalinvestors
 - virtu
@@ -174,9 +176,7 @@ greenhouse:
 - walleyecapital-external-students
 - wheely
 - workato
-- xairatherapeutics
 - xpengmotors
-- zone5technologies
 lever:
 - achievers
 - aisafety
@@ -193,7 +193,6 @@ lever:
 - intropic
 - kabam
 - kepler
-- layup
 - linkllc
 - magnetforensics
 - make-rain
@@ -244,6 +243,7 @@ smartrecruiters:
 - servicenow
 - smithsgroup2
 - stemxpert1
+- thewonderfulcompany
 - universityhealthnetwork
 - usm2
 - veoliaenvironnementsa
