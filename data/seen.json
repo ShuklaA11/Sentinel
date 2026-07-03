@@ -107,6 +107,7 @@
 "greenhouse:4123841008",
 "greenhouse:4123863008",
 "greenhouse:4254540009",
+"greenhouse:4257336009",
 "greenhouse:4280809009",
 "greenhouse:4280945009",
 "greenhouse:4286512009",
@@ -182,6 +183,7 @@
 "greenhouse:5282753008",
 "greenhouse:5282758008",
 "greenhouse:5287786008",
+"greenhouse:5289440008",
 "greenhouse:5469298003",
 "greenhouse:5469305003",
 "greenhouse:5659745004",
@@ -275,6 +277,7 @@
 "lever:7d69cf8a-06fd-4f05-bd84-27149db29c4d",
 "lever:8bcf4f33-0a79-4248-bbfd-49ac4be9dd8e",
 "lever:91a07eb1-2244-48bf-a65b-dc166a327ddc",
+"lever:9d884d26-018c-45b2-8cfb-f17d29d4e688",
 "lever:9e40d77f-b07c-437b-98e7-def9b0184d89",
 "lever:a3a1f0ea-6a4f-42e5-81c8-3b34dac22a67",
 "lever:a3bcdba6-b0d0-46ba-9af3-a387926a6fb4",
@@ -356,6 +359,7 @@
 "repo:SimplifyJobs/Summer2026-Internships:1009dc2c-0870-44a9-a48f-4ac0b57cd856",
 "repo:SimplifyJobs/Summer2026-Internships:1021f365-61b2-4ead-a636-553d171168f7",
 "repo:SimplifyJobs/Summer2026-Internships:109a73d9-1b88-4bc7-a011-1b5eda9250d7",
+"repo:SimplifyJobs/Summer2026-Internships:10b8ba9b-4b53-4c9d-ac43-9343422d6e2d",
 "repo:SimplifyJobs/Summer2026-Internships:10b8da4f-6883-47c0-b98d-6c271f1f6357",
 "repo:SimplifyJobs/Summer2026-Internships:10f26a2e-0806-4a95-ab5a-9937df1917fa",
 "repo:SimplifyJobs/Summer2026-Internships:10f63732-b872-4b8f-bbb7-529d8b168ab6",
@@ -714,6 +718,7 @@
 "repo:SimplifyJobs/Summer2026-Internships:751867f3-533e-4690-8897-2b77e95e20b3",
 "repo:SimplifyJobs/Summer2026-Internships:75840089-9ab1-4f67-bb80-130b0082924b",
 "repo:SimplifyJobs/Summer2026-Internships:75e652f6-6c0d-4dca-90c1-9bc0a5e03ad2",
+"repo:SimplifyJobs/Summer2026-Internships:764b243c-75c2-4c30-a3b0-4b86543639ed",
 "repo:SimplifyJobs/Summer2026-Internships:765ee212-ae49-4415-83b1-c513541055d8",
 "repo:SimplifyJobs/Summer2026-Internships:767e5cb4-c607-49eb-a7be-20f99eec0c61",
 "repo:SimplifyJobs/Summer2026-Internships:769cd552-cfd3-4f19-be8c-43ed9f454f5d",
@@ -1888,5 +1893,6 @@
 "smartrecruiters:744000134236652",
 "smartrecruiters:744000134461010",
 "smartrecruiters:744000135165209",
-"smartrecruiters:744000135165246"
+"smartrecruiters:744000135165246",
+"smartrecruiters:744000135674088"
 ]
