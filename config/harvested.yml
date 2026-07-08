@@ -2,6 +2,7 @@
 # Mostly startups. Merged into the poll on top of companies.yml.
 ashby:
 - 1password
+- 1x
 - adaption
 - afterquery
 - anima
@@ -78,7 +79,6 @@ ashby:
 - walrusfi
 - wealth-com
 - windborne-systems
-- zip
 bamboohr:
 - euna
 greenhouse:
@@ -123,6 +123,7 @@ greenhouse:
 - grvty
 - haizelabs
 - harbingermotors
+- horizonindustrieslimited
 - iherb
 - instawork
 - instead
@@ -139,9 +140,9 @@ greenhouse:
 - mcghealth
 - mcmastercarr
 - medicalinformaticsengineering
-- merqube
 - momentenergy
 - msfcareers
+- mwinternshipprogram
 - neuralink
 - newsbreak
 - octaura
@@ -170,7 +171,6 @@ greenhouse:
 - tenstorrentuniversity
 - togetherai
 - torcrobotics
-- tpcengineeringholdingsllc
 - transmarketgroup
 - tribalscale
 - truveta
@@ -188,6 +188,7 @@ lever:
 - achievers
 - aisafety
 - alertus
+- dga
 - diversified-automation
 - ekimetrics
 - evrealty-us
@@ -199,7 +200,6 @@ lever:
 - intropic
 - kabam
 - kepler
-- kpler
 - linkllc
 - magnetforensics
 - make-rain
@@ -226,7 +226,6 @@ smartrecruiters:
 - codeage
 - computerfutures3
 - comtechllc2
-- continental
 - eurofins
 - globalchannelmanagementinc
 - infinitequant
@@ -249,6 +248,5 @@ smartrecruiters:
 - smithsgroup2
 - stemxpert1
 - thewonderfulcompany
-- universityhealthnetwork
 - usm2
 - veoliaenvironnementsa
