@@ -71,6 +71,35 @@ def _safe_bullet(new: str, old: str) -> str:
     return new
 
 
+def _apply_rewrites(text: str, bullets: list[str]) -> list[str]:
+    """Parse the model's `INDEX|||BULLET` lines, keeping originals for any unsafe/missing row."""
+    out = dict(enumerate(bullets))  # default to originals; override with safe rewrites
+    for line in text.splitlines():
+        m = re.match(r"\s*(\d+)\s*\|\|\|\s*(.*)", line)
+        if m and int(m.group(1)) < len(bullets):
+            idx = int(m.group(1))
+            out[idx] = _safe_bullet(m.group(2).strip(), bullets[idx])
+    return [out[i] for i in range(len(bullets))]
+
+
+def _count_pages(data: bytes) -> int:
+    """Best-effort PDF page count from raw bytes (no poppler dep). Prefer the page-tree
+    /Count; fall back to counting /Type /Page objects. Returns >=1."""
+    counts = [int(m) for m in re.findall(rb"/Count\s+(\d+)", data)]
+    if counts:
+        return max(counts)
+    return len(re.findall(rb"/Type\s*/Page[^s]", data)) or 1
+
+
+def _render(tex: str, items: list[tuple[int, int, str]], bullets: list[str]) -> str:
+    """Rebuild the full .tex, swapping each \\resumeItem{} body for its (possibly rewritten)
+    bullet. Patches from last span to first so earlier indices stay valid."""
+    out = tex
+    for (start, end, _old), nb in sorted(zip(items, bullets), key=lambda x: -x[0][0]):
+        out = out[:start] + MARKER + nb + "}" + out[end:]
+    return out
+
+
 def _xetex_compat(tex: str) -> str:
     """Comment out pdfTeX-only lines tectonic's XeTeX engine can't run. Visually a no-op:
     XeTeX is Unicode-native, so the PDF stays ATS-readable without glyphtounicode."""
@@ -116,31 +145,67 @@ def _rewrite(bullets: list[str], company: str, title: str, emphasis: str, jd: st
     try:
         resp = client.messages.create(model=MODEL, max_tokens=2048,
                                       messages=[{"role": "user", "content": prompt}])
-        text = resp.content[0].text
-        out = dict(enumerate(bullets))  # default to originals; override with safe rewrites
-        for line in text.splitlines():
-            m = re.match(r"\s*(\d+)\s*\|\|\|\s*(.*)", line)
-            if m and int(m.group(1)) < len(bullets):
-                idx = int(m.group(1))
-                out[idx] = _safe_bullet(m.group(2).strip(), bullets[idx])
-        return [out[i] for i in range(len(bullets))]
+        return _apply_rewrites(resp.content[0].text, bullets)
     except Exception as exc:  # noqa: BLE001
         log.error("rewrite failed (%s) — keeping originals", exc)
         return bullets
 
 
-def _compile(tex_path: str) -> str | None:
+def _tighten(bullets: list[str], company: str, title: str, issues: list[str]) -> list[str]:
+    """Second-pass shortening when the rendered resume overflows one page. Same truthfulness
+    guard as _rewrite; only cuts words, never facts."""
+    client = _client()
+    if client is None:
+        return bullets
+    numbered = "\n".join(f"{i}. {b}" for i, b in enumerate(bullets))
+    prompt = (
+        f"A tailored one-page resume for {title} at {company} does not fit: {'; '.join(issues)}.\n"
+        "Shorten these bullets so the resume fits ONE page. Cut the weakest words and redundancy.\n"
+        "HARD RULES:\n"
+        "- Keep every metric, tool name, library name, VERSION NUMBER, and proper noun "
+        "CHARACTER-FOR-CHARACTER. Never invent, alter, or drop a fact.\n"
+        "- LaTeX-safe: keep escapes like \\% and \\& intact; no new macros.\n"
+        "- Aim <= ~95 characters per bullet, one line. Keep the SAME count and order.\n\n"
+        f"Bullets:\n{numbered}\n\n"
+        f"Return each shortened bullet as  INDEX|||BULLET , exactly {len(bullets)} lines, nothing else."
+    )
+    try:
+        resp = client.messages.create(model=MODEL, max_tokens=2048,
+                                      messages=[{"role": "user", "content": prompt}])
+        return _apply_rewrites(resp.content[0].text, bullets)
+    except Exception as exc:  # noqa: BLE001
+        log.error("tighten failed (%s) — keeping current bullets", exc)
+        return bullets
+
+
+def _compile_inspect(tex_path: str) -> tuple[str | None, list[str]]:
+    """Compile with tectonic and report soft layout issues (>1 page, overfull hbox).
+
+    Returns (pdf_path or None, issues). A resume that overflows still yields a PDF we keep
+    as best-effort; issues drive the tightening retry loop in tailor()."""
     if shutil.which("tectonic") is None:
         log.error("tectonic not installed (brew install tectonic) — cannot compile")
-        return None
+        return None, []
     try:
-        subprocess.run(["tectonic", tex_path, "--outdir", OUT_DIR],
-                       check=True, capture_output=True, text=True, timeout=120)
-    except subprocess.CalledProcessError as exc:
-        log.error("tectonic compile failed:\n%s", exc.stderr[-800:])
-        return None
+        proc = subprocess.run(["tectonic", tex_path, "--outdir", OUT_DIR],
+                              capture_output=True, text=True, timeout=120)
+    except subprocess.TimeoutExpired:
+        log.error("tectonic timed out")
+        return None, []
+    if proc.returncode != 0:
+        log.error("tectonic compile failed:\n%s", proc.stderr[-800:])
+        return None, []
     pdf = os.path.splitext(tex_path)[0] + ".pdf"
-    return pdf if os.path.exists(pdf) else None
+    if not os.path.exists(pdf):
+        return None, []
+    with open(pdf, "rb") as f:
+        pages = _count_pages(f.read())
+    issues = []
+    if pages > 1:
+        issues.append(f"{pages} pages (resume must be 1)")
+    if "overfull \\hbox" in (proc.stdout + proc.stderr).lower():
+        issues.append("overfull hbox (line spills the margin)")
+    return pdf, issues
 
 
 def tailor(company: str, title: str, archetype: str, jd: str) -> None:
@@ -159,27 +224,34 @@ def tailor(company: str, title: str, archetype: str, jd: str) -> None:
 
     new = _rewrite(bullets, company, title, emphasis, jd, bank)
 
-    # Rebuild from last span to first so indices stay valid.
-    out = tex
-    changed = 0
-    for (start, end, old), nb in sorted(zip(items, new), key=lambda x: -x[0][0]):
-        out = out[:start] + MARKER + nb + "}" + out[end:]
-        changed += nb != old
-
     os.makedirs(OUT_DIR, exist_ok=True)
     slug = f"{company}_{title}".lower().replace(" ", "_").replace("/", "-")
     tailored_tex = os.path.join(OUT_DIR, f"{slug}.tex")
-    with open(tailored_tex, "w") as f:
-        f.write(_xetex_compat(out))
 
+    # Compile → inspect → tighten loop: if the resume overflows one page, shorten the
+    # bullets and recompile (max 2 retries), then keep the best-effort PDF.
+    pdf: str | None = None
+    issues: list[str] = []
+    for attempt in range(3):
+        with open(tailored_tex, "w") as f:
+            f.write(_xetex_compat(_render(tex, items, new)))
+        pdf, issues = _compile_inspect(tailored_tex)
+        if pdf is None or not issues:
+            break
+        if attempt < 2:
+            log.warning("layout issue (%s) — tightening", "; ".join(issues))
+            new = _tighten(new, company, title, issues)
+
+    changed = sum(nb != old for (_, _, old), nb in zip(items, new))
     print(f"\n{changed}/{len(bullets)} bullets reworded (template untouched). Diff:")
     for (_, _, old), nb in zip(items, new):
         if nb != old:
             print(f"  - {old}\n  + {nb}")
 
-    pdf = _compile(tailored_tex)
-    if pdf:
+    if pdf and not issues:
         print(f"\n✓ compiled -> {pdf}")
+    elif pdf:
+        print(f"\n⚠ compiled with residual layout issue ({'; '.join(issues)}) -> {pdf}")
     else:
         base_pdf = (profile.get("facts") or {}).get("resume_path", "")
         print(f"\n✗ compile unavailable/failed — fall back to base PDF: {base_pdf}")
