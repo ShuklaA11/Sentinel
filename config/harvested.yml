@@ -47,8 +47,8 @@ ashby:
 - mercor
 - meshy
 - niural
-- nox-metals
 - npx
+- orbitalindustries
 - output
 - periodic-labs
 - persona
@@ -66,7 +66,6 @@ ashby:
 - skydio
 - solink
 - tenex
-- tessera-labs
 - the-exploration-company
 - tilderesearch
 - uncountable
@@ -87,6 +86,7 @@ greenhouse:
 - andurilindustries
 - aperaaiinc
 - aquaticcapitalmanagement
+- argmax
 - asteraearlycareer2026
 - astranis
 - axq
@@ -98,6 +98,7 @@ greenhouse:
 - clarityinnovates
 - cloudflare
 - cresta
+- customcomputerspecialists
 - didi
 - digs
 - docugami
@@ -107,11 +108,13 @@ greenhouse:
 - faire
 - fccincinnati
 - figureai
+- fiveringsllc
 - flowtraders
 - fourhands
 - fschumacherco
 - ftandinternships
 - gemini
+- generalatlantic
 - genevatrading
 - genscript
 - ginkgobioworks
@@ -142,7 +145,6 @@ greenhouse:
 - octaura
 - offerup
 - orennia
-- plscareers
 - podium81
 - point72
 - queracomputinginc
@@ -154,10 +156,10 @@ greenhouse:
 - samsungresearchamericainternship
 - scaleai
 - scminternships
+- scopely
 - sevenresearch
 - sezzle
 - sharkninjaoperatingllc
-- shein
 - silananotechnologies
 - spacex
 - studiokraftonboard
@@ -174,7 +176,7 @@ greenhouse:
 - verkada
 - vikingglobalinvestors
 - virtu
-- vscfiresecurityinc
+- voloridgeinvestmentmanagement
 - walleyecapital-external-students
 - workato
 - worldsurfleague
@@ -200,7 +202,9 @@ lever:
 - magnetforensics
 - make-rain
 - multiplylabs
+- nextgenfed
 - plus-2
+- quantco-
 - reply
 - rws
 - solopulseco
@@ -238,7 +242,6 @@ smartrecruiters:
 - northwesternmutual
 - respecinc
 - sajixsoftwaresolutionprivatelimited
-- sandisk
 - satechnologiesinc4
 - servicenow
 - sikaag
