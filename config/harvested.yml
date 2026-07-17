@@ -18,11 +18,11 @@ ashby:
 - centerfield
 - circleback
 - clera
+- composio
 - constellationspace
 - context
 - creatify
 - ctgt
-- d-matrix
 - dandy
 - droyd
 - dryft
@@ -34,7 +34,6 @@ ashby:
 - ethglobal
 - faculty
 - fundwell
-- gumloop
 - hcompany
 - heron-power
 - hiverge
@@ -59,6 +58,7 @@ ashby:
 - physicalintelligence
 - pika
 - poshmark
+- primeintellect
 - prior-labs
 - pylon-labs
 - reacher
@@ -194,6 +194,7 @@ lever:
 - exowatt
 - fluxergy-2
 - genbio
+- geocomply-2
 - go-cloudforce
 - great-gray-group
 - hermeus
@@ -205,7 +206,6 @@ lever:
 - magnetforensics
 - make-rain
 - multiplylabs
-- nextgenfed
 - plus-2
 - quantco-
 - ravl_io
@@ -213,7 +213,6 @@ lever:
 - rws
 - solopulseco
 - theinformationlab
-- traackr
 - tri
 - waabi
 - weride
@@ -254,3 +253,4 @@ smartrecruiters:
 - thewonderfulcompany
 - usm2
 - veoliaenvironnementsa
+- westerndigital
