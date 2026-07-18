@@ -23,7 +23,9 @@ ashby:
 - context
 - creatify
 - ctgt
+- cuspai
 - dandy
+- deepgram
 - droyd
 - dryft
 - eightsleep
@@ -50,6 +52,7 @@ ashby:
 - netic
 - niural
 - npx
+- odysseyml
 - orbitalindustries
 - output
 - periodic-labs
@@ -61,7 +64,6 @@ ashby:
 - primeintellect
 - prior-labs
 - pylon-labs
-- reacher
 - remarcable-inc
 - saronic
 - serval
@@ -147,6 +149,7 @@ greenhouse:
 - octaura
 - offerup
 - orennia
+- phaidra
 - podium81
 - point72
 - queracomputinginc
@@ -158,11 +161,11 @@ greenhouse:
 - samsungresearchamericainternship
 - scaleai
 - scminternships
-- scopely
 - sevenresearch
 - sezzle
 - sharkninjaoperatingllc
 - silananotechnologies
+- solidpower
 - spacex
 - sparksoftcorporation
 - studiokraftonboard
@@ -185,6 +188,7 @@ greenhouse:
 - worldsurfleague
 - xpengmotors
 lever:
+- acceldata
 - aisafety
 - alertus
 - dga
