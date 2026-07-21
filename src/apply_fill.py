@@ -1,0 +1,169 @@
+"""Field mapper for the auto-apply driver — the deterministic, testable core.
+
+Given a form's enumerated fields and the profile, produce a fill plan:
+  - fills:       fields we can answer (identity facts + answer_bank lookups)
+  - skips:       optional fields intentionally left blank (e.g. gpa 'decline')
+  - needs_human: fields we must NOT guess (unmapped, no answer on file, free-text)
+
+Safety model: screening/eligibility answers are LOOKED UP, never generated. A
+label that doesn't confidently match a known question, or whose answer_bank value
+is null, becomes needs_human. That is what keeps a wrong work-auth / sponsorship
+answer — a permanent auto-reject — from ever being autofilled. The Claude-in-Chrome
+agent runs the browser, but it defers every eligibility answer to this table.
+"""
+from __future__ import annotations
+
+import re
+
+# Ordered (label patterns -> answer_bank path). First match wins, so put the more
+# specific phrases before generic ones. Matching is case-insensitive substring.
+_SCREENING: list[tuple[tuple[str, ...], tuple[str, str]]] = [
+    (("legally authorized", "authorized to work", "work authorization", "authorized to work in the u"),
+     ("eligibility", "work_authorized_us")),
+    (("sponsorship", "sponsor you", "require visa", "visa sponsor"),
+     ("eligibility", "requires_sponsorship")),
+    (("18 years", "at least 18", "over 18", "older than 18", "least 18 years"),
+     ("eligibility", "age_18_or_older")),
+    (("currently enrolled", "are you a student", "current student", "enrolled student"),
+     ("eligibility", "currently_enrolled_student")),
+    (("gpa", "grade point"),
+     ("eligibility", "gpa")),
+    (("earliest start", "start date", "when can you start", "availability", "available to start", "date available"),
+     ("logistics", "earliest_start_date")),
+    (("relocate", "relocation"),
+     ("logistics", "willing_to_relocate")),
+    (("salary", "compensation expectation", "expected pay", "desired compensation", "pay expectation", "expected salary"),
+     ("logistics", "salary_expectation")),
+    (("how did you hear", "how were you referred", "referral source", "hear about", "how you heard"),
+     ("logistics", "how_heard_about_us")),
+    (("previously employed", "worked here before", "former employee", "previously worked"),
+     ("logistics", "previously_employed_here")),
+    (("felony", "convicted", "criminal record", "criminal history"),
+     ("background", "felony_conviction")),
+    (("non-compete", "noncompete", "non compete"),
+     ("background", "non_compete_agreement")),
+    (("gender", "what is your sex"), ("eeo", "gender")),
+    (("race", "ethnicity"), ("eeo", "race_ethnicity")),
+    (("veteran",), ("eeo", "veteran_status")),
+    (("disability",), ("eeo", "disability_status")),
+]
+
+# These answer_bank values are instructions the LLM driver applies per-form (it
+# reads the JD / dropdown options and picks), not literal strings to type. They
+# are low-risk fields — never auto-reject filters.
+_DIRECTIVE_KEYS = {("logistics", "salary_expectation"), ("logistics", "how_heard_about_us")}
+
+# Free-text prompts we defer to essay drafting (step 3), never autofill blindly.
+_ESSAY_HINTS = ("why ", "why do", "why are", "describe", "tell us", "cover letter",
+                "what interests", "in your own words", "elaborate", "explain why")
+
+
+def _words(s: str) -> set[str]:
+    return set(re.split(r"\W+", s.lower()))
+
+
+def _identity_value(label: str, profile: dict) -> tuple[str | None, str | None]:
+    """Resolve an identity/contact field from the profile. Returns (value, source);
+    (None, None) if the label doesn't look like an identity field; ('', source) if
+    it matched a known field but the profile has no value for it.
+    """
+    l = label.lower()
+    w = _words(label)
+    facts = profile.get("facts", {}) or {}
+    edu = profile.get("education", {}) or {}
+    links = facts.get("links", {}) or {}
+    name = profile.get("name", "") or ""
+
+    if "resume" in w or "cv" in w or "upload" in l:
+        return facts.get("resume_path", ""), "resume_path"
+    if "linkedin" in l:
+        return profile.get("linkedin", ""), "linkedin"
+    if "github" in l:
+        return links.get("github", ""), "github"
+    if "email" in l:
+        return profile.get("email", ""), "email"
+    if "phone" in l or "mobile" in w:
+        return profile.get("phone", ""), "phone"
+    if "first name" in l or "given name" in l:
+        return name.split(" ")[0], "name"
+    if "last name" in l or "surname" in l or "family name" in l:
+        return " ".join(name.split(" ")[1:]), "name"
+    if "full name" in l or "legal name" in l or l.strip() in ("name", "your name"):
+        return name, "name"
+    if {"school", "university", "institution", "college"} & w:
+        return edu.get("school", ""), "school"
+    if "degree" in w or "major" in w:
+        return edu.get("degree", ""), "degree"
+    if "graduation" in l or "grad date" in l or "expected graduation" in l:
+        return (profile.get("grad_date") or edu.get("graduation", "")), "graduation"
+    if "location" in l or "city" in w or l.strip() == "address":
+        return edu.get("location", ""), "location"
+    return None, None
+
+
+def _render(value, required: bool, path: tuple[str, str]) -> tuple[str, str]:
+    """Turn an answer_bank value into a (action, payload) decision."""
+    if value is None:
+        return "needs_human", "no answer on file — do not guess"
+    if value == "decline":
+        if required:
+            return "needs_human", "field required but answer is 'decline'"
+        return "skip", "intentionally left blank (decline)"
+    if path in _DIRECTIVE_KEYS:
+        return "directive", str(value)
+    if isinstance(value, bool):
+        return "fill", "Yes" if value else "No"
+    return "fill", str(value)
+
+
+def plan_field(field: dict, profile: dict) -> dict:
+    """Decide what to do with one enumerated form field.
+
+    field: {"label": str, "type": str, "required": bool, "options"?: [...]}
+    Returns one of:
+      {"label", "action": "fill", "value", "source", "directive"?: True}
+      {"label", "action": "skip", "reason"}
+      {"label", "action": "needs_human", "reason"}
+    """
+    label = field.get("label", "")
+    ftype = (field.get("type") or "text").lower()
+    required = bool(field.get("required"))
+    l = label.lower()
+
+    # Free-text essays: defer to step 3, never autofill.
+    if ftype == "textarea" or any(h in l for h in _ESSAY_HINTS):
+        return {"label": label, "action": "needs_human", "reason": "free-text — deferred to essay drafting"}
+
+    # Screening / eligibility / EEO: answer_bank lookup (the safety core).
+    ab = profile.get("answer_bank", {}) or {}
+    for patterns, (section, key) in _SCREENING:
+        if any(p in l for p in patterns):
+            value = (ab.get(section, {}) or {}).get(key)
+            action, payload = _render(value, required, (section, key))
+            src = f"{section}.{key}"
+            if action == "fill":
+                return {"label": label, "action": "fill", "value": payload, "source": src}
+            if action == "directive":
+                return {"label": label, "action": "fill", "value": payload, "source": src, "directive": True}
+            if action == "skip":
+                return {"label": label, "action": "skip", "reason": payload}
+            return {"label": label, "action": "needs_human", "reason": payload}
+
+    # Identity / contact facts.
+    value, src = _identity_value(label, profile)
+    if value:
+        return {"label": label, "action": "fill", "value": value, "source": src}
+    if value == "":  # matched a known field but the profile has no data for it
+        return {"label": label, "action": "needs_human", "reason": f"matched {src} but no value in profile"}
+
+    # No confident match anywhere.
+    return {"label": label, "action": "needs_human", "reason": "unmapped field — do not guess"}
+
+
+def plan_fields(fields: list[dict], profile: dict) -> dict:
+    """Aggregate per-field decisions into {fills, skips, needs_human}."""
+    fills, skips, needs = [], [], []
+    for f in fields:
+        p = plan_field(f, profile)
+        {"fill": fills, "skip": skips, "needs_human": needs}[p["action"]].append(p)
+    return {"fills": fills, "skips": skips, "needs_human": needs}
