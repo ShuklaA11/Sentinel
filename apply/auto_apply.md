@@ -20,12 +20,19 @@ For each `queued` row (oldest first, **one at a time**):
    - `fills` — type/select these. For `type=file`, upload `facts.resume_path` (`file_upload`).
      For a fill marked `directive: true` (salary, how-heard), read the JD range / dropdown options
      and apply the instruction — do not type the directive text verbatim.
+   - `drafts` — free-text questions. For each, call
+     `essays.draft_answer(question, profile, voice, jd_text=<the role's JD>, word_limit=<any stated limit>)`
+     where `voice` is the text of `profile/voice.md`. Fill the returned answer. It is already
+     em-dash-free and grounded only in profile facts. If it returns `None` (no API key), treat
+     that field as `needs_human` instead.
    - `skips` — leave blank (intentional, e.g. GPA declined).
-   - `needs_human` — **do not fill.** These are unmapped, no-answer-on-file, or free-text essays.
+   - `needs_human` — **do not fill.** These are unmapped or no-answer-on-file fields.
 5. **Screenshot** the completed form (`computer` screenshot) → save under `data/apply_shots/`.
 6. **Record** via `src.apply_queue`: `rows = load_queue()`,
    `update_row(rows, row.id, status="prepared", prepared_at=<now>, screenshot=<path>,`
-   `attempts=<n+1>, note=<comma-joined needs_human labels>)`, then `save_queue(rows)`.
+   `attempts=<n+1>, note=<any needs_human labels + a "drafted: <labels>" marker>)`, then
+   `save_queue(rows)`. Flagging which fields were LLM-drafted tells the reviewer exactly
+   what to read closely.
 7. **Move on.** Do not open the next form until this one is recorded.
 
 ## Shadow rule (non-negotiable in this mode)
@@ -33,6 +40,8 @@ For each `queued` row (oldest first, **one at a time**):
 - **Never click Submit / Apply-final / Send.** Stop at the completed, unsubmitted form.
 - The point is to verify the mapper's field matches and eligibility answers on *real* forms
   before any autonomous submission exists. Report anything the mapper got wrong.
+- **LLM-drafted essays get the closest review.** They are the highest-quality-risk output.
+  In shadow mode the human reads every drafted answer before it would ever be submitted.
 
 ## Per-ATS notes
 

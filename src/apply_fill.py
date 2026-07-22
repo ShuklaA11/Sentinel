@@ -2,8 +2,9 @@
 
 Given a form's enumerated fields and the profile, produce a fill plan:
   - fills:       fields we can answer (identity facts + answer_bank lookups)
+  - drafts:      free-text questions for the essay generator (essays.draft_answer)
   - skips:       optional fields intentionally left blank (e.g. gpa 'decline')
-  - needs_human: fields we must NOT guess (unmapped, no answer on file, free-text)
+  - needs_human: fields we must NOT guess (unmapped, no answer on file)
 
 Safety model: screening/eligibility answers are LOOKED UP, never generated. A
 label that doesn't confidently match a known question, or whose answer_bank value
@@ -116,6 +117,49 @@ def _render(value, required: bool, path: tuple[str, str]) -> tuple[str, str]:
     return "fill", str(value)
 
 
+_DECLINE_HINTS = ("decline", "prefer not", "wish to", "not to say", "not wish")
+
+
+def _resolve_option(value, options) -> str | None:
+    """Map an intended value to a dropdown/radio's actual option text.
+
+    Order: decline-intent -> exact (case-insensitive) -> substring either way (only
+    for values longer than 3 chars, so "No" can't match "...not..."). Returns None
+    when nothing matches confidently, so the caller can fall back to needs_human
+    rather than fill a value the form doesn't offer. No options -> passthrough (a
+    free-text field imposes no constraint).
+    """
+    if not options:
+        return str(value)
+    opts = [str(o) for o in options]
+    v = str(value).strip().lower()
+
+    if v in ("prefer_not_to_say", "decline", "prefer not to say"):
+        for o in opts:
+            if any(h in o.lower() for h in _DECLINE_HINTS):
+                return o
+        return None
+    for o in opts:                      # exact
+        if o.strip().lower() == v:
+            return o
+    if len(v) > 3:                      # whole-word match (so "Male" != "Female")
+        for o in opts:
+            ol = o.strip().lower()
+            if (re.search(r"\b" + re.escape(v) + r"\b", ol)
+                    or re.search(r"\b" + re.escape(ol) + r"\b", v)):
+                return o
+    return None
+
+
+def _fill(label: str, value, source: str, field: dict) -> dict:
+    """Build a fill decision, resolving to a real option when the field is a select."""
+    resolved = _resolve_option(value, field.get("options"))
+    if resolved is None:
+        return {"label": label, "action": "needs_human",
+                "reason": f"'{value}' has no matching option for {source}"}
+    return {"label": label, "action": "fill", "value": resolved, "source": source}
+
+
 def plan_field(field: dict, profile: dict) -> dict:
     """Decide what to do with one enumerated form field.
 
@@ -130,9 +174,11 @@ def plan_field(field: dict, profile: dict) -> dict:
     required = bool(field.get("required"))
     l = label.lower()
 
-    # Free-text essays: defer to step 3, never autofill.
+    # Free-text essays: flag for the essay generator (essays.draft_answer). The
+    # classifier only marks the field; the driver does the actual drafting, so this
+    # module stays pure and offline-testable.
     if ftype == "textarea" or any(h in l for h in _ESSAY_HINTS):
-        return {"label": label, "action": "needs_human", "reason": "free-text — deferred to essay drafting"}
+        return {"label": label, "action": "draft", "question": label}
 
     # Screening / eligibility / EEO: answer_bank lookup (the safety core).
     ab = profile.get("answer_bank", {}) or {}
@@ -142,7 +188,7 @@ def plan_field(field: dict, profile: dict) -> dict:
             action, payload = _render(value, required, (section, key))
             src = f"{section}.{key}"
             if action == "fill":
-                return {"label": label, "action": "fill", "value": payload, "source": src}
+                return _fill(label, payload, src, field)
             if action == "directive":
                 return {"label": label, "action": "fill", "value": payload, "source": src, "directive": True}
             if action == "skip":
@@ -152,7 +198,7 @@ def plan_field(field: dict, profile: dict) -> dict:
     # Identity / contact facts.
     value, src = _identity_value(label, profile)
     if value:
-        return {"label": label, "action": "fill", "value": value, "source": src}
+        return _fill(label, value, src, field)
     if value == "":  # matched a known field but the profile has no data for it
         return {"label": label, "action": "needs_human", "reason": f"matched {src} but no value in profile"}
 
@@ -161,9 +207,10 @@ def plan_field(field: dict, profile: dict) -> dict:
 
 
 def plan_fields(fields: list[dict], profile: dict) -> dict:
-    """Aggregate per-field decisions into {fills, skips, needs_human}."""
-    fills, skips, needs = [], [], []
+    """Aggregate per-field decisions into {fills, drafts, skips, needs_human}."""
+    fills, drafts, skips, needs = [], [], [], []
+    buckets = {"fill": fills, "draft": drafts, "skip": skips, "needs_human": needs}
     for f in fields:
         p = plan_field(f, profile)
-        {"fill": fills, "skip": skips, "needs_human": needs}[p["action"]].append(p)
-    return {"fills": fills, "skips": skips, "needs_human": needs}
+        buckets[p["action"]].append(p)
+    return {"fills": fills, "drafts": drafts, "skips": skips, "needs_human": needs}
