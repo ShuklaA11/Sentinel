@@ -112,6 +112,12 @@ def test_select_field_with_no_matching_option_stops():
     assert p["action"] == "needs_human"
 
 
+def test_file_field_maps_to_resume_regardless_of_label():
+    prof = {"facts": {"resume_path": "/p/resume.pdf"}}
+    p = af.plan_field({"label": "Attach", "type": "file"}, prof)   # Greenhouse's button label
+    assert p["action"] == "fill" and p["value"] == "/p/resume.pdf" and p["source"] == "resume_path"
+
+
 def test_matched_identity_field_with_no_value_stops():
     prof = {"name": "", "facts": {}, "education": {}}
     p = af.plan_field({"label": "Email address"}, prof)

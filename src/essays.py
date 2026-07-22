@@ -92,6 +92,9 @@ def _prompt(question: str, profile: dict, voice: str, jd_text: str | None, word_
         "2. STYLE imitates the VOICE reference, which is a style sample ONLY. Never copy its "
         "content or phrasing. Borrow cadence and tone, not material.\n\n"
         "WRITING CONSTRAINTS:\n"
+        "- Never reply conversationally or ask for clarification. If the QUESTION is missing, is "
+        "only a label or heading, or cannot be answered honestly from the FACTS, output exactly: "
+        "SKIP (and nothing else).\n"
         "- Absolutely NO em dashes or en dashes. Use periods and commas instead. Non-negotiable.\n"
         "- Professional register. Concrete and specific: name real tools, numbers, projects.\n"
         "- Avoid filler abstraction (meaningful, impactful, aspire, drive change) unless a "
@@ -150,5 +153,7 @@ def draft_answer(question: str, profile: dict, voice: str, jd_text: str | None =
         tries += 1
 
     if not text:
+        return None
+    if text.strip().rstrip(".").upper() == "SKIP":  # model declined -> leave for a human
         return None
     return strip_em_dashes(text).strip()  # layer 3: the deterministic guarantee

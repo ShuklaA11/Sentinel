@@ -180,6 +180,16 @@ def plan_field(field: dict, profile: dict) -> dict:
     if ftype == "textarea" or any(h in l for h in _ESSAY_HINTS):
         return {"label": label, "action": "draft", "question": label}
 
+    # Any file input on an application form is the resume — forms rarely have more
+    # than one. Handles Greenhouse's "Attach" button label, which says nothing about
+    # "resume". (If a form ever has a second file field, it would also get the resume;
+    # revisit only if that shows up.)
+    if ftype == "file":
+        rp = (profile.get("facts") or {}).get("resume_path") or ""
+        if rp:
+            return {"label": label, "action": "fill", "value": rp, "source": "resume_path"}
+        return {"label": label, "action": "needs_human", "reason": "file field but no resume_path on file"}
+
     # Screening / eligibility / EEO: answer_bank lookup (the safety core).
     ab = profile.get("answer_bank", {}) or {}
     for patterns, (section, key) in _SCREENING:

@@ -102,3 +102,11 @@ def test_draft_no_retry_when_first_draft_is_clean():
 
 def test_draft_returns_none_on_api_error():
     assert essays.draft_answer("Why us?", PROFILE, VOICE, client=_RaisingClient()) is None
+
+
+def test_draft_returns_none_on_skip_sentinel():
+    # Non-question label -> model declines with SKIP -> None (never types a reply into the form).
+    fake = _FakeClient(["SKIP"])
+    assert essays.draft_answer("Note to Hiring Manager:", PROFILE, VOICE, client=fake) is None
+    fake = _FakeClient(["Skip."])  # tolerant of trailing punctuation / case
+    assert essays.draft_answer("Note to Hiring Manager:", PROFILE, VOICE, client=fake) is None

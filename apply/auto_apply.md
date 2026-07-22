@@ -23,8 +23,8 @@ For each `queued` row (oldest first, **one at a time**):
    - `drafts` — free-text questions. For each, call
      `essays.draft_answer(question, profile, voice, jd_text=<the role's JD>, word_limit=<any stated limit>)`
      where `voice` is the text of `profile/voice.md`. Fill the returned answer. It is already
-     em-dash-free and grounded only in profile facts. If it returns `None` (no API key), treat
-     that field as `needs_human` instead.
+     em-dash-free and grounded only in profile facts. If it returns `None` (no answer / model
+     declined via SKIP), treat that field as `needs_human` instead.
    - `skips` — leave blank (intentional, e.g. GPA declined).
    - `needs_human` — **do not fill.** These are unmapped or no-answer-on-file fields.
 5. **Screenshot** the completed form (`computer` screenshot) → save under `data/apply_shots/`.
