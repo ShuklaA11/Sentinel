@@ -21,3 +21,13 @@ def test_merge_companies_unions_and_dedupes(monkeypatch):
     assert merged["lever"] == ["plaid"]
     # repos passes through untouched.
     assert merged["repos"] == ["r1"]
+
+
+def test_apply_candidates_keeps_only_greenhouse():
+    high = [
+        {"id": "greenhouse:1", "source": "greenhouse"},
+        {"id": "lever:2", "source": "lever:x"},          # driver has no Lever adapter yet
+        {"id": "repo:3", "source": "repo:SimplifyJobs"},  # board-routed, ats unknown
+    ]
+    ready = run.apply_candidates(high)
+    assert [l["id"] for l in ready] == ["greenhouse:1"]

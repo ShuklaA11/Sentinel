@@ -8,7 +8,7 @@ import os
 
 import yaml
 
-from . import sources, filter as filt, store, notify, rank
+from . import sources, filter as filt, store, notify, rank, apply_queue
 
 CONFIG_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "config")
 
@@ -38,6 +38,15 @@ def _merge_companies() -> dict:
         merged.update(dict.fromkeys(slugs))
         companies[provider] = list(merged)
     return companies
+
+
+def apply_candidates(listings: list[dict]) -> list[dict]:
+    """High-fit listings on an ATS the Playwright driver can actually fill.
+
+    Only Greenhouse for now (the one built adapter). Repo-sourced and other-ATS
+    listings still get the email alert; they just aren't queued for assisted apply.
+    """
+    return [l for l in listings if apply_queue.ats_from(l.get("source", "")) == "greenhouse"]
 
 
 def main() -> None:
@@ -93,6 +102,10 @@ def main() -> None:
     high, rest = rank.partition_by_fit(new, threshold)
     if high and notify.send_high_fit_alert(high):
         print(f"🔥 alerted {len(high)} high-fit (score >= {threshold})")
+    ready = apply_candidates(high)
+    if ready:
+        added = apply_queue.enqueue(ready, now)
+        print(f"queued {added} for assisted apply (data/apply_queue.csv)")
     if rest:
         store.enqueue_pending(rest, now)
         print(f"queued {len(rest)} for the next batch digest")
