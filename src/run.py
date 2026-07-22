@@ -46,7 +46,7 @@ def apply_candidates(listings: list[dict]) -> list[dict]:
     Only Greenhouse for now (the one built adapter). Repo-sourced and other-ATS
     listings still get the email alert; they just aren't queued for assisted apply.
     """
-    return [l for l in listings if apply_queue.ats_from(l.get("source", "")) == "greenhouse"]
+    return [l for l in listings if apply_queue.ats_from(l.get("source", "")) in apply_queue.SUPPORTED_ATS]
 
 
 def main() -> None:

@@ -54,7 +54,7 @@ def watch(interval: int = 900, poll: bool = False, once: bool = False) -> None:
             if poll:
                 _poll_once()
             rows = apply_queue.load_queue()
-            todo = [r for r in rows if r.get("status") == "queued" and r.get("ats") == "greenhouse"]
+            todo = [r for r in rows if r.get("status") == "queued" and r.get("ats") in apply_queue.SUPPORTED_ATS]
             prepared: list[dict] = []
             for row in todo:
                 page = ctx.new_page()   # left open for your review + submit

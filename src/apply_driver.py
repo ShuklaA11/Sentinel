@@ -1,4 +1,7 @@
-"""Playwright execution driver for the auto-apply pipeline (Greenhouse adapter).
+"""Playwright execution driver for the auto-apply pipeline (Greenhouse + Lever).
+
+Lever rides the generic input/select path (native fields). Greenhouse needs the
+react-select handling below (custom `.select-shell` dropdowns + label resolution).
 
 This is the browser substrate for autonomous runs. Unlike the Claude-in-Chrome shadow
 playbook (which needs an agent driving each click), this is a plain script: it reads the
@@ -52,7 +55,10 @@ el => {
   const required = el.hasAttribute('required') || el.getAttribute('aria-required') === 'true';
   let options = null;
   if (tag === 'select') options = Array.from(el.options).map(o => o.textContent.trim()).filter(Boolean);
-  return { tag, type, label: (label || '').replace(/\*/g, ' ').replace(/\s+/g, ' ').trim(), required, options };
+  // First non-empty line only: a <label> that wraps a <select> otherwise picks up the
+  // option text (e.g. "Gender Select ... Male Female ..."). Strip required-markers too.
+  const first = (label || '').split('\n').map(s => s.trim()).filter(Boolean)[0] || '';
+  return { tag, type, label: first.replace(/[\*✱]/g, ' ').replace(/\s+/g, ' ').trim(), required, options };
 }
 """
 
@@ -218,7 +224,7 @@ def run(limit: int | None = None, headful: bool = False, submit: bool = False,
     profile, voice = _load_profile(), _load_voice()
     resume_path = (profile.get("facts") or {}).get("resume_path", "")
     rows = apply_queue.load_queue()
-    todo = [r for r in rows if r.get("status") == "queued" and r.get("ats") == "greenhouse"]
+    todo = [r for r in rows if r.get("status") == "queued" and r.get("ats") in apply_queue.SUPPORTED_ATS]
     if limit:
         todo = todo[:limit]
     if not todo:

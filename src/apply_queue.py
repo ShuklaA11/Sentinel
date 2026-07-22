@@ -49,6 +49,9 @@ APPLY_FIELDS = [
 # resolves it live.
 _ATS_NAMES = {"greenhouse", "lever", "ashby", "smartrecruiters", "workable", "bamboohr", "workday"}
 
+# ATSes the Playwright driver has an adapter for (grow as adapters land).
+SUPPORTED_ATS = {"greenhouse", "lever"}
+
 _INT_FIELDS = ("score", "attempts")
 
 
