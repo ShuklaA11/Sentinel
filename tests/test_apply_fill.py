@@ -13,7 +13,8 @@ PROFILE = {
     "education": {"school": "UT Austin", "degree": "BS Statistics", "location": "Austin, TX"},
     "answer_bank": {
         "eligibility": {"work_authorized_us": True, "requires_sponsorship": False,
-                        "age_18_or_older": True, "gpa": "decline"},
+                        "age_18_or_older": True, "gpa": "decline",
+                        "currently_enrolled_student": True, "degree_level": "Bachelor's"},
         "logistics": {"willing_to_relocate": True,
                       "salary_expectation": "Match the posted range in the JD",
                       "how_heard_about_us": "Job board (or LinkedIn)"},
@@ -109,6 +110,19 @@ def test_select_field_resolves_value_to_form_option():
 def test_select_field_with_no_matching_option_stops():
     p = af.plan_field({"label": "Gender", "type": "select",
                        "options": ["Select ...", "Female", "Decline to self-identify"]}, EEO_PROFILE)
+    assert p["action"] == "needs_human"
+
+
+def test_grad_program_enrollment_is_no_for_undergrad():
+    # Bachelor's student: enrolled in a Masters/PhD program? -> No (not a blind Yes).
+    p = _plan("Are you currently enrolled in a Masters or PhD program for a technical field?")
+    assert p["action"] == "fill" and p["value"] == "No"
+    # Generic enrollment still answers Yes.
+    assert _plan("Are you currently enrolled as a full-time student?")["value"] == "Yes"
+
+
+def test_grad_program_detail_field_is_needs_human():
+    p = _plan("Which Masters or PhD program do you attend and expected graduation year?")
     assert p["action"] == "needs_human"
 
 

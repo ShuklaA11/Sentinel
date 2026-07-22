@@ -58,6 +58,18 @@ _DIRECTIVE_KEYS = {("logistics", "salary_expectation"), ("logistics", "how_heard
 _ESSAY_HINTS = ("why ", "why do", "why are", "describe", "tell us", "cover letter",
                 "what interests", "in your own words", "elaborate", "explain why")
 
+# Questions that presuppose enrollment in a graduate program. For a Bachelor's
+# student these are answered "No" (yes/no) or left to the human (program details) —
+# never a blind "Yes". Degree-aware so it self-adjusts if degree_level changes.
+_GRAD_QUALIFIERS = ("master", "phd", "ph.d", "mba", "doctoral", "doctorate",
+                    "graduate program", "grad program")
+
+
+def _is_grad_student(profile: dict) -> bool:
+    dl = str(((profile.get("answer_bank") or {}).get("eligibility") or {})
+             .get("degree_level", "")).lower()
+    return any(q in dl for q in ("master", "phd", "ph.d", "mba", "doctor"))
+
 
 def _words(s: str) -> set[str]:
     return set(re.split(r"\W+", s.lower()))
@@ -195,6 +207,11 @@ def plan_field(field: dict, profile: dict) -> dict:
     for patterns, (section, key) in _SCREENING:
         if any(p in l for p in patterns):
             value = (ab.get(section, {}) or {}).get(key)
+            # "Enrolled in a Masters/PhD program?" is No for a Bachelor's student,
+            # even though the generic "currently enrolled" answer is Yes.
+            if (key == "currently_enrolled_student" and not _is_grad_student(profile)
+                    and any(q in l for q in _GRAD_QUALIFIERS)):
+                value = False
             action, payload = _render(value, required, (section, key))
             src = f"{section}.{key}"
             if action == "fill":
@@ -208,6 +225,11 @@ def plan_field(field: dict, profile: dict) -> dict:
     # Identity / contact facts.
     value, src = _identity_value(label, profile)
     if value:
+        # A "which Masters/PhD program + grad year" field presupposes grad enrollment;
+        # don't fill it with the undergrad grad date.
+        if (src == "graduation" and not _is_grad_student(profile)
+                and any(q in l for q in _GRAD_QUALIFIERS)):
+            return {"label": label, "action": "needs_human", "reason": "grad-program-specific field"}
         return _fill(label, value, src, field)
     if value == "":  # matched a known field but the profile has no data for it
         return {"label": label, "action": "needs_human", "reason": f"matched {src} but no value in profile"}
