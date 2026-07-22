@@ -126,10 +126,15 @@ def test_grad_program_detail_field_is_needs_human():
     assert p["action"] == "needs_human"
 
 
-def test_file_field_maps_to_resume_regardless_of_label():
+def test_file_field_resume_disambiguation():
     prof = {"facts": {"resume_path": "/p/resume.pdf"}}
-    p = af.plan_field({"label": "Attach", "type": "file"}, prof)   # Greenhouse's button label
-    assert p["action"] == "fill" and p["value"] == "/p/resume.pdf" and p["source"] == "resume_path"
+    def act(label):
+        return af.plan_field({"label": label, "type": "file"}, prof)
+    assert act("Attach")["value"] == "/p/resume.pdf"        # Greenhouse bare button
+    assert act("Resume/CV")["value"] == "/p/resume.pdf"
+    assert act("Resume")["source"] == "resume_path"
+    assert act("Cover Letter")["action"] == "needs_human"   # a second upload is left alone
+    assert act("")["action"] == "needs_human"               # unlabeled (Ashby's extra file)
 
 
 def test_matched_identity_field_with_no_value_stops():

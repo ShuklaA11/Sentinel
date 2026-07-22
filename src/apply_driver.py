@@ -97,7 +97,11 @@ def extract_fields(page) -> list[dict]:
         label = re.sub(r"\s+", " ", shell.evaluate(_SELECT_LABEL_JS) or "").replace("*", "").strip()
         out.append({"tag": "select-widget", "type": "select-widget", "label": label,
                     "required": False, "options": None, "_handle": ctrl})
-    for h in page.query_selector_all("form input, form textarea, form select"):
+    # Greenhouse/Lever fields live in a <form>; Ashby renders them outside one, inside
+    # `_fieldEntry` containers. A combined selector returns each element once.
+    for h in page.query_selector_all("form input, form textarea, form select, "
+                                     "[class*=_fieldEntry] input, [class*=_fieldEntry] textarea, "
+                                     "[class*=_fieldEntry] select"):
         info = h.evaluate(_FIELD_JS)
         if not info:
             continue
@@ -144,7 +148,7 @@ def _reach_form(page) -> None:
                 break
             except Exception:  # noqa: BLE001 — apply button is optional
                 pass
-    page.wait_for_selector("form input, form textarea", timeout=15000)
+    page.wait_for_selector("form input, form textarea, [class*=_fieldEntry] input", timeout=15000)
 
 
 def _apply_field(page, f: dict, profile: dict, voice: str, resume_path: str) -> dict:

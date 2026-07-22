@@ -65,6 +65,23 @@ _GRAD_QUALIFIERS = ("master", "phd", "ph.d", "mba", "doctoral", "doctorate",
                     "graduate program", "grad program")
 
 
+_RESUME_WORDS = ("resume", "résumé", "resumé", "cv", "curriculum")
+_NOT_RESUME = ("cover letter", "portfolio", "photo", "headshot", "transcript", "writing sample")
+
+
+def _is_resume_file(label: str) -> bool:
+    """Whether a file input is the resume slot. True for resume/CV labels and bare
+    'Attach'/'Upload' buttons (Greenhouse); False for other uploads and unlabeled
+    inputs, so a second file field (cover letter, Ashby's extra upload) is left alone.
+    """
+    l = (label or "").lower()
+    if not l or any(w in l for w in _NOT_RESUME):
+        return False
+    if any(w in l for w in _RESUME_WORDS):
+        return True
+    return "attach" in l or "upload" in l
+
+
 def _is_grad_student(profile: dict) -> bool:
     dl = str(((profile.get("answer_bank") or {}).get("eligibility") or {})
              .get("degree_level", "")).lower()
@@ -189,18 +206,19 @@ def plan_field(field: dict, profile: dict) -> dict:
     # Free-text essays: flag for the essay generator (essays.draft_answer). The
     # classifier only marks the field; the driver does the actual drafting, so this
     # module stays pure and offline-testable.
-    if ftype == "textarea" or any(h in l for h in _ESSAY_HINTS):
+    if ftype != "file" and (ftype == "textarea" or any(h in l for h in _ESSAY_HINTS)):
         return {"label": label, "action": "draft", "question": label}
 
-    # Any file input on an application form is the resume — forms rarely have more
-    # than one. Handles Greenhouse's "Attach" button label, which says nothing about
-    # "resume". (If a form ever has a second file field, it would also get the resume;
-    # revisit only if that shows up.)
+    # File inputs: attach the resume only to the resume field. Handles Greenhouse's
+    # bare "Attach" button, but does NOT grab a second file input (cover letter,
+    # portfolio) — important on forms like Ashby with two uploads.
     if ftype == "file":
+        if not _is_resume_file(label):
+            return {"label": label, "action": "needs_human", "reason": "file field (not the resume)"}
         rp = (profile.get("facts") or {}).get("resume_path") or ""
         if rp:
             return {"label": label, "action": "fill", "value": rp, "source": "resume_path"}
-        return {"label": label, "action": "needs_human", "reason": "file field but no resume_path on file"}
+        return {"label": label, "action": "needs_human", "reason": "resume file but no resume_path on file"}
 
     # Screening / eligibility / EEO: answer_bank lookup (the safety core).
     ab = profile.get("answer_bank", {}) or {}
