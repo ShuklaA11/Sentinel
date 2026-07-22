@@ -32,3 +32,24 @@ def test_digest_html_includes_source_and_posted_metadata():
     assert "Anthropic" in html
     assert "Greenhouse" in html
     assert "posted" in html
+
+
+def test_send_apply_ready_subject_and_delegates_to_send(monkeypatch):
+    captured = {}
+
+    def fake_send(subject, rows, high_fit=False):
+        captured["subject"] = subject
+        captured["rows"] = rows
+        captured["high_fit"] = high_fit
+        return True
+
+    monkeypatch.setattr(notify, "_send", fake_send)
+    rows = [{"track": "ml", "company": "Faire", "title": "Data Science Intern",
+             "location": "SF", "score": 88, "source": "greenhouse", "url": "https://x/1"}]
+    assert notify.send_apply_ready(rows) is True
+    assert "1 application filled" in captured["subject"]
+    assert captured["high_fit"] is True
+    # pluralizes
+    monkeypatch.setattr(notify, "_send", fake_send)
+    notify.send_apply_ready(rows * 2)
+    assert "2 applications filled" in captured["subject"]

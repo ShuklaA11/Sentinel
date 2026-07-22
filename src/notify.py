@@ -163,3 +163,14 @@ def send_digest(new: list[dict]) -> bool:
 def send_high_fit_alert(new: list[dict]) -> bool:
     """Immediate alert for high-fit listings (score >= high_fit_threshold)."""
     return _send(f"\U0001F525 {len(new)} high-fit internship(s) — apply now", new, high_fit=True)
+
+
+def send_apply_ready(rows: list[dict]) -> bool:
+    """Notify that N applications are filled and waiting in the browser to review + submit.
+
+    Takes apply-queue rows (same shape the digest renders). Fired by the local watcher
+    after it fills a batch of forms into open tabs.
+    """
+    n = len(rows)
+    noun = "application" if n == 1 else "applications"
+    return _send(f"✅ {n} {noun} filled — review & submit", rows, high_fit=True)
