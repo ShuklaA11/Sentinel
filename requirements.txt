@@ -2,3 +2,4 @@ requests>=2.31
 PyYAML>=6.0
 anthropic>=0.40
 python-dotenv>=1.0
+playwright>=1.40  # auto-apply execution driver (src/apply_driver.py)
