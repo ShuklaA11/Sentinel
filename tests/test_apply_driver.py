@@ -52,6 +52,16 @@ def test_extract_fields_from_local_form(tmp_path):
     assert sum(1 for x in fields if x["type"] == "select-widget") == 1
 
 
+def test_hold_for_review_maps_input_to_status(monkeypatch):
+    row = {"company": "X", "title": "Y"}
+    monkeypatch.setattr("builtins.input", lambda *_: "s")
+    assert apply_driver._hold_for_review(row) == "submitted"
+    monkeypatch.setattr("builtins.input", lambda *_: "")
+    assert apply_driver._hold_for_review(row) == "reviewed"
+    monkeypatch.setattr("builtins.input", lambda *_: "q")
+    assert apply_driver._hold_for_review(row) == "__quit__"
+
+
 def test_note_summarizes_decisions():
     decisions = [
         {"label": "Full name", "action": "fill"},

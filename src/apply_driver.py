@@ -10,7 +10,13 @@ Shadow by default: fills every field it confidently can, attaches the resume, sc
 the completed form, and STOPS before submit. The live-submit flip plus captcha/login
 guards land in a later step (4c); --submit is accepted now but intentionally inert.
 
-Run: python -m src.apply_driver [--limit N] [--headful] [--submit]
+Run:
+  python -m src.apply_driver --limit 1            # headless shadow: fill, screenshot, stop
+  python -m src.apply_driver --review             # headful: fill, then pause for you to submit
+
+--review is the assisted endpoint: it opens a visible window, fills each queued form
+(resume included), and waits on the completed form so YOU review, solve any captcha, and
+click Submit yourself. That sidesteps captcha walls entirely, since a human is present.
 """
 from __future__ import annotations
 
@@ -180,6 +186,21 @@ def _note(decisions: list[dict]) -> str:
     return "SHADOW: " + "; ".join(parts) + "; NOT submitted"
 
 
+def _hold_for_review(row: dict) -> str:
+    """Pause on a filled form so the human reviews, solves any captcha, and submits.
+
+    Only called in --review mode. Returns the status to record. Blocks on input(),
+    so the browser window stays open and interactive until the human responds.
+    """
+    print(f"\n>>> {row.get('company')} — {row.get('title')}")
+    print("    Form is filled in the browser. Review it, add anything left blank,")
+    print("    solve any captcha, and click Submit yourself.")
+    ans = input("    [Enter]=reviewed   s=submitted   q=quit: ").strip().lower()
+    if ans == "q":
+        return "__quit__"
+    return "submitted" if ans == "s" else "reviewed"
+
+
 def _shot(page, id_: str) -> str:
     os.makedirs(SHOTS_DIR, exist_ok=True)
     safe = re.sub(r"[^A-Za-z0-9._-]", "_", id_)
@@ -188,9 +209,10 @@ def _shot(page, id_: str) -> str:
     return path
 
 
-def run(limit: int | None = None, headful: bool = False, submit: bool = False) -> None:
+def run(limit: int | None = None, headful: bool = False, submit: bool = False,
+        review: bool = False) -> None:
     if submit:
-        log.warning("--submit is not enabled yet (shadow only until step 4c); ignoring")
+        log.warning("--submit is not enabled yet (shadow only); use --review to submit by hand")
     from playwright.sync_api import sync_playwright  # lazy import: package is optional
 
     profile, voice = _load_profile(), _load_voice()
@@ -204,9 +226,13 @@ def run(limit: int | None = None, headful: bool = False, submit: bool = False) -
         return
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=not headful)
+        # --review needs a visible window so the human can review + submit.
+        browser = p.chromium.launch(headless=not (headful or review))
         ctx = browser.new_context()
+        stop = False
         for row in todo:
+            if stop:
+                break
             page = ctx.new_page()
             try:
                 page.goto(row["url"], timeout=30000)
@@ -214,10 +240,15 @@ def run(limit: int | None = None, headful: bool = False, submit: bool = False) -
                 decisions = [_apply_field(page, f, profile, voice, resume_path)
                              for f in extract_fields(page)]
                 shot = _shot(page, row["id"])
-                rows = apply_queue.update_row(rows, row["id"], status="prepared",
+                status = "prepared"
+                if review:
+                    status = _hold_for_review(row)   # blocks; window stays open
+                    if status == "__quit__":
+                        status, stop = "prepared", True
+                rows = apply_queue.update_row(rows, row["id"], status=status,
                                               screenshot=shot, note=_note(decisions),
                                               attempts=(row.get("attempts") or 0) + 1)
-                log.info("prepared %s -> %s", row["company"], shot)
+                log.info("%s %s -> %s", status, row["company"], shot)
             except Exception as exc:  # noqa: BLE001 — a bad row fails soft, batch continues
                 rows = apply_queue.update_row(rows, row["id"], status="failed",
                                               note=f"driver error: {exc}"[:200])
@@ -233,9 +264,11 @@ def main() -> None:
     ap = argparse.ArgumentParser(description="Auto-apply Playwright driver (Greenhouse, shadow mode)")
     ap.add_argument("--limit", type=int, default=None, help="max queued rows to process")
     ap.add_argument("--headful", action="store_true", help="show the browser window")
+    ap.add_argument("--review", action="store_true",
+                    help="headful: fill each form, then pause so you review + click Submit yourself")
     ap.add_argument("--submit", action="store_true", help="(reserved for 4c; currently inert)")
     args = ap.parse_args()
-    run(limit=args.limit, headful=args.headful, submit=args.submit)
+    run(limit=args.limit, headful=args.headful, submit=args.submit, review=args.review)
 
 
 if __name__ == "__main__":
