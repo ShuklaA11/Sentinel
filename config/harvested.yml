@@ -2,8 +2,8 @@
 # Mostly startups. Merged into the poll on top of companies.yml.
 ashby:
 - adaption
-- adaptivesecurity
 - afterquery
+- anthelioncap
 - apex-technology-inc
 - applied
 - aptura
@@ -25,6 +25,7 @@ ashby:
 - ctgt
 - cuspai
 - dandy
+- deepgram
 - ditto
 - droyd
 - dryft
@@ -35,7 +36,6 @@ ashby:
 - ethglobal
 - fab2
 - faculty
-- fluency
 - frontier-health
 - fundwell
 - genmd
@@ -48,7 +48,6 @@ ashby:
 - hubs
 - human-computer-lab
 - interplay
-- junior
 - k-id
 - kineticsystems
 - kirin
@@ -66,6 +65,7 @@ ashby:
 - netic
 - niural
 - npx
+- odin-dynamics
 - odysseyml
 - oligo
 - opusclip
@@ -94,7 +94,6 @@ ashby:
 - terranova
 - the-exploration-company
 - tilderesearch
-- tryroam
 - uncountable
 - varick-agents
 - veeda-labs
@@ -110,9 +109,9 @@ greenhouse:
 - 10alabs
 - accuweather
 - ada18
-- amarok
 - andurilindustries
 - aperaaiinc
+- appian
 - aquaticcapitalmanagement
 - argmax
 - asteraearlycareer2026
@@ -136,12 +135,14 @@ greenhouse:
 - faire
 - fccincinnati
 - figureai
+- fiveringsllc
 - flowtraders
 - fourhands
 - fschumacherco
 - gemini
 - genevatrading
 - ginkgobioworks
+- goldenpetbrands
 - grvty
 - haizelabs
 - honehealth
@@ -166,18 +167,16 @@ greenhouse:
 - neuralink
 - newsbreak
 - octaura
+- optiverprivate
 - orennia
-- podium81
 - point72
 - radixuniversity
 - rise8
 - roboforce
-- rocketlab
 - samayaai
 - samsungresearchamericainternship
 - scaleai
 - sevenresearch
-- sezzle
 - sharkninjaoperatingllc
 - silananotechnologies
 - spacex
@@ -206,7 +205,6 @@ lever:
 - diversified-automation
 - ekimetrics
 - evrealty-us
-- exowatt
 - fluxergy-2
 - go-cloudforce
 - great-gray-group
@@ -221,7 +219,6 @@ lever:
 - multiplylabs
 - plus-2
 - quantco-
-- ravl_io
 - reply
 - shyftlabs
 - solopulseco
@@ -261,7 +258,6 @@ smartrecruiters:
 - respecinc
 - sajixsoftwaresolutionprivatelimited
 - satechnologiesinc4
-- sikaag
 - smithsgroup2
 - stemxpert1
 - thewonderfulcompany
