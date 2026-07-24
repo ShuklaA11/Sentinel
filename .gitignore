@@ -13,10 +13,14 @@ __pycache__/
 venv/
 .env
 
-# Local secrets / profile (contains personal data)
-profile/profile.yml
-profile/resume.tex
-profile/voice.md
-profile/essay_bank.md
+# OS cruft
+.DS_Store
+
+# Local secrets / profile (contains personal data — resume PDF, contact info)
+profile/
 tailored/
 secrets.yml
+
+# Outreach work product (personal contact data — kept out of the public repo,
+# archived outside git; regenerated ad-hoc so ignore proactively)
+data/outreach*
