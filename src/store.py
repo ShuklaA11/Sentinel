@@ -83,3 +83,38 @@ def clear_pending() -> None:
     """Empty the outbox (call only after a digest is confirmed sent)."""
     if os.path.exists(PENDING_PATH):
         os.remove(PENDING_PATH)
+
+
+def load_listings() -> list[dict]:
+    """Read every tracker row (empty list if the CSV doesn't exist yet)."""
+    if not os.path.exists(CSV_PATH):
+        return []
+    with open(CSV_PATH, newline="") as f:
+        return list(csv.DictReader(f))
+
+
+def reconcile_status(closed_ids: set, reopened_ids: set) -> int:
+    """Flip tracker status to 'closed' / 'new' for the given ids; rewrite only if changed.
+
+    Returns the count of rows whose status actually changed. `seen.json` is deliberately
+    left untouched — liveness is a tracker-only concern, decoupled from the dedup set.
+    """
+    if not closed_ids and not reopened_ids:
+        return 0
+    rows = load_listings()
+    changed = 0
+    for r in rows:
+        rid = r.get("id", "")
+        if rid in closed_ids and r.get("status") != "closed":
+            r["status"] = "closed"
+            changed += 1
+        elif rid in reopened_ids and r.get("status") == "closed":
+            r["status"] = "new"
+            changed += 1
+    if changed:
+        with open(CSV_PATH, "w", newline="") as f:
+            w = csv.DictWriter(f, fieldnames=CSV_FIELDS)
+            w.writeheader()
+            for r in rows:
+                w.writerow({k: r.get(k, "") for k in CSV_FIELDS})
+    return changed
