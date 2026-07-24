@@ -8,7 +8,7 @@ import os
 
 import yaml
 
-from . import sources, filter as filt, store, notify, rank
+from . import sources, filter as filt, store, notify, rank, liveness
 
 CONFIG_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "config")
 
@@ -88,6 +88,14 @@ def main() -> None:
     seen.update(l["id"] for l in kept)
     store.save_seen(seen)
     print(f"\nwrote {len(new)} new rows -> data/listings.csv · seen-set now {len(seen)}")
+
+    # Liveness: mark tracker rows closed when their ATS source polled healthy but no
+    # longer lists them (self-heals reopened rows). Presence is read from raw (pre-filter).
+    present = liveness.present_ids(raw)
+    healthy = liveness.healthy_units(stats)
+    closed_ids, reopened_ids = liveness.classify(store.load_listings(), present, healthy)
+    if store.reconcile_status(closed_ids, reopened_ids):
+        print(f"liveness: {len(closed_ids)} closed · {len(reopened_ids)} reopened")
 
     threshold = filters.get("high_fit_threshold", 85)
     high, rest = rank.partition_by_fit(new, threshold)
