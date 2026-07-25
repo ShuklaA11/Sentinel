@@ -17,7 +17,7 @@ import subprocess
 
 import yaml
 
-from . import llm
+from . import keywords, llm, verify_facts
 
 log = logging.getLogger("tailor")
 
@@ -25,6 +25,15 @@ ROOT = os.path.dirname(os.path.dirname(__file__))
 MARKER = "\\resumeItem{"
 MAX_CHARS = 115
 OUT_DIR = os.path.join(ROOT, "tailored")
+
+# Target-track vocabulary for the plausibility gate on the headline. The applied-for
+# title must contain one of these (word-boundary) for a target-title line to be added.
+# Augmented at runtime with the candidate's own profile preferences.tracks.
+DEFAULT_TRACK_TERMS = (
+    "ml", "machine learning", "data", "ai", "swe", "software", "product",
+    "computer vision", "vision", "cv", "perception", "deep learning",
+    "ml engineer", "research",
+)
 
 
 def _load_yaml(path: str) -> dict:
@@ -109,9 +118,85 @@ def _xetex_compat(tex: str) -> str:
     return tex
 
 
-def _rewrite(bullets: list[str], company: str, title: str, emphasis: str, jd: str, bank: dict) -> list[str]:
+# --- target-title headline (plausibility-gated) ------------------------------
+# A single decorative line under the name in the \begin{center} header. It never
+# touches a real \resumeSubheading experience title — those stay byte-identical.
+
+def _track_terms(profile: dict) -> list[str]:
+    """Default target-track vocabulary plus the candidate's profile preferences.tracks."""
+    prefs = (profile or {}).get("preferences") or {}
+    tracks = prefs.get("tracks") if isinstance(prefs, dict) else None
+    out = list(DEFAULT_TRACK_TERMS)
+    out.extend(str(t).strip().lower() for t in (tracks or []) if str(t).strip())
+    return list(dict.fromkeys(out))
+
+
+def _escape_latex(title: str) -> str:
+    """Escape the LaTeX specials %,&,#,_,$ that would otherwise break a headline.
+    Braces are intentionally left alone — balance is validated by _safe_bullet."""
+    out = []
+    for c in title:
+        out.append("\\" + c if c in "%&#_$" else c)
+    return "".join(out)
+
+
+def _safe_headline(title: str) -> str | None:
+    """Escape the title and re-use _safe_bullet's LaTeX/length checks. Returns the
+    escaped, injection-safe string, or None if it cannot be made safe (e.g. unbalanced
+    braces or over length)."""
+    escaped = _escape_latex((title or "").strip())
+    if not escaped:
+        return None
+    return escaped if _safe_bullet(escaped, "\x00") == escaped else None
+
+
+def _plan_headline(tex: str, title: str, profile: dict) -> str | None:
+    """Decide whether a target-title headline may be injected, returning the safe,
+    escaped headline text or None. Logs the reason on every skip. Gates on: (1) the
+    applied-for title plausibly matching a target track, (2) LaTeX safety after
+    escaping, (3) the header name line being present to anchor the insert."""
+    terms = _track_terms(profile)
+    hay = (title or "").lower()
+    if not any(keywords._pattern(t).search(hay) for t in terms):
+        log.info("target-title headline skipped: %r matches no target track %s", title, terms)
+        return None
+    safe = _safe_headline(title)
+    if safe is None:
+        log.info("target-title headline skipped: %r is not LaTeX-safe after escaping", title)
+        return None
+    if _name_line(tex) is None:
+        log.info("target-title headline skipped: no header name line to anchor under")
+        return None
+    return safe
+
+
+def _name_line(tex: str) -> "re.Match | None":
+    r"""Match the full header name line — \textbf{\Huge ... \\ \vspace{..} — so the
+    insert lands on the NEXT line and the real name line stays byte-identical."""
+    return re.search(r"\\textbf\{\\Huge\b.*?\\\\(?:\s*\\vspace\{[^}]*\})?", tex)
+
+
+def _inject_headline(tex: str, headline: str) -> str:
+    """Insert a single target-title line immediately after the header name line.
+    No-op (returns tex unchanged) if the name line is absent."""
+    m = _name_line(tex)
+    if m is None:
+        return tex
+    line = f"\n    \\textbf{{\\large {headline}}} \\\\ \\vspace{{1pt}}"
+    return tex[:m.end()] + line + tex[m.end():]
+
+
+def _rewrite(bullets: list[str], company: str, title: str, emphasis: str, jd: str,
+             bank: dict, inject: list[str] | None = None) -> list[str]:
     numbered = "\n".join(f"{i}. {b}" for i, b in enumerate(bullets))
     principles = "\n".join(f"- {p}" for p in bank.get("principles", []))
+    # Keyword-coverage lever: nudge (never force) the model to surface employer keywords
+    # the candidate genuinely holds. Added AFTER the HARD RULES so the truthfulness guard
+    # reads first and is not weakened; empty candidate list adds no block at all.
+    inject_block = (
+        "\nWhere TRUTHFUL and natural, incorporate these employer keywords the candidate "
+        f"genuinely has: {', '.join(inject)}.\n" if inject else ""
+    )
     prompt = (
         f"Tailor a resume for: {title} at {company}.\n"
         f"Emphasis for this kind of company: {emphasis}\n"
@@ -123,8 +208,9 @@ def _rewrite(bullets: list[str], company: str, title: str, emphasis: str, jd: st
         "CHARACTER-FOR-CHARACTER. Do not 'correct' them (e.g. if it says YOLOv26, keep "
         "YOLOv26 exactly — never change it to YOLOv8). Keep every number exactly as given.\n"
         "- LaTeX-safe: keep escapes like \\% and \\& intact; valid LaTeX text only; no new macros.\n"
-        "- <= 115 characters per bullet, one line. Keep the SAME count and order.\n\n"
-        f"Bullets:\n{numbered}\n\n"
+        "- <= 115 characters per bullet, one line. Keep the SAME count and order.\n"
+        + inject_block
+        + f"\nBullets:\n{numbered}\n\n"
         f"Return each rewritten bullet on its own line as:  INDEX|||BULLET\n"
         f"Output exactly {len(bullets)} lines, nothing else. "
         "(Delimiter format, not JSON — LaTeX backslashes are fine.)"
@@ -153,6 +239,7 @@ def _tighten(bullets: list[str], company: str, title: str, issues: list[str]) ->
     )
     text = llm.complete(prompt, max_tokens=2048)
     if text is None:
+        log.warning("no LLM completion — leaving bullets unchanged")
         return bullets
     return _apply_rewrites(text, bullets)
 
@@ -187,7 +274,12 @@ def _compile_inspect(tex_path: str) -> tuple[str | None, list[str]]:
     return pdf, issues
 
 
-def tailor(company: str, title: str, archetype: str, jd: str) -> str | None:
+def tailor(company: str, title: str, archetype: str, jd: str, role_title: bool = True) -> str | None:
+    """Tailor the base resume for one role and return the path to the PDF to ship.
+
+    Returns the tailored PDF path when a tailored PDF was shipped (success OR residual
+    layout issue), or the base resume_path when it fell back (missing base .tex, fact-gate
+    failure, or compile unavailable/failed)."""
     profile = _load_yaml(os.path.join(ROOT, "profile", "profile.yml"))
     bank = _load_yaml(os.path.join(ROOT, "config", "resume_bank.yml"))
     tex_path = (profile.get("facts") or {}).get("resume_tex_path", "")
@@ -203,7 +295,22 @@ def tailor(company: str, title: str, archetype: str, jd: str) -> str | None:
     emphasis = (bank.get("company_archetype_emphasis", {}) or {}).get(
         archetype, "Balance impact, ownership, and rigor.")
 
-    new = _rewrite(bullets, company, title, emphasis, jd, bank)
+    # Keyword-coverage lever: measure the CURRENT resume against the JD, then pass the
+    # missing keywords the candidate GENUINELY has into the rewrite as a truthful nudge.
+    jd_keywords = keywords.extract_jd_keywords(jd)
+    profile_terms = keywords.profile_skill_terms(profile)
+    before_frac, before_present, missing = keywords.coverage(tex, jd_keywords)
+    inject = keywords.truthful_injection_candidates(missing, profile_terms)
+    if inject:
+        log.info("injecting %d truthful employer keyword(s): %s", len(inject), ", ".join(inject))
+
+    new = _rewrite(bullets, company, title, emphasis, jd, bank, inject=inject)
+
+    # Target-title headline: decide once (plausibility + LaTeX safety + anchor present),
+    # then apply the same string insert on each compile attempt.
+    headline = _plan_headline(tex, title, profile) if role_title else None
+    if not role_title:
+        log.info("--no-role-title: skipping target-title headline")
 
     os.makedirs(OUT_DIR, exist_ok=True)
     slug = f"{company}_{title}".lower().replace(" ", "_").replace("/", "-")
@@ -213,9 +320,13 @@ def tailor(company: str, title: str, archetype: str, jd: str) -> str | None:
     # bullets and recompile (max 2 retries), then keep the best-effort PDF.
     pdf: str | None = None
     issues: list[str] = []
+    rendered = ""
     for attempt in range(3):
+        rendered = _render(tex, items, new)
+        if headline:
+            rendered = _inject_headline(rendered, headline)
         with open(tailored_tex, "w") as f:
-            f.write(_xetex_compat(_render(tex, items, new)))
+            f.write(_xetex_compat(rendered))
         pdf, issues = _compile_inspect(tailored_tex)
         if pdf is None or not issues:
             break
@@ -229,14 +340,30 @@ def tailor(company: str, title: str, archetype: str, jd: str) -> str | None:
         if nb != old:
             print(f"  - {old}\n  + {nb}")
 
-    if pdf and not issues:
+    # Coverage report: recompute on the rewritten resume and show the before→after delta.
+    if jd_keywords:
+        after_frac, after_present, _ = keywords.coverage(rendered, jd_keywords)
+        gained = len(after_present) - len(before_present)
+        print(f"\nJD keyword coverage: {round(before_frac * 100)}% -> "
+              f"{round(after_frac * 100)}% ({gained:+d} keywords)")
+
+    # Fact gate: the safety rail behind aggressive keyword injection. If the rewritten
+    # resume introduces any ungrounded numeric claim, refuse to ship the tailored PDF.
+    ok, violations = verify_facts.verify(rendered, verify_facts.load_sources())
+    base_pdf = (profile.get("facts") or {}).get("resume_path", "")
+
+    if not ok:
+        log.error("FACT GATE FAILED — ungrounded metric(s): %s", violations)
+        print(f"\n✗ fact gate failed (ungrounded metrics: {', '.join(violations)}) — "
+              f"shipping base PDF, not the tailored one: {base_pdf}")
+        return base_pdf
+    elif pdf and not issues:
         print(f"\n✓ compiled -> {pdf}")
         return pdf
     elif pdf:
         print(f"\n⚠ compiled with residual layout issue ({'; '.join(issues)}) -> {pdf}")
         return pdf
     else:
-        base_pdf = (profile.get("facts") or {}).get("resume_path", "")
         print(f"\n✗ compile unavailable/failed — fall back to base PDF: {base_pdf}")
         return base_pdf
 
@@ -248,12 +375,14 @@ def main() -> None:
     ap.add_argument("--archetype", default="startup",
                     choices=["big_tech", "startup", "quant", "research_lab", "product"])
     ap.add_argument("--jd-file", default="")
+    ap.add_argument("--role-title", action=argparse.BooleanOptionalAction, default=True,
+                    help="inject a plausibility-gated target-title line under the name (default on)")
     args = ap.parse_args()
     jd = ""
     if args.jd_file and os.path.exists(args.jd_file):
         with open(args.jd_file) as f:
             jd = f.read()[:4000]
-    tailor(args.company, args.title, args.archetype, jd)
+    tailor(args.company, args.title, args.archetype, jd, role_title=args.role_title)
 
 
 if __name__ == "__main__":

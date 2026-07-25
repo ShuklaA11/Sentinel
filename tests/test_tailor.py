@@ -1,5 +1,7 @@
-"""Unit tests for tailor's pure helpers. No network, no tectonic — the LLM rewrite and
-compile paths are integration-only; here we cover the deterministic logic."""
+"""Unit tests for tailor's pure helpers and wiring. No network, no tectonic — the LLM
+rewrite and compile paths are stubbed; here we cover the deterministic logic, the LLM
+routing through llm.complete, the keyword-injection prompt, the plausibility-gated
+headline, and tailor()'s return contract."""
 from src import tailor
 
 
@@ -46,12 +48,14 @@ def test_xetex_compat_comments_out_pdftex_only_lines():
     assert "%\\pdfgentounicode=1" in out
 
 
-# --- LLM wiring: _rewrite / _tighten now route through llm.complete ----------
+# --- LLM wiring: _rewrite / _tighten route through llm.complete --------------
+# The completion helper is monkeypatched so nothing hits the network; we capture the
+# prompt string each pass would send and feed back a canned INDEX|||BULLET response.
 
 def test_rewrite_prompt_carries_truthfulness_guard_and_applies_completion(monkeypatch):
-    """The rewrite prompt keeps its truthfulness guard, and a canned INDEX|||BULLET
-    completion is applied through _apply_rewrites."""
-    captured = {}
+    """The rewrite prompt keeps its truthfulness guard byte-for-byte, and a canned
+    INDEX|||BULLET completion is applied through _apply_rewrites."""
+    captured: dict = {}
 
     def fake_complete(prompt, *, max_tokens=2048):
         captured["prompt"] = prompt
@@ -70,14 +74,15 @@ def test_rewrite_prompt_carries_truthfulness_guard_and_applies_completion(monkey
 
 
 def test_tighten_prompt_carries_guard_and_applies_completion(monkeypatch):
-    captured = {}
+    captured: dict = {}
 
     def fake_complete(prompt, *, max_tokens=2048):
         captured["prompt"] = prompt
         return "0|||short bullet"
 
     monkeypatch.setattr(tailor.llm, "complete", fake_complete)
-    out = tailor._tighten(["a rather long bullet"], "Co", "CV Intern", ["2 pages (resume must be 1)"])
+    out = tailor._tighten(["a rather long bullet"], "Co", "CV Intern",
+                          ["2 pages (resume must be 1)"])
 
     assert "CHARACTER-FOR-CHARACTER" in captured["prompt"]
     assert out == ["short bullet"]
@@ -95,23 +100,170 @@ def test_tighten_keeps_current_when_no_completion(monkeypatch):
     assert tailor._tighten(bullets, "Co", "Title", ["x"]) == bullets
 
 
-# --- full wiring: tailor() returns a path ------------------------------------
+# --- keyword injection into the rewrite prompt -------------------------------
+# The truthful keyword-coverage nudge is appended AFTER the HARD RULES; an empty
+# candidate list adds no block at all. Both paths route through llm.complete.
 
-def _profile_load(tex_path: str, base_pdf: str = "/base/resume.pdf"):
-    """Fake _load_yaml: profile carries facts, resume_bank is empty."""
-    def fake_load(path):
-        if "profile" in path:
-            return {"facts": {"resume_tex_path": tex_path, "resume_path": base_pdf}}
-        return {}
-    return fake_load
+def test_rewrite_prompt_includes_injection_keywords(monkeypatch):
+    captured: dict = {}
+
+    def fake_complete(prompt, *, max_tokens=2048):
+        captured["prompt"] = prompt
+        return "0|||reworded bullet"
+
+    monkeypatch.setattr(tailor.llm, "complete", fake_complete)
+    tailor._rewrite(["built models"], "Anthropic", "ML Intern", "emphasis", "jd",
+                    {}, inject=["pytorch", "kubernetes"])
+
+    assert "employer keywords the candidate genuinely has" in captured["prompt"]
+    assert "pytorch" in captured["prompt"]
+    assert "kubernetes" in captured["prompt"]
+
+
+def test_rewrite_prompt_omits_injection_block_when_empty(monkeypatch):
+    captured: dict = {}
+
+    def fake_complete(prompt, *, max_tokens=2048):
+        captured["prompt"] = prompt
+        return "0|||reworded bullet"
+
+    monkeypatch.setattr(tailor.llm, "complete", fake_complete)
+    tailor._rewrite(["built models"], "Anthropic", "ML Intern", "e", "", {}, inject=[])
+
+    assert "employer keywords the candidate genuinely has" not in captured["prompt"]
+    # the truthfulness guard is always present, injection or not.
+    assert "TRUTHFUL" in captured["prompt"]
+
+
+# --- target-title headline (plausibility gate + LaTeX safety) ----------------
+
+_HEADER_TEX = (
+    "\\begin{document}\n"
+    "\\begin{center}\n"
+    "    \\textbf{\\Huge \\scshape Arnav Shukla} \\\\ \\vspace{1pt}\n"
+    "    \\small email $|$ github\n"
+    "\\end{center}\n"
+    "\\resumeSubheading{Research Assistant}{2025}{Lab}{City}\n"
+    "\\resumeItem{trained a model}\n"
+    "\\end{document}\n"
+)
+
+
+def test_headline_injected_for_track_matching_title():
+    profile = {"preferences": {"tracks": ["ml"]}}
+
+    headline = tailor._plan_headline(_HEADER_TEX, "Machine Learning Intern", profile)
+    assert headline == "Machine Learning Intern"
+
+    out = tailor._inject_headline(_HEADER_TEX, headline)
+    # headline appears under the name...
+    assert "\\textbf{\\large Machine Learning Intern}" in out
+    # ...the real name line stays byte-identical...
+    assert "\\textbf{\\Huge \\scshape Arnav Shukla} \\\\ \\vspace{1pt}" in out
+    # ...and the real experience subheading is never rewritten.
+    assert "\\resumeSubheading{Research Assistant}{2025}{Lab}{City}" in out
+
+
+def test_headline_injected_for_computer_vision_title():
+    # Broadened DEFAULT_TRACK_TERMS covers the vision/perception core, so a CV title
+    # passes the plausibility gate even with an empty profile tracks list.
+    profile = {"preferences": {"tracks": []}}
+    headline = tailor._plan_headline(_HEADER_TEX, "Computer Vision Engineer Intern", profile)
+    assert headline is not None
+    assert headline == "Computer Vision Engineer Intern"
+
+
+def test_headline_skipped_for_track_mismatched_title():
+    profile = {"preferences": {"tracks": ["ml", "data"]}}
+    assert tailor._plan_headline(_HEADER_TEX, "Warehouse Associate Intern", profile) is None
+
+
+def test_headline_skipped_when_title_unsafe_after_escaping():
+    # unbalanced brace cannot be made LaTeX-safe -> no injection even though 'data' matches.
+    profile = {"preferences": {"tracks": []}}
+    assert tailor._plan_headline(_HEADER_TEX, "Data { Intern", profile) is None
+
+
+def test_headline_escapes_latex_specials():
+    profile = {"preferences": {"tracks": ["product"]}}
+    headline = tailor._plan_headline(_HEADER_TEX, "Product & Growth Intern", profile)
+    assert headline == "Product \\& Growth Intern"
+
+
+# --- full tailor() wiring: coverage delta, fact gate, return contract --------
+
+def _base_profile(tex_path: str) -> dict:
+    return {
+        "facts": {"resume_tex_path": tex_path, "resume_path": "/base/resume.pdf"},
+        "preferences": {"tracks": ["ml"]},
+        "skills": {"languages": ["Python"], "tools": ["Docker"]},
+    }
+
+
+def _write_tex(tmp_path, body_item: str) -> str:
+    tex = (
+        "\\begin{document}\n"
+        "\\begin{center}\n"
+        "    \\textbf{\\Huge \\scshape Arnav Shukla} \\\\ \\vspace{1pt}\n"
+        "\\end{center}\n"
+        f"\\resumeItem{{{body_item}}}\n"
+        "\\end{document}\n"
+    )
+    path = tmp_path / "resume.tex"
+    path.write_text(tex)
+    return str(path)
+
+
+def test_tailor_reports_coverage_delta(tmp_path, monkeypatch, capsys):
+    tex_path = _write_tex(tmp_path, "built web services")
+    profile = _base_profile(tex_path)
+    monkeypatch.setattr(tailor, "_load_yaml",
+                        lambda p: profile if p.endswith("profile.yml") else {})
+    monkeypatch.setattr(tailor, "OUT_DIR", str(tmp_path / "out"))
+    # rewrite surfaces the genuinely-held keywords python + docker.
+    monkeypatch.setattr(tailor, "_rewrite",
+                        lambda *a, **k: ["built Python services with Docker"])
+    monkeypatch.setattr(tailor, "_compile_inspect", lambda p: (str(tmp_path / "r.pdf"), []))
+    monkeypatch.setattr(tailor.verify_facts, "load_sources", lambda: [])
+
+    tailor.tailor("Acme", "ML Intern", "startup", "Python and Docker")
+
+    out = capsys.readouterr().out
+    # base tex had neither keyword (0%), rewritten resume has both (100%), +2 gained.
+    assert "JD keyword coverage: 0% -> 100% (+2 keywords)" in out
+
+
+def test_tailor_fact_gate_falls_back_and_returns_base_resume(tmp_path, monkeypatch, capsys):
+    tex_path = _write_tex(tmp_path, "optimized the pipeline")
+    profile = _base_profile(tex_path)
+    monkeypatch.setattr(tailor, "_load_yaml",
+                        lambda p: profile if p.endswith("profile.yml") else {})
+    monkeypatch.setattr(tailor, "OUT_DIR", str(tmp_path / "out"))
+    # the rewrite fabricates a metric absent from the ground-truth sources.
+    monkeypatch.setattr(tailor, "_rewrite",
+                        lambda *a, **k: ["accelerated the pipeline 5x"])
+    monkeypatch.setattr(tailor, "_compile_inspect", lambda p: (str(tmp_path / "r.pdf"), []))
+    monkeypatch.setattr(tailor.verify_facts, "load_sources", lambda: ["no numbers here"])
+
+    result = tailor.tailor("Acme", "ML Intern", "startup", "")
+
+    out = capsys.readouterr().out
+    # fact gate blocks the tailored PDF, prints the fallback, and returns the base path.
+    assert "fact gate failed" in out
+    assert "5x" in out
+    assert "/base/resume.pdf" in out
+    assert "✓ compiled" not in out
+    assert result == "/base/resume.pdf"
 
 
 def test_tailor_returns_tailored_pdf_on_success(tmp_path, monkeypatch):
-    tex = tmp_path / "base.tex"
-    tex.write_text("\\begin{document}\\resumeItem{old bullet}\\end{document}")
-    monkeypatch.setattr(tailor, "_load_yaml", _profile_load(str(tex)))
+    tex_path = _write_tex(tmp_path, "old bullet")
+    profile = _base_profile(tex_path)
+    monkeypatch.setattr(tailor, "_load_yaml",
+                        lambda p: profile if p.endswith("profile.yml") else {})
     monkeypatch.setattr(tailor.llm, "complete", lambda prompt, *, max_tokens=2048: "0|||new bullet")
     monkeypatch.setattr(tailor, "OUT_DIR", str(tmp_path / "tailored"))
+    monkeypatch.setattr(tailor.verify_facts, "load_sources", lambda: [])
     out_pdf = str(tmp_path / "out.pdf")
     monkeypatch.setattr(tailor, "_compile_inspect", lambda p: (out_pdf, []))
 
@@ -119,30 +271,37 @@ def test_tailor_returns_tailored_pdf_on_success(tmp_path, monkeypatch):
 
 
 def test_tailor_returns_pdf_on_residual_layout_issue(tmp_path, monkeypatch):
-    tex = tmp_path / "base.tex"
-    tex.write_text("\\begin{document}\\resumeItem{old bullet}\\end{document}")
-    monkeypatch.setattr(tailor, "_load_yaml", _profile_load(str(tex)))
+    tex_path = _write_tex(tmp_path, "old bullet")
+    profile = _base_profile(tex_path)
+    monkeypatch.setattr(tailor, "_load_yaml",
+                        lambda p: profile if p.endswith("profile.yml") else {})
     monkeypatch.setattr(tailor.llm, "complete", lambda prompt, *, max_tokens=2048: "0|||new bullet")
     monkeypatch.setattr(tailor, "OUT_DIR", str(tmp_path / "tailored"))
+    monkeypatch.setattr(tailor.verify_facts, "load_sources", lambda: [])
     out_pdf = str(tmp_path / "out.pdf")
-    # never resolves the layout issue -> after the retry loop, keep best-effort pdf
-    monkeypatch.setattr(tailor, "_compile_inspect", lambda p: (out_pdf, ["2 pages (resume must be 1)"]))
+    # never resolves the layout issue -> after the retry loop, keep best-effort pdf.
+    monkeypatch.setattr(tailor, "_compile_inspect",
+                        lambda p: (out_pdf, ["2 pages (resume must be 1)"]))
 
     assert tailor.tailor("Co", "CV Intern", "startup", "") == out_pdf
 
 
-def test_tailor_returns_base_resume_when_fact_gate_fails(monkeypatch):
-    # base .tex missing -> precondition (fact) gate fails -> fall back to base resume path
-    monkeypatch.setattr(tailor, "_load_yaml", _profile_load("/does/not/exist.tex"))
+def test_tailor_returns_base_resume_when_base_tex_missing(monkeypatch):
+    # base .tex missing -> precondition fails before any rewrite -> return base resume path.
+    profile = _base_profile("/does/not/exist.tex")
+    monkeypatch.setattr(tailor, "_load_yaml",
+                        lambda p: profile if p.endswith("profile.yml") else {})
     assert tailor.tailor("Co", "Title", "startup", "") == "/base/resume.pdf"
 
 
 def test_tailor_returns_base_resume_when_compile_unavailable(tmp_path, monkeypatch):
-    tex = tmp_path / "base.tex"
-    tex.write_text("\\begin{document}\\resumeItem{old bullet}\\end{document}")
-    monkeypatch.setattr(tailor, "_load_yaml", _profile_load(str(tex)))
+    tex_path = _write_tex(tmp_path, "old bullet")
+    profile = _base_profile(tex_path)
+    monkeypatch.setattr(tailor, "_load_yaml",
+                        lambda p: profile if p.endswith("profile.yml") else {})
     monkeypatch.setattr(tailor.llm, "complete", lambda prompt, *, max_tokens=2048: "0|||new bullet")
     monkeypatch.setattr(tailor, "OUT_DIR", str(tmp_path / "tailored"))
+    monkeypatch.setattr(tailor.verify_facts, "load_sources", lambda: [])
     monkeypatch.setattr(tailor, "_compile_inspect", lambda p: (None, []))
 
     assert tailor.tailor("Co", "Title", "startup", "") == "/base/resume.pdf"
