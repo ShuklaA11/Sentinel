@@ -61,7 +61,7 @@ def main() -> None:
 
     # Fit-score new listings (no-ops without API key / filled profile).
     profile = _load_profile()
-    new = rank.score_listings(new, profile)
+    new, score_warning = rank.score_listings(new, profile)
 
     # Report.
     dead = [k for k, v in stats.items() if v == 0]
@@ -78,6 +78,9 @@ def main() -> None:
         print(f"  {sc} [{l['track']:>7}] {l['company']:<18} {l['title'][:55]:<55} {l['location'][:22]}")
     if by_track:
         print("\n  new by track:", ", ".join(f"{k}={v}" for k, v in sorted(by_track.items())))
+    if score_warning:
+        unscored = sum(1 for l in new if not isinstance(l.get("score"), int))
+        print(f"\n⚠️  {score_warning} — {unscored} listing(s) unscored (add credits or a fallback key)")
 
     if args.dry_run:
         print("\n(dry-run: nothing written)")
