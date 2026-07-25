@@ -63,7 +63,7 @@ def _digest_text(new: list[dict]) -> str:
             loc = f" · {l['location']}" if l["location"] else ""
             sc = f"[{l['score']}] " if l.get("score") != "" else ""
             reason = f"  — {l['fit_reason']}" if l.get("fit_reason") else ""
-            lines.append(f"  {sc}{l['company']} — {l['title']}{loc}{reason}\n    {l['url']}")
+            lines.append(f"  {sc}{l['company']} — {l['title']}{loc}{reason}\n    {l['url']}\n    Package: python -m src.package --id {l.get('id', '')}")
     return "\n".join(lines)
 
 

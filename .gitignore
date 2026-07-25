@@ -19,6 +19,7 @@ venv/
 # Local secrets / profile (contains personal data — resume PDF, contact info)
 profile/
 tailored/
+applications/
 secrets.yml
 
 # Outreach work product (personal contact data — kept out of the public repo,
