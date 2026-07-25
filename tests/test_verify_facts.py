@@ -39,19 +39,26 @@ def test_extract_multiplier_uppercase_normalized():
 
 
 def test_extract_count_with_plus():
-    assert vf.extract_metrics("logged 250+ hours") == {"250 hours"}
+    # Identity is the numeric core only; the trailing prose word is not bound in.
+    assert vf.extract_metrics("logged 250+ hours") == {"250"}
 
 
 def test_extract_count_with_commas():
-    assert vf.extract_metrics("classified 2,000 crops") == {"2000 crops"}
+    assert vf.extract_metrics("classified 2,000 crops") == {"2000"}
 
 
 def test_extract_count_with_k_suffix():
-    assert vf.extract_metrics("trained on 100K samples") == {"100k samples"}
+    # The magnitude suffix stays part of the numeric core; 'samples' does not.
+    assert vf.extract_metrics("trained on 100K samples") == {"100k"}
 
 
 def test_extract_count_bare():
-    assert vf.extract_metrics("coordinated 15 departments") == {"15 departments"}
+    assert vf.extract_metrics("coordinated 15 departments") == {"15"}
+
+
+def test_extract_decimal_ignores_trailing_word():
+    # A bare decimal keeps its full numeric core and binds no following word.
+    assert vf.extract_metrics("recall@5 reached 0.77 via reranking") == {"5", "0.77"}
 
 
 def test_extract_empty_string():
@@ -71,18 +78,25 @@ def test_comma_and_plus_variants_compare_equal():
     a = vf.extract_metrics("2,000 crops")
     b = vf.extract_metrics("2000 crops")
     c = vf.extract_metrics("2,000+ crops")
-    assert a == b == c == {"2000 crops"}
+    assert a == b == c == {"2000"}
 
 
 def test_multiple_metrics_in_one_string():
     metrics = vf.extract_metrics("raised $50,000, grew 3x, over 250+ hours")
-    assert metrics == {"$50000", "3x", "250 hours"}
+    assert metrics == {"$50000", "3x", "250"}
 
 
 def test_gpu_name_not_split_into_count():
     # 'A100' is a chip name, not '100 samples' — a digit glued to letters is
     # not a free-standing number.
     assert vf.extract_metrics("ran on an A100 GPU") == set()
+
+
+def test_number_glued_to_trailing_letters_is_not_a_metric():
+    # A number fused to a trailing letter (a LaTeX dimension like '1pt', an
+    # identifier like '100gb') is not a bare claim — the trailing guard rejects
+    # it, mirroring the leading guard that protects 'A100'.
+    assert vf.extract_metrics("\\vspace{1pt} and a 100gb disk") == set()
 
 
 # ---------------------------------------------------------------------------
@@ -165,6 +179,40 @@ def test_verify_normalization_bridges_comma_forms():
     ok, violations = vf.verify("shipped 2,000+ crops", ["labeled 2000 crops"])
     assert ok is True
     assert violations == []
+
+
+# ---------------------------------------------------------------------------
+# verify — trailing prose word must not change a number's identity
+# ---------------------------------------------------------------------------
+
+
+def test_verify_decimal_grounds_despite_changed_trailing_word():
+    # A truthful rewrite keeps the number 0.77 but swaps the following word
+    # ('via' -> 'using'). The number is grounded; the word is irrelevant.
+    ok, violations = vf.verify(
+        "lifted recall@5 to 0.77 using BGE reranking",
+        ["improved recall@5 from 0.68 to 0.77 via a cross-encoder"],
+    )
+    assert ok is True
+    assert violations == []
+
+
+def test_verify_count_grounds_despite_changed_trailing_word():
+    # source '2,000 crops' grounds generated '2000 image ...' — the noun differs
+    # but the count is identical, so nothing is fabricated.
+    ok, violations = vf.verify("labeled 2000 image tiles", ["classified 2,000 crops"])
+    assert ok is True
+    assert violations == []
+
+
+def test_verify_invented_number_with_trailing_word_still_flagged():
+    # An invented percentage absent from every source must still be flagged, even
+    # when it carries a trailing prose word.
+    ok, violations = vf.verify(
+        "reached 99% accuracy", ["improved accuracy on the held-out set"]
+    )
+    assert ok is False
+    assert "99%" in violations
 
 
 # ---------------------------------------------------------------------------

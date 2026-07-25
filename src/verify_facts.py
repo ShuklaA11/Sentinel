@@ -39,14 +39,31 @@ _NUM = r"\d[\d,]*(?:\.\d+)?"
 # mistaken for their own metrics.
 _LEAD = r"(?<![\w.])"
 
+# Symmetric right-hand guard for a BARE number: it must not be glued to a trailing
+# word char, so a typesetting dimension like '1pt' or an identifier like '100gb'
+# is not read as the metric '1' or '100'. Forbidding a trailing digit too stops
+# the number regex from backtracking mid-run to satisfy the guard ('100gb' must
+# not degrade to '10'). A magnitude suffix (k/m/b) is consumed before this guard,
+# and a genuine metric word is space-separated ('2000 image'), so this only
+# rejects letters/digits fused directly to the number.
+_TRAIL = r"(?![\w])"
+
 # One combined scanner. Alternatives are tried left-to-right at each position,
-# so ordering is the precedence: percent, currency, multiplier, then N-unit count.
+# so ordering is the precedence: percent, currency, multiplier, then bare number.
+#
+# The bare-number alternative binds ONLY the numeric core plus its own magnitude
+# suffix (k/m/b) and an optional '+'. It deliberately does NOT absorb the prose
+# word that happens to follow: a metric's identity is the number and any symbol
+# glued to it, never the trailing noun. Binding that noun would falsely flag a
+# truthful rewrite that keeps the number but changes the word ('2000 crops' ->
+# '2000 image'); an invented number still fails because the number itself is
+# absent from the sources.
 _METRIC_RE = re.compile(
     rf"""
-      {_LEAD}(?P<pct>{_NUM})\s*%                                  # 94%   3,050%
-    | \$\s*(?P<cur>{_NUM})(?P<cur_suf>[kmb])?                     # $1.2M  $50,000
-    | {_LEAD}(?P<mult>{_NUM})x\b                                  # 3x   10X
-    | {_LEAD}(?P<cnt>{_NUM})(?P<cnt_suf>[kmb])?\+?\s+(?P<unit>[a-z]+)  # 250+ hours
+      {_LEAD}(?P<pct>{_NUM})\s*%                    # 94%   3,050%
+    | \$\s*(?P<cur>{_NUM})(?P<cur_suf>[kmb])?       # $1.2M  $50,000
+    | {_LEAD}(?P<mult>{_NUM})x\b                    # 3x   10X
+    | {_LEAD}(?P<cnt>{_NUM})(?P<cnt_suf>[kmb])?{_TRAIL}\+?  # 0.77  2000  2,000+  100K  15
     """,
     re.IGNORECASE | re.VERBOSE,
 )
@@ -60,10 +77,12 @@ def _num(core: str) -> str:
 def extract_metrics(text: str) -> set[str]:
     """Extract metric-shaped claims and normalize each to a canonical form.
 
-    Normalization strips commas from the numeric core, lowercases units and
-    magnitude suffixes, and drops a trailing '+', so '2,000', '2000' and
-    '2,000+' all collapse to the same token. Returns a set of canonical strings
-    such as '94%', '$1.2m', '10x', '250 hours', '100k samples'.
+    Normalization strips commas from the numeric core, lowercases magnitude
+    suffixes, and drops a trailing '+', so '2,000', '2000' and '2,000+' all
+    collapse to the same token. A metric's identity is its numeric core plus only
+    an explicitly-attached symbol ('%', '$', or an 'x'/'X' multiplier); a bare or
+    count number carries no trailing prose word. Returns a set of canonical
+    strings such as '94%', '$1.2m', '10x', '2000', '100k', '0.77'.
     """
     out: set[str] = set()
     for m in _METRIC_RE.finditer(text or ""):
@@ -76,7 +95,7 @@ def extract_metrics(text: str) -> set[str]:
             out.add(f"{_num(m.group('mult'))}x")
         elif m.group("cnt") is not None:
             suf = (m.group("cnt_suf") or "").lower()
-            out.add(f"{_num(m.group('cnt'))}{suf} {m.group('unit').lower()}")
+            out.add(f"{_num(m.group('cnt'))}{suf}")
     return out
 
 
