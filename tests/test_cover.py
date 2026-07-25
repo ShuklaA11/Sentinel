@@ -228,6 +228,8 @@ def test_immutable_facts_renders_real_identity_and_guards():
     # real current role + work authorization.
     assert "Machine Learning Intern at ChargeScape" in block
     assert "authorized to work in the US, no sponsorship required" in block
+    # stays honest without volunteering the gap: don't apologize for / flag a missing credential.
+    assert "do NOT apologize for or draw attention to lacking it" in block
 
 
 def test_immutable_facts_defensive_on_missing_sections():

@@ -280,7 +280,12 @@ def immutable_facts(profile: dict) -> str:
     if not lines:
         return ""
     header = "IMMUTABLE CANDIDATE FACTS (reproduce EXACTLY; never change, upgrade, or invent):"
-    return header + "\n" + "\n".join(f"- {line}" for line in lines)
+    footer = (
+        "- If the posting prefers a qualification the candidate lacks (e.g. a Master's/PhD), "
+        "do NOT claim it, but also do NOT apologize for or draw attention to lacking it — "
+        "lead with genuine strengths and simply omit what isn't there."
+    )
+    return header + "\n" + "\n".join(f"- {line}" for line in lines) + "\n" + footer
 
 
 def _build_prompt(company: str, title: str, emphasis: str, jd: str,
