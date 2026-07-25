@@ -26,12 +26,11 @@ import re
 
 import yaml
 
-from . import keywords, verify_facts
+from . import keywords, llm, verify_facts
 
 log = logging.getLogger("cover")
 
 ROOT = os.path.dirname(os.path.dirname(__file__))
-MODEL = os.environ.get("COVER_MODEL", "claude-sonnet-4-6")
 OUT_DIR = os.path.join(ROOT, "tailored")
 PROFILE_YML = os.path.join(ROOT, "profile", "profile.yml")
 VOICE_MD = os.path.join(ROOT, "profile", "voice.md")
@@ -187,17 +186,7 @@ def _drop_unverified_sentences(text: str, source_texts: list[str]) -> str:
     return "\n\n".join(out_paras)
 
 
-# --- LLM client + generation --------------------------------------------------
-
-
-def _client():
-    if not os.environ.get("ANTHROPIC_API_KEY"):
-        return None
-    try:
-        import anthropic
-    except ImportError:
-        return None
-    return anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
+# --- LLM generation -----------------------------------------------------------
 
 
 def _stringify(value: object) -> str:
@@ -280,16 +269,13 @@ def _build_prompt(company: str, title: str, emphasis: str, jd: str,
     )
 
 
-def _generate(client, prompt: str) -> str:
-    try:
-        resp = client.messages.create(
-            model=MODEL, max_tokens=1200,
-            messages=[{"role": "user", "content": prompt}],
-        )
-        return resp.content[0].text
-    except Exception as exc:  # noqa: BLE001
-        log.error("cover generation failed (%s)", exc)
-        return ""
+def _generate(prompt: str) -> str:
+    """Model text via the shared LLM helper (Claude primary, GPT fallback).
+
+    Returns '' when no provider is configured or the call yields nothing —
+    llm.complete never raises and returns None in that case, which we treat as
+    empty so the empty-letter gate in tailor_cover fails closed."""
+    return llm.complete(prompt, max_tokens=1200) or ""
 
 
 # --- orchestration ------------------------------------------------------------
@@ -298,13 +284,11 @@ def _generate(client, prompt: str) -> str:
 def tailor_cover(company: str, title: str, jd: str, archetype: str = "startup") -> str | None:
     """Generate a fact-gated cover letter, write it to tailored/, and return the text.
 
-    Returns None (after logging a skip) when no ANTHROPIC_API_KEY is set.
+    Fails closed: when the LLM is unavailable (no ANTHROPIC_API_KEY / OPENAI_API_KEY
+    provider configured, so llm.complete returns None) or the final letter is empty
+    after the fact-gate scrub, this logs a skip, writes NO file, prints a failure
+    line, and returns None. Only real non-empty content is written and returned.
     """
-    client = _client()
-    if client is None:
-        log.warning("no ANTHROPIC_API_KEY — skipping cover letter for %s / %s", company, title)
-        return None
-
     profile = _load_yaml(PROFILE_YML) if os.path.exists(PROFILE_YML) else {}
     bank = _load_yaml(RESUME_BANK) if os.path.exists(RESUME_BANK) else {}
     voice = _read_optional(VOICE_MD)
@@ -329,18 +313,30 @@ def tailor_cover(company: str, title: str, jd: str, archetype: str = "startup") 
     # First draft, then the numeric fact gate: regenerate once, then drop the
     # unverifiable sentence rather than ship a fabricated number.
     prompt = _build_prompt(company, title, emphasis, jd, inject, values, ctx, voice)
-    letter = _sanitize(_generate(client, prompt))
+    letter = _sanitize(_generate(prompt))
     ok, violations = verify_facts.verify(letter, sources)
     if not ok:
         log.warning("draft has ungrounded metric(s) %s — regenerating once", violations)
         strict = _build_prompt(company, title, emphasis, jd, inject, values, ctx, voice, strict=True)
-        letter = _sanitize(_generate(client, strict))
+        letter = _sanitize(_generate(strict))
         ok, violations = verify_facts.verify(letter, sources)
         if not ok:
             log.warning("still ungrounded %s — dropping unverifiable sentence(s)", violations)
             letter = _drop_unverified_sentences(letter, sources)
 
     letter = _cap_words(letter, MAX_WORDS)
+
+    # Fail closed: no LLM completion (llm.complete -> None) or an empty letter after
+    # the fact-gate scrub means we have nothing to ship. Write NO file and never
+    # print a ✓ — reporting success while shipping a 0-byte letter was the bug.
+    if not letter.strip():
+        log.warning(
+            "no cover letter for %s / %s — LLM unavailable or produced no grounded "
+            "content (set ANTHROPIC_API_KEY / OPENAI_API_KEY); wrote nothing",
+            company, title,
+        )
+        print("\n✗ cover letter unavailable — no content generated (nothing written)")
+        return None
 
     os.makedirs(OUT_DIR, exist_ok=True)
     slug = f"{company}_{title}".lower().replace(" ", "_").replace("/", "-")

@@ -1,10 +1,10 @@
 """Unit tests for the cover-letter generator's pure / mockable parts.
 
-Offline only: the anthropic client is mocked so nothing hits the network, and
+Offline only: llm.complete is monkeypatched so nothing hits the network, and
 profile / fact-source I/O is monkeypatched so nothing depends on the live
 profile/ directory. The LLM prose path itself is integration-only; here we cover
-value extraction, the fact gate, the word cap, keyword injection, and the
-graceful no-API-key skip.
+value extraction, the fact gate, the word cap, keyword injection, the graceful
+no-API-key skip, and the fail-closed path when the LLM is unavailable.
 """
 from __future__ import annotations
 
@@ -126,18 +126,14 @@ def test_tailor_cover_no_api_key_returns_none(monkeypatch, caplog):
 # ---------------------------------------------------------------------------
 
 
-class _FakeClient:
-    """Captures the prompt and returns a canned cover-letter body."""
+def _fake_complete(captured: dict, reply: str):
+    """A stand-in for llm.complete: captures the prompt, returns a canned body."""
 
-    def __init__(self, captured: dict, reply: str):
-        self._captured = captured
-        self._reply = reply
-        self.messages = self
+    def complete(prompt, *, max_tokens=1200):
+        captured["prompt"] = prompt
+        return reply
 
-    def create(self, model, max_tokens, messages):  # noqa: A003 - mirrors anthropic API
-        self._captured["prompt"] = messages[0]["content"]
-        block = type("B", (), {"text": self._reply})()
-        return type("R", (), {"content": [block]})()
+    return complete
 
 
 _CANNED_LETTER = (
@@ -161,7 +157,7 @@ def _profile() -> dict:
 def test_tailor_cover_assembles_bounded_letter_with_keyword(tmp_path, monkeypatch):
     monkeypatch.setenv("ANTHROPIC_API_KEY", "test-key")
     captured: dict = {}
-    monkeypatch.setattr(cover, "_client", lambda: _FakeClient(captured, _CANNED_LETTER))
+    monkeypatch.setattr(cover.llm, "complete", _fake_complete(captured, _CANNED_LETTER))
     monkeypatch.setattr(cover, "_load_yaml", lambda p: _profile() if p.endswith("profile.yml") else {})
     monkeypatch.setattr(cover, "_read_optional", lambda p: "")
     monkeypatch.setattr(cover.verify_facts, "load_sources", lambda: [])
@@ -198,7 +194,7 @@ def test_tailor_cover_fact_gate_regenerates_then_drops(tmp_path, monkeypatch):
         "I grew a side project to 9000% month-over-month growth.\n\n"
         "I'm in Boston and free in June. Thanks."
     )
-    monkeypatch.setattr(cover, "_client", lambda: _FakeClient(captured, fabricated))
+    monkeypatch.setattr(cover.llm, "complete", _fake_complete(captured, fabricated))
     monkeypatch.setattr(cover, "_load_yaml", lambda p: _profile() if p.endswith("profile.yml") else {})
     monkeypatch.setattr(cover, "_read_optional", lambda p: "")
     monkeypatch.setattr(cover.verify_facts, "load_sources", lambda: ["no such metric in ground truth"])
@@ -211,3 +207,28 @@ def test_tailor_cover_fact_gate_regenerates_then_drops(tmp_path, monkeypatch):
     from src import verify_facts
     ok, _ = verify_facts.verify(letter, ["no such metric in ground truth"])
     assert ok is True
+
+
+# ---------------------------------------------------------------------------
+# tailor_cover — LLM unavailable => fail closed (None, no file, no ✓)
+# ---------------------------------------------------------------------------
+
+
+def test_tailor_cover_llm_unavailable_writes_nothing(tmp_path, monkeypatch, capsys):
+    """When llm.complete returns None (no provider / unavailable), tailor_cover
+    must return None, write NO output file, and never print a ✓ success line —
+    the fix for the 0-byte 'success' silent-failure bug."""
+    monkeypatch.setattr(cover.llm, "complete", lambda prompt, *, max_tokens=1200: None)
+    monkeypatch.setattr(cover, "_load_yaml", lambda p: _profile() if p.endswith("profile.yml") else {})
+    monkeypatch.setattr(cover, "_read_optional", lambda p: "")
+    monkeypatch.setattr(cover.verify_facts, "load_sources", lambda: [])
+    monkeypatch.setattr(cover, "OUT_DIR", str(tmp_path / "out"))
+
+    result = cover.tailor_cover("Acme", "ML Intern", "Python and PyTorch role.", archetype="startup")
+
+    assert result is None
+    # no file written at the slugified path
+    out_file = tmp_path / "out" / "acme_ml_intern_cover.md"
+    assert not out_file.exists()
+    # never a success marker on failure
+    assert "✓" not in capsys.readouterr().out
