@@ -114,6 +114,7 @@ def test_sanitize_strips_em_dashes():
 
 def test_tailor_cover_no_api_key_returns_none(monkeypatch, caplog):
     monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)  # both providers gone -> no fallback
     import logging
     with caplog.at_level(logging.WARNING, logger="cover"):
         result = cover.tailor_cover("Acme", "ML Intern", "Python and PyTorch role.")
