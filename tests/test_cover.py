@@ -185,6 +185,90 @@ def test_tailor_cover_assembles_bounded_letter_with_keyword(tmp_path, monkeypatc
     assert out_file.read_text() == letter
 
 
+# ---------------------------------------------------------------------------
+# immutable_facts — non-negotiable identity block, guards against credential
+# fabrication / upgrade (the live run once claimed a Master's the candidate
+# does not hold because the JD asked for 'MS or PhD')
+# ---------------------------------------------------------------------------
+
+
+def _full_profile() -> dict:
+    """A profile that carries the education / experience / eligibility sections
+    immutable_facts reads (the _profile() fixture above deliberately lacks them)."""
+    return {
+        "name": "Test Candidate",
+        "facts": {"location": "Austin, TX", "availability": "May 2028"},
+        "skills": {"languages": ["Python"], "frameworks": ["PyTorch"]},
+        "education": {
+            "degree": "Bachelor of Science in Statistics and Data Science",
+            "school": "University of Texas at Austin",
+            "graduation": "May 2028",
+        },
+        "experience": [
+            {"role": "Machine Learning Intern", "company": "ChargeScape"},
+        ],
+        "answer_bank": {
+            "eligibility": {"work_authorized_us": True, "requires_sponsorship": False},
+        },
+        "grad_date": "May 2028",
+        "preferences": {"tracks": ["ml"]},
+    }
+
+
+def test_immutable_facts_renders_real_identity_and_guards():
+    block = cover.immutable_facts(_full_profile())
+    # the real degree string, verbatim.
+    assert "Bachelor of Science in Statistics and Data Science" in block
+    assert "University of Texas at Austin" in block
+    assert "May 2028" in block
+    # an explicit NEVER-change/upgrade instruction on the degree.
+    assert "NEVER change/upgrade" in block
+    # an explicit 'NOT a Master's or PhD' standing statement.
+    assert "NOT a Master's or PhD" in block
+    # real current role + work authorization.
+    assert "Machine Learning Intern at ChargeScape" in block
+    assert "authorized to work in the US, no sponsorship required" in block
+
+
+def test_immutable_facts_defensive_on_missing_sections():
+    # an empty profile must never raise; it degrades to an empty block.
+    assert cover.immutable_facts({}) == ""
+    # a partial profile (degree only) renders what's present and omits the rest.
+    partial = {"education": {"degree": "Bachelor of Science in Statistics and Data Science"}}
+    block = cover.immutable_facts(partial)
+    assert "Bachelor of Science in Statistics and Data Science" in block
+    assert "NOT a Master's or PhD" in block  # still guards from the degree alone
+    assert "Current role" not in block       # no experience section -> omitted
+    assert "Work authorization" not in block  # no eligibility section -> omitted
+
+
+def test_prompt_embeds_immutable_facts_and_anti_upgrade_rule(tmp_path, monkeypatch):
+    """The prompt sent to llm.complete must embed the immutable-facts block (real BS
+    degree) AND the anti-Master's / anti-'even if the job asks' rule, so the model
+    can never upgrade the credential to satisfy an 'MS or PhD' requirement."""
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "test-key")
+    captured: dict = {}
+    monkeypatch.setattr(cover.llm, "complete", _fake_complete(captured, _CANNED_LETTER))
+    # profile.yml is not committed, so force the load guard True and feed the full profile.
+    monkeypatch.setattr(cover.os.path, "exists", lambda p: True)
+    monkeypatch.setattr(cover, "_load_yaml", lambda p: _full_profile() if p.endswith("profile.yml") else {})
+    monkeypatch.setattr(cover, "_read_optional", lambda p: "")
+    monkeypatch.setattr(cover.verify_facts, "load_sources", lambda: [])
+    monkeypatch.setattr(cover, "OUT_DIR", str(tmp_path / "out"))
+
+    jd = "Machine Learning Intern. MS or PhD in CS preferred. Python and PyTorch for retrieval."
+    cover.tailor_cover("Acme", "ML Intern", jd, archetype="startup")
+
+    prompt = captured["prompt"]
+    # the real BS degree is embedded verbatim.
+    assert "Bachelor of Science in Statistics and Data Science" in prompt
+    # the anti-Master's guard is present.
+    assert "NOT a Master's or PhD" in prompt
+    assert "Master's" in prompt
+    # the 'even if the job asks' rule is present.
+    assert "EVEN IF THE JOB ASKS FOR ONE" in prompt
+
+
 def test_tailor_cover_fact_gate_regenerates_then_drops(tmp_path, monkeypatch):
     """If the model keeps fabricating a number across both tries, the offending
     sentence is dropped rather than shipped."""

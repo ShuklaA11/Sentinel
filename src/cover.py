@@ -225,9 +225,67 @@ def _profile_context(profile: dict) -> str:
     return "\n".join(lines)
 
 
+def _is_bachelors(degree: str | None) -> bool:
+    """True when the degree string reads as an undergraduate (Bachelor's) degree,
+    so we can assert the candidate is NOT a Master's / PhD candidate."""
+    d = (degree or "").lower()
+    return "bachelor" in d or bool(re.search(r"\bb\.?s\b|\bb\.?a\b", d))
+
+
+def immutable_facts(profile: dict) -> str:
+    """Render the candidate's non-negotiable identity as a labeled, reproduce-exactly
+    block, read defensively from the live profile dict.
+
+    Guards against the model inventing or upgrading a credential to match a JD (the
+    live run once claimed a Master's in CS because the JD asked for 'MS or PhD'; the
+    candidate is a BS Statistics & Data Science student). Reads education/experience/
+    answer_bank locations with .get chains, renders only the facts actually present,
+    and NEVER raises on a missing section — an empty profile yields ''.
+
+    Facts read: education.degree / .school / .graduation (graduation falls back to the
+    top-level grad_date), the current role+company from experience[0], and work
+    authorization from answer_bank.eligibility (work_authorized_us and NOT
+    requires_sponsorship => authorized, no sponsorship).
+    """
+    profile = profile or {}
+    education = profile.get("education") if isinstance(profile.get("education"), dict) else {}
+    lines: list[str] = []
+
+    # Degree line: degree, school, graduation — only the parts present, exact wording.
+    degree = education.get("degree")
+    school = education.get("school")
+    graduation = education.get("graduation") or profile.get("grad_date")
+    degree_parts = [str(p).strip() for p in (degree, school, graduation) if p]
+    if degree_parts:
+        lines.append("Degree (NEVER change/upgrade): " + ", ".join(degree_parts))
+        if _is_bachelors(degree):
+            lines.append("Standing: undergraduate/BS student, NOT a Master's or PhD candidate")
+
+    # Current role from the most recent experience entry.
+    experience = profile.get("experience")
+    if isinstance(experience, list) and experience and isinstance(experience[0], dict):
+        role = experience[0].get("role")
+        company = experience[0].get("company")
+        if role and company:
+            lines.append(f"Current role: {role} at {company}")
+        elif role:
+            lines.append(f"Current role: {role}")
+
+    # Work authorization from answer_bank.eligibility.
+    bank = profile.get("answer_bank") if isinstance(profile.get("answer_bank"), dict) else {}
+    elig = bank.get("eligibility") if isinstance(bank.get("eligibility"), dict) else {}
+    if elig.get("work_authorized_us") and not elig.get("requires_sponsorship"):
+        lines.append("Work authorization: authorized to work in the US, no sponsorship required")
+
+    if not lines:
+        return ""
+    header = "IMMUTABLE CANDIDATE FACTS (reproduce EXACTLY; never change, upgrade, or invent):"
+    return header + "\n" + "\n".join(f"- {line}" for line in lines)
+
+
 def _build_prompt(company: str, title: str, emphasis: str, jd: str,
                   inject: list[str], values: list[str], ctx: str, voice: str,
-                  strict: bool = False) -> str:
+                  profile: dict | None = None, strict: bool = False) -> str:
     inject_block = (
         "Where TRUTHFUL and natural, weave in these employer keywords the candidate "
         f"genuinely has (use their exact wording): {', '.join(inject)}.\n" if inject else ""
@@ -241,13 +299,27 @@ def _build_prompt(company: str, title: str, emphasis: str, jd: str,
         "the candidate material above. If unsure, state the achievement without a number.\n"
         if strict else ""
     )
+    # HARD RULE, placed ABOVE the writing instructions: the model must reproduce the
+    # candidate's real credentials verbatim and can never invent or upgrade one to match
+    # the JD (no Master's/PhD to satisfy an 'MS or PhD' ask, no BS->MS, no intern->FTE).
+    facts = immutable_facts(profile or {})
+    facts_block = (
+        facts + "\n"
+        "These facts are NON-NEGOTIABLE: reproduce every credential EXACTLY as written "
+        "above. NEVER claim a degree, major, school, job title, employer, or credential "
+        "that is not listed here, EVEN IF THE JOB ASKS FOR ONE. Do NOT claim a Master's "
+        "or PhD to match an 'MS or PhD' requirement; do NOT upgrade a Bachelor's to a "
+        "Master's, an internship to a full-time role, or invent a field of study.\n\n"
+        if facts else ""
+    )
     return (
         f"Write a cover letter for the {title} role at {company}.\n\n"
         f"Candidate material (the ONLY facts you may use):\n{ctx}\n\n"
         + (f"Job description:\n{jd}\n\n" if jd else "")
         + (f"Voice / tone guide:\n{voice}\n\n" if voice else "")
         + f"Emphasis for this kind of company: {emphasis}\n\n"
-        "Follow this 5-paragraph formula, one short paragraph each:\n"
+        + facts_block
+        + "Follow this 5-paragraph formula, one short paragraph each:\n"
         "1. HOOK: specific, genuine enthusiasm for THIS company's product / mission. "
         "No generic flattery.\n"
         "2. TECHNICAL MATCH: the candidate's relevant skills, using the job description's "
@@ -312,12 +384,13 @@ def tailor_cover(company: str, title: str, jd: str, archetype: str = "startup") 
 
     # First draft, then the numeric fact gate: regenerate once, then drop the
     # unverifiable sentence rather than ship a fabricated number.
-    prompt = _build_prompt(company, title, emphasis, jd, inject, values, ctx, voice)
+    prompt = _build_prompt(company, title, emphasis, jd, inject, values, ctx, voice, profile=profile)
     letter = _sanitize(_generate(prompt))
     ok, violations = verify_facts.verify(letter, sources)
     if not ok:
         log.warning("draft has ungrounded metric(s) %s — regenerating once", violations)
-        strict = _build_prompt(company, title, emphasis, jd, inject, values, ctx, voice, strict=True)
+        strict = _build_prompt(company, title, emphasis, jd, inject, values, ctx, voice,
+                               profile=profile, strict=True)
         letter = _sanitize(_generate(strict))
         ok, violations = verify_facts.verify(letter, sources)
         if not ok:
