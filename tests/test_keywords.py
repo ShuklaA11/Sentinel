@@ -90,6 +90,29 @@ def test_extract_drops_job_posting_filler():
         assert filler not in result
 
 
+def test_extract_drops_proper_nouns_and_corporate_noise():
+    # Arrange: company/person/place proper nouns + boilerplate around real skills.
+    text = (
+        "PlusAI, backed by Scania and Hyundai and Traton, headquartered in "
+        "Silicon Valley, builds deep learning and object detection with PyTorch"
+    )
+
+    # Act
+    result = kw.extract_jd_keywords(text)
+
+    # Assert: mid-sentence proper nouns + corporate/geographic filler are gone.
+    for noise in (
+        "plusai", "scania", "hyundai", "traton", "silicon", "valley",
+        "headquartered",
+    ):
+        assert noise not in result
+
+    # Real skills survive: curated bigrams + allowlisted tech term.
+    assert "deep learning" in result
+    assert "object detection" in result
+    assert "pytorch" in result
+
+
 # --- coverage ----------------------------------------------------------------
 
 def test_coverage_splits_present_and_missing():

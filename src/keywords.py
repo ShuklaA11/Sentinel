@@ -39,6 +39,13 @@ STOPWORDS: frozenset[str] = frozenset({
     "required", "requirements", "responsibilities", "responsibility", "help",
     "using", "use", "well", "including", "include", "etc", "new", "great",
     "good", "excellent", "related", "relevant", "years", "year", "company",
+    # JD boilerplate + corporate / geographic filler (dilutes coverage signal)
+    "headquartered", "silicon", "valley", "states", "europe", "named", "world",
+    "companies", "partners", "partner", "group", "brands", "brand",
+    "operations", "pioneering", "one", "joining", "opportunity",
+    "opportunities", "mission", "talented", "individuals", "teams", "fast",
+    "growing", "next", "generation", "working", "accelerate", "deployment",
+    "future",
 })
 
 # Curated multi-word tech/skill phrases captured as single keywords when their
@@ -50,12 +57,40 @@ _BIGRAMS: frozenset[str] = frozenset({
     "data pipeline",
     "reinforcement learning",
     "time series",
+    # perception / vision phrases that read as single skills
+    "object detection",
+    "motion tracking",
+    "3d vision",
+    "semantic segmentation",
     # a few common neighbours in the same vein
     "natural language",
     "data science",
     "neural networks",
     "large language",
 })
+
+# Known tech terms / conference acronyms that look like proper nouns but are
+# real skills. Membership is case-insensitive (stored lowercased). Kept small
+# but broad enough that the proper-noun filter never drops a genuine skill.
+_TECH_ALLOWLIST: frozenset[str] = frozenset({
+    # required minimal set
+    "pytorch", "tensorflow", "jax", "cvpr", "iclr", "iccv", "eccv", "neurips",
+    "aaai", "siggraph", "lidar", "gpu", "ml", "ai", "nlp", "cv", "api", "sql",
+    "aws",
+    # common Title/Camel-cased languages, frameworks, tools and platforms
+    "python", "rust", "go", "golang", "java", "javascript", "typescript",
+    "kotlin", "swift", "scala", "ruby", "kubernetes", "docker", "linux",
+    "react", "angular", "vue", "node", "django", "flask", "fastapi", "spark",
+    "kafka", "hadoop", "airflow", "numpy", "pandas", "scipy", "keras",
+    "opencv", "cuda", "redis", "postgres", "postgresql", "mysql", "mongodb",
+    "graphql", "azure", "gcp", "terraform", "ansible", "jenkins", "github",
+    "gitlab", "snowflake", "databricks", "tableau", "matlab", "pytest",
+    "onnx", "ros", "slam",
+})
+
+# Characters that end a sentence; a capitalized token right after one is
+# ambiguous (could be an ordinary word) and is never treated as a proper noun.
+_SENTENCE_END: frozenset[str] = frozenset(".!?")
 
 
 @lru_cache(maxsize=None)
@@ -71,13 +106,53 @@ def _tokenize(text: str) -> list[str]:
     return [t for t in re.split(r"[^a-z0-9]+", text.lower()) if t]
 
 
+def _proper_noun_tokens(jd_text: str) -> set[str]:
+    """Return lowercased tokens that read as proper nouns in the ORIGINAL text.
+
+    A token qualifies only when EVERY occurrence is capitalized (uppercase
+    first character), NONE sits at a sentence start, and it is not a known tech
+    term. This flags company/person/place names (PlusAI, Scania, Hyundai) while
+    leaving real skills alone. Conservative by design: a single lowercased or
+    sentence-initial occurrence, or an allowlist hit, keeps the token — we never
+    want to drop a genuine skill.
+    """
+    if not jd_text:
+        return set()
+
+    only_capitalized: set[str] = set()
+    disqualified: set[str] = set()
+
+    for m in re.finditer(r"[A-Za-z0-9]+", jd_text):
+        word = m.group()
+        low = word.lower()
+
+        prefix = jd_text[: m.start()]
+        stripped = prefix.rstrip()
+        trailing_ws = prefix[len(stripped):]
+        # Start-of-text is treated as mid-sentence: a leading proper noun
+        # (e.g. "PlusAI, ...") should still be droppable.
+        at_sentence_start = bool(stripped) and (
+            stripped[-1] in _SENTENCE_END or "\n" in trailing_ws
+        )
+
+        if not word[0].isupper() or at_sentence_start or low in _TECH_ALLOWLIST:
+            disqualified.add(low)
+        else:
+            only_capitalized.add(low)
+
+    return only_capitalized - disqualified
+
+
 def extract_jd_keywords(jd_text: str) -> list[str]:
     """Extract skill keywords from a job description.
 
-    Keeps meaningful unigrams (stopwords dropped) plus curated multi-word
-    bigrams captured when both words are adjacent. Deduped, first-seen order.
+    Keeps meaningful unigrams (stopwords and detected proper-noun noise
+    dropped) plus curated multi-word bigrams captured when both words are
+    adjacent. Deduped, first-seen order.
     """
-    tokens = _tokenize(jd_text or "")
+    text = jd_text or ""
+    proper_nouns = _proper_noun_tokens(text)
+    tokens = _tokenize(text)
     out: list[str] = []
     seen: set[str] = set()
 
@@ -92,7 +167,7 @@ def extract_jd_keywords(jd_text: str) -> list[str]:
             bigram = f"{tok} {tokens[i + 1]}"
             if bigram in _BIGRAMS:
                 _add(bigram)
-        if tok not in STOPWORDS:
+        if tok not in STOPWORDS and tok not in proper_nouns:
             _add(tok)
 
     log.debug("extracted %d jd keywords", len(out))
