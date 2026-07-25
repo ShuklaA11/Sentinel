@@ -7,7 +7,8 @@ from src import rank
 
 
 def L(id, score):
-    return {"id": id, "score": score, "company": "X", "title": "ML Intern", "track": "ml"}
+    return {"id": id, "score": score, "company": "X", "title": "ML Intern",
+            "location": "Remote", "track": "ml"}
 
 
 def _row(i=0, veto=False, reason="ok", **dims):
@@ -70,3 +71,60 @@ def test_no_high_fit_returns_everything_as_rest():
     high, rest = rank.partition_by_fit([L("a", 50), L("b", 70)], 85)
     assert high == []
     assert len(rest) == 2
+
+
+# --- provider fallback + loud-failure signal ---------------------------------
+
+READY_PROFILE = {"background": "real ML background", "preferences": {"track": "ml"}}
+GOOD_JSON = json.dumps([_row(i=0, reason="match")])  # all dims 80 -> composite 80
+
+
+def _fake_provider(name, fn):
+    """A provider whose .call(client, prompt) delegates to fn(prompt)."""
+    return rank._Provider(name, object(), lambda _client, prompt, _fn=fn: _fn(prompt))
+
+
+def _billing_error(_prompt):
+    raise Exception("Error code: 400 - Your credit balance is too low")
+
+
+def test_is_unavailable_distinguishes_billing_from_transient():
+    assert rank._is_unavailable(Exception("Your credit balance is too low")) is True
+    assert rank._is_unavailable(Exception("insufficient_quota for this org")) is True
+    assert rank._is_unavailable(Exception("Connection timed out")) is False
+
+
+def test_fallback_scores_when_primary_is_unavailable(monkeypatch):
+    monkeypatch.setattr(rank, "_providers", lambda: [
+        _fake_provider("anthropic", _billing_error),      # primary: out of credits
+        _fake_provider("openai", lambda _p: GOOD_JSON),   # fallback: works
+    ])
+    scored, warning = rank.score_listings([L("a", "")], READY_PROFILE)
+    assert warning is None                 # a working fallback = no alarm
+    assert scored[0]["score"] == 80        # scored by GPT
+
+
+def test_all_providers_unavailable_returns_loud_warning(monkeypatch):
+    monkeypatch.setattr(rank, "_providers", lambda: [
+        _fake_provider("anthropic", _billing_error),
+        _fake_provider("openai", _billing_error),
+    ])
+    scored, warning = rank.score_listings([L("a", "")], READY_PROFILE)
+    assert scored[0]["score"] == ""        # unscored fallthrough (no crash)
+    assert warning and "unavailable" in warning
+
+
+def test_no_providers_is_a_quiet_skip(monkeypatch):
+    monkeypatch.setattr(rank, "_providers", lambda: [])
+    scored, warning = rank.score_listings([L("a", "")], READY_PROFILE)
+    assert warning is None                 # no keys = expected, not an alarm
+    assert scored[0]["score"] == ""
+
+
+def test_transient_failure_does_not_trip_the_warning(monkeypatch):
+    def _transient(_p):
+        raise Exception("Connection reset by peer")
+    monkeypatch.setattr(rank, "_providers", lambda: [_fake_provider("anthropic", _transient)])
+    scored, warning = rank.score_listings([L("a", "")], READY_PROFILE)
+    assert warning is None                 # provider stays alive -> not "unavailable"
+    assert scored[0]["score"] == ""

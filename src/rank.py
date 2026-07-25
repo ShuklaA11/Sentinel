@@ -1,22 +1,27 @@
-"""Fit-score new listings 0–100 against the user's profile via Claude (Haiku).
+"""Fit-score new listings 0–100 against the user's profile via an LLM.
 
 The model rates four dimensions per listing and flags hard deal-breakers; the composite
 0–100 score is computed deterministically in Python (weighted mean), and a veto forces the
 score to 0 so a disqualifying-but-shiny role can't sneak into the high-fit alert.
 
-Graceful: if ANTHROPIC_API_KEY is unset, the `anthropic` package is missing, or the
-profile is unfilled, scoring is skipped (listings pass through unscored) so the core
-detect→alert pipeline never breaks. Scoring activates once the key + profile exist.
+Providers run in order — Anthropic (Claude Haiku) primary, OpenAI (GPT) fallback. If a
+provider hits an *unavailable* condition (billing/auth/quota) it is dropped for the rest of
+the run and the next provider takes over; a transient error just fails that batch. When
+every provider is unavailable, `score_listings` returns a loud warning so a dead scorer is
+never silent (esp. in CI). With no keys / an unfilled profile, scoring is skipped quietly
+(listings pass through unscored) so the core detect→alert pipeline never breaks.
 """
 from __future__ import annotations
 
 import json
 import logging
 import os
+from typing import Callable, NamedTuple
 
 log = logging.getLogger("rank")
 
-MODEL = "claude-haiku-4-5"
+ANTHROPIC_MODEL = "claude-haiku-4-5"
+OPENAI_MODEL = os.environ.get("SCORE_OPENAI_MODEL", "gpt-4o-mini")
 BATCH = 25  # listings per API call
 
 # Fit dimensions and their weights (must sum to 1.0). track/skill dominate because a
@@ -78,50 +83,146 @@ def _parse_batch(text: str) -> dict:
     return out
 
 
-def _client():
+# --- providers ---------------------------------------------------------------
+
+class _Provider(NamedTuple):
+    name: str
+    client: object
+    call: Callable[[object, str], str]  # (client, prompt) -> raw model text
+
+
+def _anthropic_client():
     key = os.environ.get("ANTHROPIC_API_KEY")
     if not key:
         return None
     try:
         import anthropic
     except ImportError:
-        log.warning("anthropic package not installed — skipping scoring")
+        log.warning("anthropic package not installed — Claude scoring disabled")
         return None
     return anthropic.Anthropic(api_key=key)
 
 
-def _score_batch(client, profile: dict, batch: list[dict]) -> dict:
-    """Return {index: (score, reason)} for one batch."""
+def _openai_client():
+    key = os.environ.get("OPENAI_API_KEY")
+    if not key:
+        return None
     try:
-        resp = client.messages.create(
-            model=MODEL, max_tokens=1536,
-            messages=[{"role": "user", "content": _prompt(profile, batch)}],
-        )
-        return _parse_batch(resp.content[0].text.strip())
-    except Exception as exc:  # noqa: BLE001 — never let scoring crash the run
-        log.error("scoring batch failed: %s", exc)
-        return {}
+        import openai
+    except ImportError:
+        log.warning("openai package not installed — GPT fallback disabled")
+        return None
+    return openai.OpenAI(api_key=key)
 
 
-def score_listings(new: list[dict], profile: dict) -> list[dict]:
-    """Add `score` (int or '') and `fit_reason` to each listing."""
+def _call_anthropic(client, prompt: str) -> str:
+    resp = client.messages.create(
+        model=ANTHROPIC_MODEL, max_tokens=1536,
+        messages=[{"role": "user", "content": prompt}],
+    )
+    return resp.content[0].text.strip()
+
+
+def _call_openai(client, prompt: str) -> str:
+    resp = client.chat.completions.create(
+        model=OPENAI_MODEL, max_tokens=1536,
+        messages=[{"role": "user", "content": prompt}],
+    )
+    return (resp.choices[0].message.content or "").strip()
+
+
+def _providers() -> list[_Provider]:
+    """Available scorers in priority order: Anthropic primary, OpenAI fallback."""
+    out: list[_Provider] = []
+    a = _anthropic_client()
+    if a is not None:
+        out.append(_Provider("anthropic", a, _call_anthropic))
+    o = _openai_client()
+    if o is not None:
+        out.append(_Provider("openai", o, _call_openai))
+    return out
+
+
+def _is_unavailable(exc: Exception) -> bool:
+    """True when an error means the provider is *out of service* for this run (billing,
+    auth, quota) — as opposed to a transient blip. Drives dropping vs. retrying a provider.
+    """
+    status = getattr(exc, "status_code", None) or getattr(
+        getattr(exc, "response", None), "status_code", None)
+    if status in (401, 403):
+        return True
+    msg = str(exc).lower()
+    return any(s in msg for s in (
+        "credit balance is too low", "insufficient_quota", "billing",
+        "exceeded your current quota", "invalid_api_key", "invalid api key",
+        "authentication", "account is not active",
+    ))
+
+
+def _short(exc: Exception) -> str:
+    return str(exc).splitlines()[0][:120] if str(exc) else exc.__class__.__name__
+
+
+def _unscored(listings: list[dict]) -> list[dict]:
+    return [{**l, "score": "", "fit_reason": ""} for l in listings]
+
+
+def _score_batch(alive: list[_Provider], profile: dict, batch: list[dict]) -> tuple[dict, str]:
+    """Try each still-alive provider until one scores the batch. Providers that hit an
+    unavailable error are removed from `alive` (mutated in place). Returns (results, reason)
+    where reason is the last unavailable-failure message (for the loud warning)."""
+    prompt = _prompt(profile, batch)
+    reason = ""
+    for prov in list(alive):
+        try:
+            return _parse_batch(prov.call(prov.client, prompt)), reason
+        except Exception as exc:  # noqa: BLE001 — never let scoring crash the run
+            if _is_unavailable(exc):
+                reason = f"{prov.name}: {_short(exc)}"
+                alive.remove(prov)
+                log.error("scorer %s unavailable — %s", prov.name, reason)
+            else:
+                log.error("scorer %s batch failed: %s", prov.name, exc)
+    return {}, reason
+
+
+def score_listings(new: list[dict], profile: dict) -> tuple[list[dict], str | None]:
+    """Add `score` (int or '') and `fit_reason` to each listing.
+
+    Returns (listings, warning). `warning` is None on the happy path or an expected skip
+    (no keys / unfilled profile); it is a loud, human-readable string only when every
+    configured provider became unavailable mid-run (so the caller can surface it).
+    """
     if not new:
-        return new
-    client = _client()
-    if client is None or not _profile_ready(profile):
-        if client and not _profile_ready(profile):
-            log.warning("profile not filled — skipping scoring")
-        return [{**l, "score": "", "fit_reason": ""} for l in new]
+        return new, None
+    providers = _providers()
+    if not providers:
+        return _unscored(new), None  # no keys configured — expected quiet skip
+    if not _profile_ready(profile):
+        log.warning("profile not filled — skipping scoring")
+        return _unscored(new), None
 
-    scored = []
+    alive = list(providers)
+    last_reason = ""
+    scored: list[dict] = []
     for start in range(0, len(new), BATCH):
         batch = new[start:start + BATCH]
-        results = _score_batch(client, profile, batch)
+        results, reason = _score_batch(alive, profile, batch)
+        if reason:
+            last_reason = reason
         for i, l in enumerate(batch):
-            score, reason = results.get(i, ("", ""))
-            scored.append({**l, "score": score, "fit_reason": reason})
-    log.info("scored %d listings", len(scored))
-    return scored
+            score, fit = results.get(i, ("", ""))
+            scored.append({**l, "score": score, "fit_reason": fit})
+        if not alive:  # every provider is down — remaining batches can't be scored
+            scored.extend(_unscored(new[len(scored):]))
+            break
+
+    n_scored = sum(1 for l in scored if isinstance(l.get("score"), int))
+    log.info("scored %d/%d listings", n_scored, len(new))
+    warning = None
+    if not alive:
+        warning = f"scoring unavailable — {last_reason}"
+    return scored, warning
 
 
 def partition_by_fit(listings: list[dict], threshold: int) -> tuple[list[dict], list[dict]]:
