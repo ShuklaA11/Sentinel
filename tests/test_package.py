@@ -19,20 +19,34 @@ from src import package
 
 FAKE_PROFILE = {
     "name": "Jane Doe",
+    "email": "jane@example.com",
+    "phone": "555-0100",
+    "linkedin": "linkedin.com/in/janedoe",
+    "grad_date": "May 2027",
     "facts": {
-        "email": "jane@example.com",
-        "phone": "555-0100",
-        "location": "New York, NY",
-        "work_authorization": "US citizen",
-        "graduation_date": "May 2027",
-        "links": {"github": "github.com/janedoe", "linkedin": "linkedin.com/in/janedoe"},
+        "links": {"github": "github.com/janedoe"},
+    },
+    "education": {
+        "degree": "Bachelor of Science in Statistics and Data Science",
+        "school": "University of Texas at Austin",
+        "graduation": "May 2028",
+        "location": "Austin, TX",
+    },
+    "experience": [
+        {"role": "Machine Learning Intern", "company": "ChargeScape"},
+    ],
+    "preferences": {
+        "locations": {"preferred": ["New York, NY"], "willing_to_relocate": True},
+    },
+    "answer_bank": {
+        "eligibility": {"work_authorized_us": True, "requires_sponsorship": False},
+        "logistics": {
+            "earliest_start_date": "June 2026",
+            "salary_expectation": "$8k/month",
+        },
     },
     "skills": {"languages": ["Python"], "frameworks": ["PyTorch"]},
     "projects": ["Built a retrieval system with PyTorch and evaluated it"],
-    "answer_bank": {
-        "availability": "June 2026",
-        "target_salary": "$8k/month",
-    },
 }
 
 DEFAULT_JD = "We want Python and PyTorch. A machine learning role on retrieval."
@@ -102,10 +116,22 @@ def test_snapshot_shows_present_values(patched, monkeypatch):
     monkeypatch.setattr(package.llm, "complete", lambda *a, **k: "text")
     pkg = package.build_package(company="Co", title="SWE Intern", url="u", source="lever")
     md = _read_md(pkg)
+    # each field is mapped to its REAL profile.yml location and rendered (no TODO).
     assert "Jane Doe" in md
     assert "jane@example.com" in md
+    assert "555-0100" in md
+    assert "linkedin.com/in/janedoe" in md
     assert "github.com/janedoe" in md
-    assert "US citizen" in md
+    assert "May 2027" in md  # graduation from top-level grad_date
+    # work authorization derived from answer_bank.eligibility.
+    assert "Authorized to work in the US; no sponsorship required" in md
+    # location from preferences.locations.preferred[0] + willing_to_relocate note.
+    assert "New York, NY (willing to relocate)" in md
+    assert "June 2026" in md      # earliest_start_date
+    assert "$8k/month" in md       # salary_expectation
+    # none of the mapped fields degraded to a TODO.
+    for field in ("Email", "Phone", "LinkedIn", "Graduation date", "Work authorization"):
+        assert f"TODO: {field}" not in md
 
 
 def test_snapshot_todo_for_missing_fields(patched, monkeypatch):
@@ -137,6 +163,34 @@ def test_llm_unavailable_degrades_message_and_star(patched, monkeypatch):
     assert md.count(package.LLM_UNAVAILABLE) >= 2
     # cover was None -> no file written, master doc still built
     assert not os.path.exists(os.path.join(pkg, "cover_letter.md"))
+
+
+# ---------------------------------------------------------------------------
+# immutable-facts guard — MESSAGE + STAR prompts embed the non-negotiable
+# identity block + anti-credential-fabrication rule (never upgrade BS -> MS,
+# even if the JD asks for an 'MS or PhD')
+# ---------------------------------------------------------------------------
+
+
+def test_message_and_star_prompts_embed_immutable_facts(patched, monkeypatch):
+    captured: list[str] = []
+
+    def complete(prompt, *a, **k):
+        captured.append(prompt)
+        return "I built retrieval systems and love this mission."
+
+    monkeypatch.setattr(package.llm, "complete", complete)
+    package.build_package(company="Anthropic", title="ML Intern", url="u", source="greenhouse")
+
+    # one MESSAGE prompt + three STAR prompts, all fact-guarded.
+    assert len(captured) >= 1 + len(package.STAR_PROMPTS)
+    for prompt in captured:
+        # the real BS degree from cover.immutable_facts is embedded verbatim.
+        assert "Bachelor of Science in Statistics and Data Science" in prompt
+        # the anti-Master's / anti-upgrade guard travels with it.
+        assert "NOT a Master's or PhD" in prompt
+        assert "Master's" in prompt
+        assert "EVEN IF THE JOB ASKS FOR ONE" in prompt
 
 
 def test_missing_resume_path_skips_copy_without_crashing(patched, monkeypatch):

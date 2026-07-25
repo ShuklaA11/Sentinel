@@ -171,31 +171,60 @@ def resolve_listing(listing_id: str, company: str, title: str,
 # --- snapshot answers ---------------------------------------------------------
 
 
+def _dict(value: object) -> dict:
+    """Return value when it is a dict, else {} — for defensive .get chains."""
+    return value if isinstance(value, dict) else {}
+
+
+def _snapshot_location(locations: dict, education: dict) -> str | None:
+    """Preferred location for the form: preferences.locations.preferred[0], falling
+    back to education.location. When preferences.locations.willing_to_relocate is
+    true, note the relocation openness. None when no location is on file."""
+    preferred = locations.get("preferred")
+    base = preferred[0] if isinstance(preferred, list) and preferred else None
+    base = _first(base, education.get("location"))
+    if not base:
+        return None
+    if locations.get("willing_to_relocate"):
+        return f"{base} (willing to relocate)"
+    return str(base)
+
+
+def _work_authorization(eligibility: dict) -> str | None:
+    """Derive the work-authorization line from answer_bank.eligibility: authorized
+    to work in the US with no sponsorship required renders a plain statement; any
+    other/absent state returns None so the renderer shows a visible TODO."""
+    if eligibility.get("work_authorized_us") and not eligibility.get("requires_sponsorship"):
+        return "Authorized to work in the US; no sponsorship required"
+    return None
+
+
 def _snapshot_answers(profile: dict) -> list[tuple[str, object | None]]:
-    """The one-glance application-form answers, drawn from profile.yml facts +
-    answer_bank. A genuinely-missing value is returned as None so the renderer
-    surfaces a visible 'TODO: <field>' rather than fabricating anything."""
+    """The one-glance application-form answers, mapped to their REAL profile.yml
+    locations and read with defensive .get chains so a missing profile never
+    crashes. A genuinely-missing value is returned as None so the renderer surfaces
+    a visible 'TODO: <field>' rather than fabricating anything."""
     profile = profile or {}
-    facts = profile.get("facts") if isinstance(profile.get("facts"), dict) else {}
-    links = facts.get("links") if isinstance(facts.get("links"), dict) else {}
-    bank = profile.get("answer_bank") if isinstance(profile.get("answer_bank"), dict) else {}
+    facts = _dict(profile.get("facts"))
+    links = _dict(facts.get("links"))
+    education = _dict(profile.get("education"))
+    prefs = _dict(profile.get("preferences"))
+    locations = _dict(prefs.get("locations"))
+    bank = _dict(profile.get("answer_bank"))
+    eligibility = _dict(bank.get("eligibility"))
+    logistics = _dict(bank.get("logistics"))
 
     return [
-        ("Full name", _first(profile.get("name"), facts.get("name"))),
-        ("Email", _first(facts.get("email"), links.get("email"), bank.get("email"))),
-        ("Phone", _first(facts.get("phone"), bank.get("phone"))),
-        ("LinkedIn", _first(links.get("linkedin"), facts.get("linkedin"), bank.get("linkedin"))),
-        ("GitHub", _first(links.get("github"))),
-        ("Location", _first(facts.get("location"), profile.get("location"), bank.get("location"))),
-        ("Work authorization", _first(bank.get("work_authorization"),
-                                       facts.get("work_authorization"))),
-        ("Availability / earliest start", _first(bank.get("availability"),
-                                                  facts.get("availability"),
-                                                  bank.get("earliest_start"))),
-        ("Graduation date", _first(bank.get("graduation_date"), facts.get("graduation_date"),
-                                    facts.get("graduation"))),
-        ("Target salary range", _first(bank.get("target_salary"), bank.get("target_salary_range"),
-                                        facts.get("target_salary"))),
+        ("Full name", profile.get("name")),
+        ("Email", profile.get("email")),
+        ("Phone", profile.get("phone")),
+        ("LinkedIn", profile.get("linkedin")),
+        ("GitHub", links.get("github")),
+        ("Location", _snapshot_location(locations, education)),
+        ("Work authorization", _work_authorization(eligibility)),
+        ("Availability / earliest start", logistics.get("earliest_start_date")),
+        ("Graduation date", _first(profile.get("grad_date"), education.get("graduation"))),
+        ("Target salary range", logistics.get("salary_expectation")),
     ]
 
 
@@ -226,11 +255,30 @@ def _candidate_context(profile: dict) -> str:
     return "\n".join(lines)
 
 
+def _facts_block(profile: dict) -> str:
+    """The non-negotiable identity block + anti-credential-fabrication HARD RULE,
+    reused verbatim from src.cover so MESSAGE and STAR carry the SAME guard as the
+    cover letter: never invent or upgrade a degree, title, employer, or credential
+    to match a JD (no Master's/PhD for an 'MS or PhD' ask, no BS->MS, no intern->FTE).
+    Empty profile -> '' (cover.immutable_facts degrades gracefully)."""
+    facts = cover.immutable_facts(profile or {})
+    if not facts:
+        return ""
+    return (
+        facts + "\n"
+        "These facts are NON-NEGOTIABLE: reproduce every credential EXACTLY as written "
+        "above. NEVER claim a degree, major, school, job title, employer, or credential "
+        "that is not listed here, EVEN IF THE JOB ASKS FOR ONE. Do NOT claim a Master's "
+        "or PhD to match an 'MS or PhD' requirement; do NOT upgrade a Bachelor's to a "
+        "Master's, an internship to a full-time role, or invent a field of study.\n\n"
+    )
+
+
 def _message_body(company: str, title: str, jd: str, jd_keywords: list[str],
-                  voice: str, ctx: str, sources: list[str]) -> str:
+                  voice: str, ctx: str, sources: list[str], profile: dict) -> str:
     """A ~200-300 word condensed message to the hiring team. Keyword-rich, in the
-    candidate's voice, fact-gated. Returns the visible placeholder when the LLM
-    is unavailable (llm.complete -> None)."""
+    candidate's voice, fact-gated, and guarded against credential fabrication.
+    Returns the visible placeholder when the LLM is unavailable (llm.complete -> None)."""
     kw = ", ".join(jd_keywords[:25])
     prompt = (
         f"Write a concise message to the hiring team for the {title} role at {company}.\n\n"
@@ -238,6 +286,7 @@ def _message_body(company: str, title: str, jd: str, jd_keywords: list[str],
         + (f"Job description:\n{jd[:MAX_JD_CHARS]}\n\n" if jd else "")
         + (f"Voice / tone guide:\n{voice}\n\n" if voice else "")
         + (f"Where truthful and natural, surface these job keywords: {kw}.\n\n" if kw else "")
+        + _facts_block(profile)
         + "HARD RULES:\n"
         "- 200-300 words, plain prose, no bullet points, no salutation or signature line.\n"
         "- Human and direct; use contractions; sound like a real person, not a template.\n"
@@ -251,8 +300,9 @@ def _message_body(company: str, title: str, jd: str, jd_keywords: list[str],
 
 
 def _star_body(company: str, title: str, prompt_desc: str, jd_keywords: list[str],
-               voice: str, ctx: str, sources: list[str]) -> str:
-    """One STAR behavioral answer, fact-gated. Placeholder when the LLM is None."""
+               voice: str, ctx: str, sources: list[str], profile: dict) -> str:
+    """One STAR behavioral answer, fact-gated and guarded against credential
+    fabrication. Placeholder when the LLM is None."""
     kw = ", ".join(jd_keywords[:15])
     prompt = (
         f"Answer a behavioral interview prompt in STAR form for a candidate applying to "
@@ -260,6 +310,7 @@ def _star_body(company: str, title: str, prompt_desc: str, jd_keywords: list[str
         f"Candidate material (the ONLY facts you may use):\n{ctx}\n\n"
         + (f"Where truthful, weave in these job keywords: {kw}.\n\n" if kw else "")
         + (f"Voice / tone guide:\n{voice}\n\n" if voice else "")
+        + _facts_block(profile)
         + "HARD RULES:\n"
         "- Label the four parts: Situation, Task, Action, Result.\n"
         "- Draw ONLY on the candidate material. NEVER invent metrics, tools, or facts.\n\n"
@@ -319,18 +370,18 @@ def _snapshot_section(profile: dict) -> str:
 
 
 def _message_section(listing: dict, jd: str, jd_keywords: list[str], voice: str,
-                     ctx: str, sources: list[str]) -> str:
+                     ctx: str, sources: list[str], profile: dict) -> str:
     body = _message_body(listing["company"], listing["title"], jd, jd_keywords,
-                         voice, ctx, sources)
+                         voice, ctx, sources, profile)
     return f"## MESSAGE TO HIRING TEAM\n\n{body}"
 
 
 def _star_section(listing: dict, jd_keywords: list[str], voice: str,
-                  ctx: str, sources: list[str]) -> str:
+                  ctx: str, sources: list[str], profile: dict) -> str:
     parts = ["## STAR BEHAVIORAL ANSWERS"]
     for heading, desc in STAR_PROMPTS:
         body = _star_body(listing["company"], listing["title"], desc, jd_keywords,
-                          voice, ctx, sources)
+                          voice, ctx, sources, profile)
         parts.append(f"### {heading}\n\n{body}")
     return "\n\n".join(parts)
 
@@ -363,8 +414,8 @@ def _render_application_md(listing: dict, jd: str, letter: str | None) -> str:
     sections = [
         _header_section(listing, letter),
         _snapshot_section(profile),
-        _message_section(listing, jd, jd_keywords, voice, ctx, sources),
-        _star_section(listing, jd_keywords, voice, ctx, sources),
+        _message_section(listing, jd, jd_keywords, voice, ctx, sources, profile),
+        _star_section(listing, jd_keywords, voice, ctx, sources, profile),
     ]
     values = cover.extract_values(jd)
     if values:  # omit the section entirely when the JD lists no values
