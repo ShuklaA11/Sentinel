@@ -17,10 +17,11 @@ import subprocess
 
 import yaml
 
+from . import llm
+
 log = logging.getLogger("tailor")
 
 ROOT = os.path.dirname(os.path.dirname(__file__))
-MODEL = os.environ.get("TAILOR_MODEL", "claude-sonnet-4-6")
 MARKER = "\\resumeItem{"
 MAX_CHARS = 115
 OUT_DIR = os.path.join(ROOT, "tailored")
@@ -108,21 +109,7 @@ def _xetex_compat(tex: str) -> str:
     return tex
 
 
-def _client():
-    if not os.environ.get("ANTHROPIC_API_KEY"):
-        return None
-    try:
-        import anthropic
-    except ImportError:
-        return None
-    return anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
-
-
 def _rewrite(bullets: list[str], company: str, title: str, emphasis: str, jd: str, bank: dict) -> list[str]:
-    client = _client()
-    if client is None:
-        log.warning("no ANTHROPIC_API_KEY — leaving bullets unchanged")
-        return bullets
     numbered = "\n".join(f"{i}. {b}" for i, b in enumerate(bullets))
     principles = "\n".join(f"- {p}" for p in bank.get("principles", []))
     prompt = (
@@ -142,21 +129,16 @@ def _rewrite(bullets: list[str], company: str, title: str, emphasis: str, jd: st
         f"Output exactly {len(bullets)} lines, nothing else. "
         "(Delimiter format, not JSON — LaTeX backslashes are fine.)"
     )
-    try:
-        resp = client.messages.create(model=MODEL, max_tokens=2048,
-                                      messages=[{"role": "user", "content": prompt}])
-        return _apply_rewrites(resp.content[0].text, bullets)
-    except Exception as exc:  # noqa: BLE001
-        log.error("rewrite failed (%s) — keeping originals", exc)
+    text = llm.complete(prompt, max_tokens=2048)
+    if text is None:
+        log.warning("no LLM completion — leaving bullets unchanged")
         return bullets
+    return _apply_rewrites(text, bullets)
 
 
 def _tighten(bullets: list[str], company: str, title: str, issues: list[str]) -> list[str]:
     """Second-pass shortening when the rendered resume overflows one page. Same truthfulness
     guard as _rewrite; only cuts words, never facts."""
-    client = _client()
-    if client is None:
-        return bullets
     numbered = "\n".join(f"{i}. {b}" for i, b in enumerate(bullets))
     prompt = (
         f"A tailored one-page resume for {title} at {company} does not fit: {'; '.join(issues)}.\n"
@@ -169,13 +151,10 @@ def _tighten(bullets: list[str], company: str, title: str, issues: list[str]) ->
         f"Bullets:\n{numbered}\n\n"
         f"Return each shortened bullet as  INDEX|||BULLET , exactly {len(bullets)} lines, nothing else."
     )
-    try:
-        resp = client.messages.create(model=MODEL, max_tokens=2048,
-                                      messages=[{"role": "user", "content": prompt}])
-        return _apply_rewrites(resp.content[0].text, bullets)
-    except Exception as exc:  # noqa: BLE001
-        log.error("tighten failed (%s) — keeping current bullets", exc)
+    text = llm.complete(prompt, max_tokens=2048)
+    if text is None:
         return bullets
+    return _apply_rewrites(text, bullets)
 
 
 def _compile_inspect(tex_path: str) -> tuple[str | None, list[str]]:
@@ -208,12 +187,14 @@ def _compile_inspect(tex_path: str) -> tuple[str | None, list[str]]:
     return pdf, issues
 
 
-def tailor(company: str, title: str, archetype: str, jd: str) -> None:
+def tailor(company: str, title: str, archetype: str, jd: str) -> str | None:
     profile = _load_yaml(os.path.join(ROOT, "profile", "profile.yml"))
     bank = _load_yaml(os.path.join(ROOT, "config", "resume_bank.yml"))
     tex_path = (profile.get("facts") or {}).get("resume_tex_path", "")
     if not tex_path or not os.path.exists(tex_path):
-        print(f"base .tex not found: {tex_path!r} — set facts.resume_tex_path"); return
+        base_pdf = (profile.get("facts") or {}).get("resume_path", "")
+        print(f"base .tex not found: {tex_path!r} — set facts.resume_tex_path")
+        return base_pdf
 
     with open(tex_path) as f:
         tex = f.read()
@@ -250,11 +231,14 @@ def tailor(company: str, title: str, archetype: str, jd: str) -> None:
 
     if pdf and not issues:
         print(f"\n✓ compiled -> {pdf}")
+        return pdf
     elif pdf:
         print(f"\n⚠ compiled with residual layout issue ({'; '.join(issues)}) -> {pdf}")
+        return pdf
     else:
         base_pdf = (profile.get("facts") or {}).get("resume_path", "")
         print(f"\n✗ compile unavailable/failed — fall back to base PDF: {base_pdf}")
+        return base_pdf
 
 
 def main() -> None:
