@@ -13,6 +13,7 @@ from __future__ import annotations
 import os
 
 import pytest
+from pypdf import PdfWriter
 
 from src import package
 
@@ -66,6 +67,13 @@ def patched(monkeypatch, tmp_path):
 
     monkeypatch.setattr(package.cover, "tailor_cover",
                         lambda *a, **k: "Dear team, I admire your retrieval work.")
+    def fake_cover_pdf(letter, company, title, profile, output_path):
+        writer = PdfWriter()
+        writer.add_blank_page(width=612, height=792)
+        with open(output_path, "wb") as stream:
+            writer.write(stream)
+        return output_path
+    monkeypatch.setattr(package.cover, "render_cover_pdf", fake_cover_pdf)
     monkeypatch.setattr(package, "_load_profile", lambda: FAKE_PROFILE)
     return tmp_path, str(apps), str(fake_pdf)
 
@@ -91,11 +99,13 @@ def test_build_package_creates_dir_files_and_master_doc(patched, monkeypatch):
     assert os.path.exists(os.path.join(pkg, "resume.pdf"))
     assert os.path.exists(os.path.join(pkg, "jd.txt"))
     assert os.path.exists(os.path.join(pkg, "cover_letter.md"))
+    assert os.path.exists(os.path.join(pkg, "cover_letter.pdf"))
 
     md = _read_md(pkg)
     assert "HEADER" in md
     assert "SNAPSHOT ANSWERS" in md
     assert "JD KEYWORD COVERAGE" in md
+    assert "cover_letter.pdf" in md
     assert "Anthropic" in md
     assert "ML Intern" in md
 
@@ -163,6 +173,8 @@ def test_llm_unavailable_degrades_message_and_star(patched, monkeypatch):
     assert md.count(package.LLM_UNAVAILABLE) >= 2
     # cover was None -> no file written, master doc still built
     assert not os.path.exists(os.path.join(pkg, "cover_letter.md"))
+    assert not os.path.exists(os.path.join(pkg, "cover_letter.pdf"))
+    assert "unavailable (LLM unavailable)" in md
 
 
 # ---------------------------------------------------------------------------

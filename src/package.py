@@ -5,7 +5,8 @@ directly with flags), assemble a complete, ready-to-apply bundle under
 applications/{slug}/:
 
     resume.pdf       — the per-role tailored resume (src.tailor), copied in
-    cover_letter.md  — the per-role cover letter (src.cover), when the LLM produced one
+    cover_letter.pdf — the submission-ready, one-page cover letter
+    cover_letter.md  — editable source for the per-role cover letter
     jd.txt           — the fetched job description (may be empty)
     application.md   — the master doc: header, snapshot answers, a message to the
                        hiring team, STAR behavioral answers, values alignment, and
@@ -344,8 +345,13 @@ def _fmt_kv(label: str, value: object) -> str:
     return f"- **{label}:** {value}"
 
 
-def _header_section(listing: dict, letter: str | None) -> str:
+def _header_section(listing: dict, letter: str | None, cover_pdf: bool = False) -> str:
     score = listing["score"] if listing["score"] not in ("", None) else "n/a"
+    cover_status = (
+        "cover_letter.pdf (editable source: cover_letter.md)" if cover_pdf
+        else "cover_letter.md (PDF rendering unavailable)" if letter
+        else "unavailable (LLM unavailable)"
+    )
     lines = [
         f"# Application — {listing['company']} · {listing['title']}",
         "",
@@ -357,7 +363,7 @@ def _header_section(listing: dict, letter: str | None) -> str:
         _fmt_kv("Source", listing["source"] or "n/a"),
         _fmt_kv("Score", score),
         _fmt_kv("Posted at", listing["posted_at"] or "n/a"),
-        _fmt_kv("Cover letter", "cover_letter.md" if letter else "unavailable (LLM unavailable)"),
+        _fmt_kv("Cover letter", cover_status),
     ]
     return "\n".join(lines)
 
@@ -403,7 +409,8 @@ def _coverage_section(profile: dict, jd_keywords: list[str]) -> str:
     return f"## JD KEYWORD COVERAGE\n\n{body}"
 
 
-def _render_application_md(listing: dict, jd: str, letter: str | None) -> str:
+def _render_application_md(listing: dict, jd: str, letter: str | None,
+                           cover_pdf: bool = False) -> str:
     """Assemble the master application.md from all sections."""
     profile = _load_profile()
     voice = _read_optional(VOICE_MD)
@@ -412,7 +419,7 @@ def _render_application_md(listing: dict, jd: str, letter: str | None) -> str:
     jd_keywords = keywords.extract_jd_keywords(jd)
 
     sections = [
-        _header_section(listing, letter),
+        _header_section(listing, letter, cover_pdf),
         _snapshot_section(profile),
         _message_section(listing, jd, jd_keywords, voice, ctx, sources, profile),
         _star_section(listing, jd_keywords, voice, ctx, sources, profile),
@@ -456,15 +463,22 @@ def build_package(listing_id: str = "", company: str = "", title: str = "",
         log.warning("no resume PDF to copy (tailor returned %r) — skipping resume.pdf", resume_src)
 
     # Cover: may be None when the LLM is unavailable — write a file only on success.
+    cover_pdf = False
     letter = cover.tailor_cover(company, title, jd, archetype)
     if letter:
         with open(os.path.join(pkg_dir, "cover_letter.md"), "w") as f:
             f.write(letter)
+        pdf_path = os.path.join(pkg_dir, "cover_letter.pdf")
+        cover_pdf = bool(cover.render_cover_pdf(
+            letter, company, title, _load_profile(), pdf_path,
+        ))
+        if not cover_pdf:
+            log.warning("cover PDF rendering failed — keeping editable cover_letter.md only")
     else:
         log.warning("no cover letter (LLM unavailable) — noted in application.md")
 
     with open(os.path.join(pkg_dir, "application.md"), "w") as f:
-        f.write(_render_application_md(listing, jd, letter))
+        f.write(_render_application_md(listing, jd, letter, cover_pdf))
 
     print(f"\n✓ application package -> {pkg_dir}")
     return pkg_dir

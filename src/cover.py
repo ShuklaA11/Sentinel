@@ -20,6 +20,8 @@ Run: python -m src.cover --company "Anthropic" --title "ML Intern" [--jd-file jd
 from __future__ import annotations
 
 import argparse
+import datetime as dt
+import html
 import logging
 import os
 import re
@@ -167,6 +169,178 @@ def _cap_words(text: str, limit: int = MAX_WORDS) -> str:
         if used >= limit:
             break
     return "\n\n".join(out_paras)
+
+
+# --- PDF rendering ------------------------------------------------------------
+
+
+def _cover_location(profile: dict) -> str:
+    """Best available city/state for the PDF header; never invent an address."""
+    direct = profile.get("location")
+    if direct:
+        return str(direct)
+    education = profile.get("education")
+    if isinstance(education, dict) and education.get("location"):
+        return str(education["location"])
+    preferences = profile.get("preferences")
+    locations = preferences.get("locations") if isinstance(preferences, dict) else None
+    preferred = locations.get("preferred") if isinstance(locations, dict) else None
+    if isinstance(preferred, list) and preferred:
+        return str(preferred[0])
+    return ""
+
+
+def _cover_contact(profile: dict) -> list[str]:
+    """Contact fields for the header, in a stable ATS-readable order."""
+    facts = profile.get("facts") if isinstance(profile.get("facts"), dict) else {}
+    links = facts.get("links") if isinstance(facts.get("links"), dict) else {}
+    fields = [
+        profile.get("email"),
+        profile.get("phone"),
+        _cover_location(profile),
+        profile.get("linkedin"),
+        links.get("github"),
+    ]
+    out: list[str] = []
+    for value in fields:
+        if not value or not str(value).strip():
+            continue
+        text = str(value).strip()
+        if text.startswith(("https://", "http://")):
+            text = re.sub(r"^https?://(?:www\.)?", "", text).rstrip("/")
+        out.append(text)
+    return out
+
+
+def _letter_body_paragraphs(letter: str) -> list[str]:
+    """Return body-only paragraphs, peeling common model-added wrappers.
+
+    The generator asks for body prose only, but providers occasionally add a
+    greeting or sign-off. The PDF template owns those elements so they stay
+    consistent across every application.
+    """
+    paragraphs = [p.strip() for p in re.split(r"\n\s*\n", letter or "") if p.strip()]
+    if paragraphs and re.match(r"^(dear|to)\b", paragraphs[0], re.IGNORECASE):
+        paragraphs.pop(0)
+    if paragraphs and re.match(
+        r"^(sincerely|best(?:\s+regards)?|kind\s+regards|respectfully)[,\s]",
+        paragraphs[-1], re.IGNORECASE,
+    ):
+        paragraphs.pop()
+    return paragraphs
+
+
+def render_cover_pdf(letter: str, company: str, title: str, profile: dict,
+                     output_path: str) -> str | None:
+    """Render an ATS-readable, one-page business-letter PDF.
+
+    The researched template uses a resume-style identity header, standard
+    business-letter metadata, 10.5pt body text, generous white space, and no
+    columns/icons/graphics. The completed file is reopened with pypdf; anything
+    other than exactly one page is deleted rather than shipped.
+    """
+    try:
+        from pypdf import PdfReader
+        from reportlab.lib import colors
+        from reportlab.lib.enums import TA_LEFT
+        from reportlab.lib.pagesizes import LETTER
+        from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
+        from reportlab.lib.units import inch
+        from reportlab.platypus import HRFlowable, Paragraph, SimpleDocTemplate, Spacer
+    except ImportError as exc:
+        log.error("cover PDF dependencies unavailable: %s", exc)
+        return None
+
+    paragraphs = _letter_body_paragraphs(letter)
+    if not paragraphs:
+        log.error("cover PDF skipped: no body paragraphs")
+        return None
+
+    os.makedirs(os.path.dirname(output_path) or ".", exist_ok=True)
+    name = str(profile.get("name") or "Candidate").strip()
+    contact_fields = _cover_contact(profile)
+    contact_primary = " | ".join(contact_fields[:3])
+    contact_links = " | ".join(contact_fields[3:])
+    today = dt.date.today()
+    date_text = f"{today.strftime('%B')} {today.day}, {today.year}"
+
+    styles = getSampleStyleSheet()
+    name_style = ParagraphStyle(
+        "CoverName", parent=styles["Normal"], fontName="Helvetica-Bold",
+        fontSize=18, leading=21, alignment=TA_LEFT, textColor=colors.HexColor("#111827"),
+        spaceAfter=3,
+    )
+    contact_style = ParagraphStyle(
+        "CoverContact", parent=styles["Normal"], fontName="Helvetica",
+        fontSize=8.5, leading=11, alignment=TA_LEFT, textColor=colors.HexColor("#374151"),
+        spaceAfter=7,
+    )
+    meta_style = ParagraphStyle(
+        "CoverMeta", parent=styles["Normal"], fontName="Helvetica",
+        fontSize=9.5, leading=12, alignment=TA_LEFT, textColor=colors.HexColor("#111827"),
+        spaceAfter=1,
+    )
+    role_style = ParagraphStyle(
+        "CoverRole", parent=meta_style, fontName="Helvetica-Bold", spaceBefore=5, spaceAfter=9,
+    )
+    body_style = ParagraphStyle(
+        "CoverBody", parent=styles["Normal"], fontName="Helvetica",
+        fontSize=10.5, leading=14, alignment=TA_LEFT, textColor=colors.HexColor("#111827"),
+        spaceAfter=9,
+    )
+
+    doc = SimpleDocTemplate(
+        output_path, pagesize=LETTER,
+        leftMargin=0.78 * inch, rightMargin=0.78 * inch,
+        topMargin=0.62 * inch, bottomMargin=0.62 * inch,
+        title=f"{name} - {title} Cover Letter", author=name,
+        subject=f"Application for {title} at {company}",
+    )
+    esc = html.escape
+    story = [Paragraph(esc(name), name_style)]
+    if contact_primary:
+        story.append(Paragraph(esc(contact_primary), ParagraphStyle(
+            "CoverContactPrimary", parent=contact_style, spaceAfter=1,
+        )))
+    if contact_links:
+        story.append(Paragraph(esc(contact_links), contact_style))
+    story.extend([
+        HRFlowable(width="100%", thickness=0.7, color=colors.HexColor("#9CA3AF"),
+                   spaceBefore=1, spaceAfter=10),
+        Paragraph(esc(date_text), meta_style),
+        Spacer(1, 5),
+        Paragraph("Hiring Team", meta_style),
+        Paragraph(esc(company), meta_style),
+        Paragraph(f"Re: {esc(title)}", role_style),
+        Paragraph(f"Dear {esc(company)} Hiring Team,", body_style),
+    ])
+    story.extend(Paragraph(esc(p).replace("\n", "<br/>"), body_style) for p in paragraphs)
+    story.extend([
+        Spacer(1, 2),
+        Paragraph("Sincerely,", body_style),
+        Paragraph(esc(name), ParagraphStyle(
+            "CoverSignoff", parent=body_style, fontName="Helvetica-Bold", spaceAfter=0,
+        )),
+    ])
+
+    try:
+        doc.build(story)
+        reader = PdfReader(output_path)
+        if len(reader.pages) != 1:
+            log.error("cover PDF overflowed to %d pages — deleting %s",
+                      len(reader.pages), output_path)
+            os.remove(output_path)
+            return None
+        if not (reader.pages[0].extract_text() or "").strip():
+            log.error("cover PDF has no extractable text — deleting %s", output_path)
+            os.remove(output_path)
+            return None
+    except Exception as exc:  # noqa: BLE001 — PDF failure must not crash package generation
+        log.error("cover PDF render failed: %s", exc)
+        if os.path.exists(output_path):
+            os.remove(output_path)
+        return None
+    return output_path
 
 
 def _drop_unverified_sentences(text: str, source_texts: list[str]) -> str:
@@ -340,7 +514,7 @@ def _build_prompt(company: str, title: str, emphasis: str, jd: str,
         "- NEVER open with 'I am writing to express my interest' or similar boilerplate.\n"
         "- NO em dashes. NO bullet points. NO full CV restatement.\n"
         "- NEVER invent metrics, tools, employers, or facts. Only the material above is true.\n"
-        f"- Under {MAX_WORDS} words total.\n"
+        f"- Target 250-350 words; hard cap {MAX_WORDS} words.\n"
         + strict_block
         + "\nReturn ONLY the letter body as plain prose paragraphs, nothing else."
     )
@@ -422,7 +596,13 @@ def tailor_cover(company: str, title: str, jd: str, archetype: str = "startup") 
     with open(out_path, "w") as f:
         f.write(letter)
 
-    print(f"\n✓ cover letter ({len(letter.split())} words) -> {out_path}")
+    pdf_path = os.path.join(OUT_DIR, f"{slug}_cover.pdf")
+    rendered_pdf = render_cover_pdf(letter, company, title, profile, pdf_path)
+    if rendered_pdf:
+        print(f"\n✓ cover letter ({len(letter.split())} words) -> {out_path} + {rendered_pdf}")
+    else:
+        log.warning("cover text generated, but PDF rendering failed — Markdown kept at %s", out_path)
+        print(f"\n⚠ cover letter text generated, PDF unavailable -> {out_path}")
     return letter
 
 

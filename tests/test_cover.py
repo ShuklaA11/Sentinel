@@ -8,6 +8,10 @@ no-API-key skip, and the fail-closed path when the LLM is unavailable.
 """
 from __future__ import annotations
 
+import os
+
+from pypdf import PdfReader
+
 from src import cover
 
 
@@ -183,6 +187,62 @@ def test_tailor_cover_assembles_bounded_letter_with_keyword(tmp_path, monkeypatc
     out_file = tmp_path / "out" / "acme_ml_intern_cover.md"
     assert out_file.exists()
     assert out_file.read_text() == letter
+    pdf_file = tmp_path / "out" / "acme_ml_intern_cover.pdf"
+    assert pdf_file.exists()
+    reader = PdfReader(str(pdf_file))
+    assert len(reader.pages) == 1
+    pdf_text = reader.pages[0].extract_text()
+    assert "Test Candidate" in pdf_text
+    assert "ML Intern" in pdf_text
+    assert "PyTorch" in pdf_text
+
+
+def test_render_cover_pdf_is_one_page_and_ats_readable(tmp_path):
+    profile = {
+        "name": "Jane Candidate",
+        "email": "jane@example.com",
+        "phone": "555-0100",
+        "linkedin": "https://linkedin.com/in/jane",
+        "education": {"location": "Austin, TX"},
+    }
+    letter = (
+        "This company-specific opening explains why the mission matters.\n\n"
+        "I built a Python and PyTorch vision pipeline and measured its performance.\n\n"
+        "That experience maps directly to the role's model-evaluation work.\n\n"
+        "Thank you for your consideration."
+    )
+    out = tmp_path / "cover.pdf"
+
+    rendered = cover.render_cover_pdf(
+        letter, "Acme AI", "Machine Learning Intern", profile, str(out),
+    )
+
+    assert rendered == str(out)
+    assert out.read_bytes().startswith(b"%PDF")
+    reader = PdfReader(str(out))
+    assert len(reader.pages) == 1
+    text = reader.pages[0].extract_text()
+    for expected in (
+        "Jane Candidate", "jane@example.com", "555-0100",
+        "linkedin.com/in/jane", "Acme AI", "Machine Learning Intern",
+        "Dear Acme AI Hiring Team",
+        "Python and PyTorch",
+    ):
+        assert expected in text
+
+
+def test_render_cover_pdf_rejects_overflow_instead_of_shipping(tmp_path):
+    profile = {"name": "Jane Candidate", "email": "jane@example.com"}
+    letter = "\n\n".join(
+        "This deliberately long paragraph contains enough words to force a second page. " * 18
+        for _ in range(12)
+    )
+    out = tmp_path / "overflow.pdf"
+
+    rendered = cover.render_cover_pdf(letter, "Acme", "ML Intern", profile, str(out))
+
+    assert rendered is None
+    assert not os.path.exists(out)
 
 
 # ---------------------------------------------------------------------------
@@ -317,5 +377,6 @@ def test_tailor_cover_llm_unavailable_writes_nothing(tmp_path, monkeypatch, caps
     # no file written at the slugified path
     out_file = tmp_path / "out" / "acme_ml_intern_cover.md"
     assert not out_file.exists()
+    assert not (tmp_path / "out" / "acme_ml_intern_cover.pdf").exists()
     # never a success marker on failure
     assert "✓" not in capsys.readouterr().out
