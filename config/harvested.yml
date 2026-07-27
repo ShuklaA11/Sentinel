@@ -21,8 +21,6 @@ ashby:
 - clera
 - context
 - creatify
-- ctgt
-- cuspai
 - deepgram
 - ditto
 - droyd
@@ -53,7 +51,6 @@ ashby:
 - mach
 - maxima
 - melotech
-- mercor
 - meshy
 - mistral
 - monogram
@@ -62,7 +59,6 @@ ashby:
 - netic
 - niural
 - npx
-- odin-dynamics
 - oligo
 - opusclip
 - orbitalindustries
@@ -172,6 +168,7 @@ greenhouse:
 - samayaai
 - samsungresearchamericainternship
 - scaleai
+- scm
 - sevenresearch
 - sharkninjaoperatingllc
 - silananotechnologies
@@ -182,11 +179,11 @@ greenhouse:
 - tenstorrentuniversity
 - togetherai
 - torcrobotics
+- toshibaglobalcommercesolutions
 - transmarketgroup
 - tribalscale
 - truveta
 - twosixtechnologies
-- vardaspace
 - verkada
 - vikingglobalinvestors
 - virtu
