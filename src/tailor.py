@@ -23,7 +23,7 @@ log = logging.getLogger("tailor")
 
 ROOT = os.path.dirname(os.path.dirname(__file__))
 MARKER = "\\resumeItem{"
-MAX_CHARS = 115
+MAX_CHARS = 108  # one-line ceiling for this template (~114 chars wraps in \small)
 OUT_DIR = os.path.join(ROOT, "tailored")
 
 # Target-track vocabulary for the plausibility gate on the headline. The applied-for
@@ -224,7 +224,8 @@ def _rewrite(bullets: list[str], company: str, title: str, emphasis: str, jd: st
         "CHARACTER-FOR-CHARACTER. Do not 'correct' them (e.g. if it says YOLOv26, keep "
         "YOLOv26 exactly — never change it to YOLOv8). Keep every number exactly as given.\n"
         "- LaTeX-safe: keep escapes like \\% and \\& intact; valid LaTeX text only; no new macros.\n"
-        "- <= 115 characters per bullet, one line. Keep the SAME count and order.\n"
+        "- <= 108 characters per bullet — it MUST fit on ONE single line, never wrap. "
+        "Keep the SAME count and order.\n"
         + inject_block
         + f"\nBullets:\n{numbered}\n\n"
         f"Return each rewritten bullet on its own line as:  INDEX|||BULLET\n"
