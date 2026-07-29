@@ -93,8 +93,24 @@ def _apply_rewrites(text: str, bullets: list[str]) -> list[str]:
 
 
 def _count_pages(data: bytes) -> int:
-    """Best-effort PDF page count from raw bytes (no poppler dep). Prefer the page-tree
-    /Count; fall back to counting /Type /Page objects. Returns >=1."""
+    """PDF page count from raw bytes. Uses pypdf (reads tectonic's compressed object
+    streams correctly); falls back to a plaintext byte-regex only if pypdf can't parse.
+    Returns >=1.
+
+    The regex alone silently undercounted: tectonic stores the page tree inside a
+    compressed object stream, so '/Count N' and '/Type /Page' aren't visible as plain
+    bytes — the fallback returned 1 and 2-page resumes shipped as '✓ compiled'.
+    """
+    try:
+        import io
+
+        from pypdf import PdfReader
+
+        pages = len(PdfReader(io.BytesIO(data)).pages)
+        if pages:
+            return pages
+    except Exception:  # noqa: BLE001 — fall back to the byte-regex on any parse failure
+        pass
     counts = [int(m) for m in re.findall(rb"/Count\s+(\d+)", data)]
     if counts:
         return max(counts)

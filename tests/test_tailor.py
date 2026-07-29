@@ -18,6 +18,23 @@ def test_count_pages_never_returns_zero():
     assert tailor._count_pages(b"no pdf structure here") == 1
 
 
+def test_count_pages_reads_compressed_pdf():
+    """Regression: tectonic emits compressed object streams, so the page tree is NOT
+    visible as plaintext '/Count N' or '/Type /Page'. The byte-regex fell back to 1 and
+    silently shipped multi-page resumes as '✓ compiled'. This fixture is a real
+    tectonic-produced 2-page PDF; it must count as 2, not 1."""
+    import os
+    import re
+
+    fixture = os.path.join(os.path.dirname(__file__), "fixtures", "two_page_compressed.pdf")
+    data = open(fixture, "rb").read()
+    # the byte-regex the old implementation relied on finds nothing here...
+    assert not re.findall(rb"/Count\s+(\d+)", data)
+    assert not re.findall(rb"/Type\s*/Page[^s]", data)
+    # ...yet the true page count is 2.
+    assert tailor._count_pages(data) == 2
+
+
 def test_render_swaps_only_resumeitem_bodies():
     tex = "\\begin{document}\\resumeItem{old one}\\resumeItem{old two}\\end{document}"
     items = tailor._extract_items(tex)
