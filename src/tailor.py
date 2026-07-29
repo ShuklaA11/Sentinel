@@ -261,21 +261,37 @@ def _tighten(bullets: list[str], company: str, title: str, issues: list[str]) ->
 
 
 def _compile_inspect(tex_path: str) -> tuple[str | None, list[str]]:
-    """Compile with tectonic and report soft layout issues (>1 page, overfull hbox).
+    """Compile with tectonic (preferred) or xelatex (fallback) and report soft layout issues.
 
     Returns (pdf_path or None, issues). A resume that overflows still yields a PDF we keep
     as best-effort; issues drive the tightening retry loop in tailor()."""
-    if shutil.which("tectonic") is None:
-        log.error("tectonic not installed (brew install tectonic) — cannot compile")
-        return None, []
-    try:
-        proc = subprocess.run(["tectonic", tex_path, "--outdir", OUT_DIR],
-                              capture_output=True, text=True, timeout=120)
-    except subprocess.TimeoutExpired:
-        log.error("tectonic timed out")
-        return None, []
-    if proc.returncode != 0:
-        log.error("tectonic compile failed:\n%s", proc.stderr[-800:])
+    if shutil.which("tectonic") is not None:
+        try:
+            proc = subprocess.run(["tectonic", tex_path, "--outdir", OUT_DIR],
+                                  capture_output=True, text=True, timeout=120)
+        except subprocess.TimeoutExpired:
+            log.error("tectonic timed out")
+            return None, []
+        if proc.returncode != 0:
+            log.error("tectonic compile failed:\n%s", proc.stderr[-800:])
+            return None, []
+        combined = proc.stdout + proc.stderr
+    elif shutil.which("xelatex") is not None:
+        log.info("tectonic not found — falling back to xelatex")
+        try:
+            proc = subprocess.run(
+                ["xelatex", "-interaction=nonstopmode", f"-output-directory={OUT_DIR}", tex_path],
+                capture_output=True, text=True, timeout=120,
+            )
+        except subprocess.TimeoutExpired:
+            log.error("xelatex timed out")
+            return None, []
+        if proc.returncode != 0:
+            log.error("xelatex compile failed:\n%s", proc.stdout[-800:])
+            return None, []
+        combined = proc.stdout + proc.stderr
+    else:
+        log.error("no LaTeX compiler found (install tectonic or xelatex)")
         return None, []
     pdf = os.path.splitext(tex_path)[0] + ".pdf"
     if not os.path.exists(pdf):
@@ -285,7 +301,7 @@ def _compile_inspect(tex_path: str) -> tuple[str | None, list[str]]:
     issues = []
     if pages > 1:
         issues.append(f"{pages} pages (resume must be 1)")
-    if "overfull \\hbox" in (proc.stdout + proc.stderr).lower():
+    if "overfull \\hbox" in combined.lower():
         issues.append("overfull hbox (line spills the margin)")
     return pdf, issues
 
@@ -300,6 +316,19 @@ def tailor(company: str, title: str, archetype: str, jd: str, role_title: bool =
     profile = _load_yaml(os.path.join(ROOT, "profile", "profile.yml"))
     bank = _load_yaml(os.path.join(ROOT, "config", "resume_bank.yml"))
     tex_path = (profile.get("facts") or {}).get("resume_tex_path", "")
+    # If the stored absolute path doesn't resolve (e.g. running in a sandbox/CI with a
+    # different mount point), fall back to the same filename relative to ROOT.
+    if tex_path and not os.path.exists(tex_path):
+        rel = os.path.join(ROOT, os.path.relpath(tex_path, os.path.commonpath([ROOT, tex_path]))
+                           if os.path.isabs(tex_path) else tex_path)
+        # simpler: just take the last two path components (e.g. profile/resume.tex)
+        parts = tex_path.replace("\\", "/").split("/")
+        for n in range(2, min(5, len(parts)) + 1):
+            candidate = os.path.join(ROOT, *parts[-n:])
+            if os.path.exists(candidate):
+                tex_path = candidate
+                log.info("resolved tex_path via ROOT fallback: %s", tex_path)
+                break
     if not tex_path or not os.path.exists(tex_path):
         base_pdf = (profile.get("facts") or {}).get("resume_path", "")
         print(f"base .tex not found: {tex_path!r} — set facts.resume_tex_path")
