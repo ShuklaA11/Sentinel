@@ -331,3 +331,70 @@ def test_tailor_returns_base_resume_when_compile_unavailable(tmp_path, monkeypat
     monkeypatch.setattr(tailor, "_compile_inspect", lambda p: (None, []))
 
     assert tailor.tailor("Co", "Title", "startup", "") == "/base/resume.pdf"
+
+
+def test_tailor_titles_is_opt_in_by_default():
+    import inspect
+    assert inspect.signature(tailor.tailor).parameters["tailor_titles"].default is False
+
+
+def _write_tex_with_subheading(tmp_path) -> str:
+    tex = (
+        "\\begin{document}\n"
+        "\\begin{center}\n"
+        "    \\textbf{\\Huge \\scshape Arnav Shukla} \\\\ \\vspace{1pt}\n"
+        "\\end{center}\n"
+        "\\resumeSubheading\n"
+        "    {INSPIRE Lab}{January 2026 -- Present}\n"
+        "    {Undergraduate Researcher}{Austin, TX}\n"
+        "\\resumeItem{Built a YOLO26 pipeline detecting robotaxis}\n"
+        "\\end{document}\n"
+    )
+    path = tmp_path / "resume.tex"
+    path.write_text(tex)
+    return str(path)
+
+
+def _title_profile(tex_path: str) -> dict:
+    profile = _base_profile(tex_path)
+    profile["role_titles"] = {
+        "INSPIRE Lab": ["Undergraduate Researcher", "Computer Vision Researcher"]
+    }
+    return profile
+
+
+def test_tailor_titles_swaps_approved_alternate(tmp_path, monkeypatch, capsys):
+    tex_path = _write_tex_with_subheading(tmp_path)
+    profile = _title_profile(tex_path)
+    monkeypatch.setattr(tailor, "_load_yaml", lambda p: profile if p.endswith("profile.yml") else {})
+    monkeypatch.setattr(tailor, "OUT_DIR", str(tmp_path / "out"))
+    monkeypatch.setattr(tailor, "_rewrite", lambda *a, **k: ["Built a YOLO26 pipeline detecting robotaxis"])
+    monkeypatch.setattr(tailor, "_compile_inspect", lambda p: (str(tmp_path / "r.pdf"), []))
+    monkeypatch.setattr(tailor.verify_facts, "load_sources", lambda: [])
+
+    tailor.tailor("Waymo", "Computer Vision Intern", "startup",
+                  "computer vision perception object detection", tailor_titles=True)
+
+    out = capsys.readouterr().out
+    assert "TITLE CHANGES" in out
+    assert "Undergraduate Researcher  ->  Computer Vision Researcher" in out
+    written = (tmp_path / "out" / "waymo_computer_vision_intern.tex").read_text()
+    assert "Computer Vision Researcher" in written
+    assert "Undergraduate Researcher" not in written
+
+
+def test_tailor_titles_off_by_default_keeps_titles(tmp_path, monkeypatch, capsys):
+    tex_path = _write_tex_with_subheading(tmp_path)
+    profile = _title_profile(tex_path)
+    monkeypatch.setattr(tailor, "_load_yaml", lambda p: profile if p.endswith("profile.yml") else {})
+    monkeypatch.setattr(tailor, "OUT_DIR", str(tmp_path / "out"))
+    monkeypatch.setattr(tailor, "_rewrite", lambda *a, **k: ["Built a YOLO26 pipeline detecting robotaxis"])
+    monkeypatch.setattr(tailor, "_compile_inspect", lambda p: (str(tmp_path / "r.pdf"), []))
+    monkeypatch.setattr(tailor.verify_facts, "load_sources", lambda: [])
+
+    tailor.tailor("Waymo", "Computer Vision Intern", "startup", "computer vision perception")
+
+    written = (tmp_path / "out" / "waymo_computer_vision_intern.tex").read_text()
+    assert "Undergraduate Researcher" in written
+    assert "Computer Vision Researcher" not in written
+    assert "TITLE CHANGES" not in capsys.readouterr().out

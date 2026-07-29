@@ -17,7 +17,7 @@ import subprocess
 
 import yaml
 
-from . import keywords, llm, verify_facts
+from . import keywords, llm, roletitles, verify_facts
 
 log = logging.getLogger("tailor")
 
@@ -290,7 +290,8 @@ def _compile_inspect(tex_path: str) -> tuple[str | None, list[str]]:
     return pdf, issues
 
 
-def tailor(company: str, title: str, archetype: str, jd: str, role_title: bool = False) -> str | None:
+def tailor(company: str, title: str, archetype: str, jd: str, role_title: bool = False,
+           tailor_titles: bool = False) -> str | None:
     """Tailor the base resume for one role and return the path to the PDF to ship.
 
     Returns the tailored PDF path when a tailored PDF was shipped (success OR residual
@@ -306,6 +307,19 @@ def tailor(company: str, title: str, archetype: str, jd: str, role_title: bool =
 
     with open(tex_path) as f:
         tex = f.read()
+
+    # Role-title tailoring: swap experience titles for their best JD match from the
+    # user-APPROVED alternate set (seniority locked, canonical wins ties). Applied to the
+    # base tex first so bullet spans are computed against the retitled document.
+    if tailor_titles:
+        tex, title_changes = roletitles.apply(tex, jd, profile)
+        if title_changes:
+            print("\nTITLE CHANGES (approved alternates — review before sending):")
+            for c in title_changes:
+                print(f"  {c['company']}: {c['old']}  ->  {c['new']}")
+        else:
+            print("\n(no role-title changes: no approved alternate out-matched the canonical)")
+
     items = _extract_items(tex)
     bullets = [c for _, _, c in items]
     emphasis = (bank.get("company_archetype_emphasis", {}) or {}).get(
@@ -395,12 +409,17 @@ def main() -> None:
                     help="opt in to a plausibility-gated target-title line under the name "
                          "(default off — a title tagline is a weak ATS signal for a student "
                          "resume; ATS read titles from the experience section)")
+    ap.add_argument("--tailor-titles", action=argparse.BooleanOptionalAction, default=False,
+                    help="opt in to swapping experience titles for their best JD match from "
+                         "your approved role_titles set in profile.yml (default off; seniority "
+                         "locked, canonical wins ties)")
     args = ap.parse_args()
     jd = ""
     if args.jd_file and os.path.exists(args.jd_file):
         with open(args.jd_file) as f:
             jd = f.read()[:4000]
-    tailor(args.company, args.title, args.archetype, jd, role_title=args.role_title)
+    tailor(args.company, args.title, args.archetype, jd, role_title=args.role_title,
+           tailor_titles=args.tailor_titles)
 
 
 if __name__ == "__main__":
