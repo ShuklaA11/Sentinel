@@ -17,7 +17,7 @@ import subprocess
 
 import yaml
 
-from . import keywords, llm, roletitles, verify_facts
+from . import keywords, llm, resumeselect, roletitles, verify_facts
 
 log = logging.getLogger("tailor")
 
@@ -307,7 +307,7 @@ def _compile_inspect(tex_path: str) -> tuple[str | None, list[str]]:
 
 
 def tailor(company: str, title: str, archetype: str, jd: str, role_title: bool = False,
-           tailor_titles: bool = False) -> str | None:
+           tailor_titles: bool = False, select_bullets: bool = False) -> str | None:
     """Tailor the base resume for one role and return the path to the PDF to ship.
 
     Returns the tailored PDF path when a tailored PDF was shipped (success OR residual
@@ -348,6 +348,20 @@ def tailor(company: str, title: str, archetype: str, jd: str, role_title: bool =
                 print(f"  {c['company']}: {c['old']}  ->  {c['new']}")
         else:
             print("\n(no role-title changes: no approved alternate out-matched the canonical)")
+
+    # Bullet-pool selection: pick the most JD-relevant subset of the pooled \resumeItem
+    # bullets (active AND commented) under a one-page budget — byte-preserving, offline.
+    # Runs AFTER retitling so both compose, and BEFORE _extract_items so downstream only
+    # sees the newly-activated bullets (commented pool bullets are skipped by _extract_items).
+    if select_bullets:
+        tex, bullet_changes = resumeselect.select(tex, jd)
+        if bullet_changes:
+            print("\nBULLETS SELECTED (fit to one page, by JD relevance):")
+            for c in bullet_changes:
+                sign = "+activated" if c["action"] == "activated" else "-deactivated"
+                print(f"  {c['company']}: {sign}: {c['text'][:70]}")
+        else:
+            print("\n(no bullet changes)")
 
     items = _extract_items(tex)
     bullets = [c for _, _, c in items]
@@ -442,13 +456,16 @@ def main() -> None:
                     help="opt in to swapping experience titles for their best JD match from "
                          "your approved role_titles set in profile.yml (default off; seniority "
                          "locked, canonical wins ties)")
+    ap.add_argument("--select-bullets", action=argparse.BooleanOptionalAction, default=False,
+                    help="opt in to per-JD selection of which pooled resume bullets to show "
+                         "(default off; picks the most JD-relevant true bullets to fit one page)")
     args = ap.parse_args()
     jd = ""
     if args.jd_file and os.path.exists(args.jd_file):
         with open(args.jd_file) as f:
             jd = f.read()[:4000]
     tailor(args.company, args.title, args.archetype, jd, role_title=args.role_title,
-           tailor_titles=args.tailor_titles)
+           tailor_titles=args.tailor_titles, select_bullets=args.select_bullets)
 
 
 if __name__ == "__main__":

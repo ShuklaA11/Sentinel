@@ -398,3 +398,78 @@ def test_tailor_titles_off_by_default_keeps_titles(tmp_path, monkeypatch, capsys
     assert "Undergraduate Researcher" in written
     assert "Computer Vision Researcher" not in written
     assert "TITLE CHANGES" not in capsys.readouterr().out
+
+
+# --- bullet-pool selection wiring (opt-in, default off) ----------------------
+# select_bullets applies resumeselect.select BEFORE bullet extraction: it picks the
+# most JD-relevant subset of the pooled \resumeItem bullets (active AND commented)
+# under a one-page budget, byte-preserving everything else. Off by default.
+
+def test_select_bullets_is_opt_in_by_default():
+    import inspect
+    assert inspect.signature(tailor.tailor).parameters["select_bullets"].default is False
+
+
+def _write_tex_with_pool(tmp_path) -> str:
+    # One experience with a two-bullet pool: an off-topic ACTIVE default plus a commented
+    # JD-relevant pool bullet. Budget = active count = 1, so a JD hit flips the pair.
+    tex = (
+        "\\begin{document}\n"
+        "\\begin{center}\n"
+        "    \\textbf{\\Huge \\scshape Arnav Shukla} \\\\ \\vspace{1pt}\n"
+        "\\end{center}\n"
+        "\\resumeSubheading\n"
+        "    {INSPIRE Lab}{January 2026 -- Present}\n"
+        "    {Undergraduate Researcher}{Austin, TX}\n"
+        "\\resumeItem{Organized a campus bake sale for the student council}\n"
+        "% \\resumeItem{Built a computer vision object detection pipeline}\n"
+        "\\end{document}\n"
+    )
+    path = tmp_path / "resume.tex"
+    path.write_text(tex)
+    return str(path)
+
+
+def test_select_bullets_activates_jd_relevant_pooled_bullet(tmp_path, monkeypatch, capsys):
+    tex_path = _write_tex_with_pool(tmp_path)
+    profile = _base_profile(tex_path)
+    monkeypatch.setattr(tailor, "_load_yaml", lambda p: profile if p.endswith("profile.yml") else {})
+    monkeypatch.setattr(tailor, "OUT_DIR", str(tmp_path / "out"))
+    # identity rewrite over the (now newly-selected) active bullets.
+    monkeypatch.setattr(tailor, "_rewrite", lambda bullets, *a, **k: list(bullets))
+    monkeypatch.setattr(tailor, "_compile_inspect", lambda p: (str(tmp_path / "r.pdf"), []))
+    monkeypatch.setattr(tailor.verify_facts, "load_sources", lambda: [])
+
+    tailor.tailor("Waymo", "Computer Vision Intern", "startup",
+                  "computer vision object detection perception model", select_bullets=True)
+
+    out = capsys.readouterr().out
+    assert "BULLETS SELECTED (fit to one page, by JD relevance):" in out
+    assert "+activated" in out and "-deactivated" in out
+
+    written = (tmp_path / "out" / "waymo_computer_vision_intern.tex").read_text()
+    # the JD-relevant pool bullet is now ACTIVE (uncommented)...
+    assert "\\resumeItem{Built a computer vision object detection pipeline}" in written
+    assert "% \\resumeItem{Built a computer vision object detection pipeline}" not in written
+    # ...and the off-topic default is DEACTIVATED (commented out).
+    assert "% \\resumeItem{Organized a campus bake sale for the student council}" in written
+
+
+def test_select_bullets_off_by_default_keeps_activation(tmp_path, monkeypatch, capsys):
+    tex_path = _write_tex_with_pool(tmp_path)
+    profile = _base_profile(tex_path)
+    monkeypatch.setattr(tailor, "_load_yaml", lambda p: profile if p.endswith("profile.yml") else {})
+    monkeypatch.setattr(tailor, "OUT_DIR", str(tmp_path / "out"))
+    monkeypatch.setattr(tailor, "_rewrite", lambda bullets, *a, **k: list(bullets))
+    monkeypatch.setattr(tailor, "_compile_inspect", lambda p: (str(tmp_path / "r.pdf"), []))
+    monkeypatch.setattr(tailor.verify_facts, "load_sources", lambda: [])
+
+    tailor.tailor("Waymo", "Computer Vision Intern", "startup",
+                  "computer vision object detection perception model")
+
+    written = (tmp_path / "out" / "waymo_computer_vision_intern.tex").read_text()
+    # activation is UNCHANGED: the default stays active, the pool bullet stays commented.
+    assert "\\resumeItem{Organized a campus bake sale for the student council}" in written
+    assert "% \\resumeItem{Organized a campus bake sale for the student council}" not in written
+    assert "% \\resumeItem{Built a computer vision object detection pipeline}" in written
+    assert "BULLETS SELECTED" not in capsys.readouterr().out
