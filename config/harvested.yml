@@ -49,12 +49,14 @@ ashby:
 - k-id
 - kineticsystems
 - kirin
+- kognitos
 - kos
 - mach
 - maxima
 - melotech
 - meshy
 - mistral
+- modal
 - monogram
 - nationgraph
 - neocognition
@@ -90,7 +92,6 @@ ashby:
 - the-exploration-company
 - tilderesearch
 - uncountable
-- varick-agents
 - veeda-labs
 - vega
 - vendelux
@@ -143,7 +144,6 @@ greenhouse:
 - horizonindustrieslimited
 - iherb
 - innodatainc
-- instawork
 - instead
 - integra
 - integrainterns
@@ -167,6 +167,7 @@ greenhouse:
 - pdtpartners
 - point72
 - radixuniversity
+- rendezvousrobotics
 - rise8
 - roboforce
 - samayaai
@@ -176,7 +177,6 @@ greenhouse:
 - sevenresearch
 - sharkninjaoperatingllc
 - spacex
-- sparksoftcorporation
 - studiokraftonboard
 - technergetics
 - tenstorrentuniversity
@@ -194,13 +194,14 @@ greenhouse:
 - walleyecapital-external-students
 - workato
 - xpengmotors
+- xtxmarketstechnologies
 lever:
 - acceldata
 - alertus
-- dga
 - diversified-automation
 - ekimetrics
 - evrealty-us
+- field-ai
 - fluxergy-2
 - go-cloudforce
 - great-gray-group
