@@ -308,7 +308,8 @@ def _compile_inspect(tex_path: str) -> tuple[str | None, list[str]]:
 
 
 def tailor(company: str, title: str, archetype: str, jd: str, role_title: bool = False,
-           tailor_titles: bool = False, select_bullets: bool = False) -> str | None:
+           tailor_titles: bool = False, select_bullets: bool = False,
+           reword: bool = True) -> str | None:
     """Tailor the base resume for one role and return the path to the PDF to ship.
 
     Returns the tailored PDF path when a tailored PDF was shipped (success OR residual
@@ -378,7 +379,13 @@ def tailor(company: str, title: str, archetype: str, jd: str, role_title: bool =
     if inject:
         log.info("injecting %d truthful employer keyword(s): %s", len(inject), ", ".join(inject))
 
-    new = _rewrite(bullets, company, title, emphasis, jd, bank, inject=inject)
+    # --no-reword ships the (curated, already-truthful) selected bullets verbatim — no
+    # LLM rephrasing, which preserves a role's cohesive story and avoids embellishment.
+    if reword:
+        new = _rewrite(bullets, company, title, emphasis, jd, bank, inject=inject)
+    else:
+        new = list(bullets)
+        log.info("--no-reword: shipping %d selected bullets verbatim", len(bullets))
 
     # Target-title headline: decide once (plausibility + LaTeX safety + anchor present),
     # then apply the same string insert on each compile attempt.
@@ -404,9 +411,11 @@ def tailor(company: str, title: str, archetype: str, jd: str, role_title: bool =
         pdf, issues = _compile_inspect(tailored_tex)
         if pdf is None or not issues:
             break
-        if attempt < 2:
+        if attempt < 2 and reword:
             log.warning("layout issue (%s) — tightening", "; ".join(issues))
             new = _tighten(new, company, title, issues)
+        elif not reword:
+            break  # verbatim mode: no LLM tightening, keep the best-effort PDF
 
     changed = sum(nb != old for (_, _, old), nb in zip(items, new))
     print(f"\n{changed}/{len(bullets)} bullets reworded (template untouched). Diff:")
@@ -460,13 +469,17 @@ def main() -> None:
     ap.add_argument("--select-bullets", action=argparse.BooleanOptionalAction, default=False,
                     help="opt in to per-JD selection of which pooled resume bullets to show "
                          "(default off; picks the most JD-relevant true bullets to fit one page)")
+    ap.add_argument("--reword", action=argparse.BooleanOptionalAction, default=True,
+                    help="LLM-rewrite each bullet toward the JD (default on). --no-reword ships "
+                         "the selected bullets verbatim — cohesive, no embellishment, no API needed")
     args = ap.parse_args()
     jd = ""
     if args.jd_file and os.path.exists(args.jd_file):
         with open(args.jd_file) as f:
             jd = f.read()[:4000]
     tailor(args.company, args.title, args.archetype, jd, role_title=args.role_title,
-           tailor_titles=args.tailor_titles, select_bullets=args.select_bullets)
+           tailor_titles=args.tailor_titles, select_bullets=args.select_bullets,
+           reword=args.reword)
 
 
 if __name__ == "__main__":

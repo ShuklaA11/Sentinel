@@ -475,3 +475,29 @@ def test_select_bullets_off_by_default_keeps_activation(tmp_path, monkeypatch, c
     assert "% \\resumeItem{Organized a campus bake sale for the student council}" not in written
     assert "% \\resumeItem{Built a computer vision object detection pipeline}" in written
     assert "BULLETS SELECTED" not in capsys.readouterr().out
+
+
+def test_reword_defaults_on_and_no_reword_ships_verbatim(tmp_path, monkeypatch):
+    import inspect
+    assert inspect.signature(tailor.tailor).parameters["reword"].default is True
+
+    tex_path = _write_tex(tmp_path, "built gradient boosting models on tabular data")
+    profile = _base_profile(tex_path)
+    monkeypatch.setattr(tailor, "_load_yaml", lambda p: profile if p.endswith("profile.yml") else {})
+    monkeypatch.setattr(tailor, "OUT_DIR", str(tmp_path / "out"))
+    # with reword=False, _rewrite must never be called and the bullet ships verbatim.
+    called = {"rewrite": False}
+
+    def _boom(*a, **k):
+        called["rewrite"] = True
+        return ["REWRITTEN SHOULD NOT APPEAR"]
+
+    monkeypatch.setattr(tailor, "_rewrite", _boom)
+    monkeypatch.setattr(tailor, "_compile_inspect", lambda p: (str(tmp_path / "r.pdf"), []))
+    monkeypatch.setattr(tailor.verify_facts, "load_sources", lambda: [])
+
+    tailor.tailor("Acme", "ML Intern", "startup", "python", reword=False)
+    assert called["rewrite"] is False
+    written = (tmp_path / "out" / "acme_ml_intern.tex").read_text()
+    assert "built gradient boosting models on tabular data" in written
+    assert "REWRITTEN SHOULD NOT APPEAR" not in written
