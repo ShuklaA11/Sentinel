@@ -436,7 +436,8 @@ def _render_application_md(listing: dict, jd: str, letter: str | None,
 
 def build_package(listing_id: str = "", company: str = "", title: str = "",
                   url: str = "", source: str = "", archetype: str = "startup",
-                  role_title: bool = False, tailor_titles: bool = False) -> str:
+                  role_title: bool = False, tailor_titles: bool = False,
+                  select_bullets: bool = False) -> str:
     """Build the full application package for ONE role and return its directory.
 
     Degrades gracefully at every step: an empty JD, a missing resume PDF, or an
@@ -457,7 +458,7 @@ def build_package(listing_id: str = "", company: str = "", title: str = "",
 
     # Resume: tailor returns the PDF to ship; copy it in when present.
     resume_src = tailor.tailor(company, title, archetype, jd, role_title=role_title,
-                               tailor_titles=tailor_titles)
+                               tailor_titles=tailor_titles, select_bullets=select_bullets)
     if resume_src and os.path.exists(resume_src):
         shutil.copyfile(resume_src, os.path.join(pkg_dir, "resume.pdf"))
     else:
@@ -499,6 +500,8 @@ def main() -> None:
                     help="pass through to tailor's target-title headline (default off)")
     ap.add_argument("--tailor-titles", action=argparse.BooleanOptionalAction, default=False,
                     help="pass through to tailor's approved-alternate experience titles (default off)")
+    ap.add_argument("--select-bullets", action=argparse.BooleanOptionalAction, default=False,
+                    help="pass through to tailor per-JD bullet selection (default off)")
     args = ap.parse_args()
 
     if not args.listing_id and not (args.company and args.title):
@@ -508,6 +511,7 @@ def main() -> None:
         listing_id=args.listing_id, company=args.company, title=args.title,
         url=args.url, source=args.source, archetype=args.archetype,
         role_title=args.role_title, tailor_titles=args.tailor_titles,
+        select_bullets=args.select_bullets,
     )
 
 

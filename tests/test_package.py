@@ -277,3 +277,37 @@ def test_values_section_omitted_when_no_values(patched, monkeypatch):
     pkg = package.build_package(company="Co", title="ML Intern", url="u", source="greenhouse")
     md = _read_md(pkg)
     assert "VALUES ALIGNMENT" not in md
+
+
+# ---------------------------------------------------------------------------
+# --select-bullets passthrough — forwarded into tailor.tailor, default off
+# ---------------------------------------------------------------------------
+
+
+def _spy_tailor(monkeypatch, fake_pdf: str) -> dict:
+    """Replace tailor.tailor with a spy that captures its kwargs; return the store."""
+    captured: dict = {}
+
+    def spy(*a, **k):
+        captured.update(k)
+        return fake_pdf
+
+    monkeypatch.setattr(package.tailor, "tailor", spy)
+    return captured
+
+
+def test_select_bullets_forwarded_to_tailor(patched, monkeypatch):
+    _tmp, _apps, fake_pdf = patched
+    captured = _spy_tailor(monkeypatch, fake_pdf)
+    monkeypatch.setattr(package.llm, "complete", lambda *a, **k: "text")
+    package.build_package(company="Co", title="ML Intern", url="u", source="greenhouse",
+                          select_bullets=True)
+    assert captured["select_bullets"] is True
+
+
+def test_select_bullets_defaults_off(patched, monkeypatch):
+    _tmp, _apps, fake_pdf = patched
+    captured = _spy_tailor(monkeypatch, fake_pdf)
+    monkeypatch.setattr(package.llm, "complete", lambda *a, **k: "text")
+    package.build_package(company="Co", title="ML Intern", url="u", source="greenhouse")
+    assert captured["select_bullets"] is False
