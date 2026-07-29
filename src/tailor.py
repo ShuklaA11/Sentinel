@@ -290,7 +290,7 @@ def _compile_inspect(tex_path: str) -> tuple[str | None, list[str]]:
     return pdf, issues
 
 
-def tailor(company: str, title: str, archetype: str, jd: str, role_title: bool = True) -> str | None:
+def tailor(company: str, title: str, archetype: str, jd: str, role_title: bool = False) -> str | None:
     """Tailor the base resume for one role and return the path to the PDF to ship.
 
     Returns the tailored PDF path when a tailored PDF was shipped (success OR residual
@@ -391,8 +391,10 @@ def main() -> None:
     ap.add_argument("--archetype", default="startup",
                     choices=["big_tech", "startup", "quant", "research_lab", "product"])
     ap.add_argument("--jd-file", default="")
-    ap.add_argument("--role-title", action=argparse.BooleanOptionalAction, default=True,
-                    help="inject a plausibility-gated target-title line under the name (default on)")
+    ap.add_argument("--role-title", action=argparse.BooleanOptionalAction, default=False,
+                    help="opt in to a plausibility-gated target-title line under the name "
+                         "(default off — a title tagline is a weak ATS signal for a student "
+                         "resume; ATS read titles from the experience section)")
     args = ap.parse_args()
     jd = ""
     if args.jd_file and os.path.exists(args.jd_file):

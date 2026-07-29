@@ -166,6 +166,15 @@ _HEADER_TEX = (
 )
 
 
+def test_role_title_headline_is_opt_in_by_default():
+    """The target-title headline is opt-in: a tagline under the name is a weak ATS
+    signal for a student resume (ATS read titles from the experience section), so
+    tailor() must default role_title to False."""
+    import inspect
+
+    assert inspect.signature(tailor.tailor).parameters["role_title"].default is False
+
+
 def test_headline_injected_for_track_matching_title():
     profile = {"preferences": {"tracks": ["ml"]}}
 

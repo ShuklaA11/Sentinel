@@ -436,7 +436,7 @@ def _render_application_md(listing: dict, jd: str, letter: str | None,
 
 def build_package(listing_id: str = "", company: str = "", title: str = "",
                   url: str = "", source: str = "", archetype: str = "startup",
-                  role_title: bool = True) -> str:
+                  role_title: bool = False) -> str:
     """Build the full application package for ONE role and return its directory.
 
     Degrades gracefully at every step: an empty JD, a missing resume PDF, or an
@@ -494,8 +494,8 @@ def main() -> None:
     ap.add_argument("--source", default="", help="override or bypass the CSV ATS source")
     ap.add_argument("--archetype", default="startup",
                     choices=["big_tech", "startup", "quant", "research_lab", "product"])
-    ap.add_argument("--role-title", action=argparse.BooleanOptionalAction, default=True,
-                    help="pass through to tailor's target-title headline (default on)")
+    ap.add_argument("--role-title", action=argparse.BooleanOptionalAction, default=False,
+                    help="pass through to tailor's target-title headline (default off)")
     args = ap.parse_args()
 
     if not args.listing_id and not (args.company and args.title):
