@@ -96,16 +96,16 @@ def test_build_package_creates_dir_files_and_master_doc(patched, monkeypatch):
 
     assert os.path.isdir(pkg)
     assert os.path.exists(os.path.join(pkg, "application.md"))
-    assert os.path.exists(os.path.join(pkg, "resume.pdf"))
+    assert os.path.exists(os.path.join(pkg, "Jane_Doe_Resume.pdf"))
     assert os.path.exists(os.path.join(pkg, "jd.txt"))
-    assert os.path.exists(os.path.join(pkg, "cover_letter.md"))
-    assert os.path.exists(os.path.join(pkg, "cover_letter.pdf"))
+    assert os.path.exists(os.path.join(pkg, "Jane_Doe_Cover_Letter.md"))
+    assert os.path.exists(os.path.join(pkg, "Jane_Doe_Cover_Letter.pdf"))
 
     md = _read_md(pkg)
     assert "HEADER" in md
     assert "SNAPSHOT ANSWERS" in md
     assert "JD KEYWORD COVERAGE" in md
-    assert "cover_letter.pdf" in md
+    assert "Jane_Doe_Cover_Letter.pdf" in md
     assert "Anthropic" in md
     assert "ML Intern" in md
 
@@ -172,8 +172,8 @@ def test_llm_unavailable_degrades_message_and_star(patched, monkeypatch):
     # placeholder appears for the message AND at least one STAR competency
     assert md.count(package.LLM_UNAVAILABLE) >= 2
     # cover was None -> no file written, master doc still built
-    assert not os.path.exists(os.path.join(pkg, "cover_letter.md"))
-    assert not os.path.exists(os.path.join(pkg, "cover_letter.pdf"))
+    assert not os.path.exists(os.path.join(pkg, "Jane_Doe_Cover_Letter.md"))
+    assert not os.path.exists(os.path.join(pkg, "Jane_Doe_Cover_Letter.pdf"))
     assert "unavailable (LLM unavailable)" in md
 
 
@@ -210,7 +210,7 @@ def test_missing_resume_path_skips_copy_without_crashing(patched, monkeypatch):
     monkeypatch.setattr(package.llm, "complete", lambda *a, **k: "text")
     pkg = package.build_package(company="Co", title="ML Intern", url="u", source="greenhouse")
     assert os.path.exists(os.path.join(pkg, "application.md"))
-    assert not os.path.exists(os.path.join(pkg, "resume.pdf"))
+    assert not os.path.exists(os.path.join(pkg, "Jane_Doe_Resume.pdf"))
 
 
 # ---------------------------------------------------------------------------
@@ -311,3 +311,10 @@ def test_select_bullets_defaults_off(patched, monkeypatch):
     monkeypatch.setattr(package.llm, "complete", lambda *a, **k: "text")
     package.build_package(company="Co", title="ML Intern", url="u", source="greenhouse")
     assert captured["select_bullets"] is False
+
+
+def test_name_slug_builds_file_safe_prefix():
+    assert package._name_slug({"name": "Arnav Shukla"}) == "Arnav_Shukla"
+    assert package._name_slug({"name": "Mary-Jane O'Neil"}) == "Mary_Jane_O_Neil"
+    assert package._name_slug({}) == "Candidate"          # no name -> safe fallback
+    assert package._name_slug({"name": "   "}) == "Candidate"

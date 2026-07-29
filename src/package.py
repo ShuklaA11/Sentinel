@@ -4,9 +4,9 @@ Given a single listing (looked up by id in data/listings.csv, or specified
 directly with flags), assemble a complete, ready-to-apply bundle under
 applications/{slug}/:
 
-    resume.pdf       — the per-role tailored resume (src.tailor), copied in
-    cover_letter.pdf — the submission-ready, one-page cover letter
-    cover_letter.md  — editable source for the per-role cover letter
+    {Name}_Resume.pdf       — the per-role tailored resume (src.tailor), copied in
+    {Name}_Cover_Letter.pdf — the submission-ready, one-page cover letter
+    {Name}_Cover_Letter.md  — editable source for the per-role cover letter
     jd.txt           — the fetched job description (may be empty)
     application.md   — the master doc: header, snapshot answers, a message to the
                        hiring team, STAR behavioral answers, values alignment, and
@@ -84,6 +84,14 @@ def _read_optional(path: str) -> str:
 def _slug(company: str, title: str) -> str:
     """Package-dir slug — identical rule to tailor/cover so the three agree."""
     return f"{company}_{title}".lower().replace(" ", "_").replace("/", "-")
+
+
+def _name_slug(profile: dict) -> str:
+    """Candidate name as a file-safe prefix for output docs, e.g. 'Arnav_Shukla'.
+    Recruiters and ATS expect name-labeled files ('Arnav_Shukla_Resume.pdf')."""
+    name = str((profile or {}).get("name", "")).strip()
+    slug = re.sub(r"[^A-Za-z0-9]+", "_", name).strip("_")
+    return slug or "Candidate"
 
 
 def _first(*values: object) -> object | None:
@@ -345,11 +353,12 @@ def _fmt_kv(label: str, value: object) -> str:
     return f"- **{label}:** {value}"
 
 
-def _header_section(listing: dict, letter: str | None, cover_pdf: bool = False) -> str:
+def _header_section(listing: dict, letter: str | None, cover_pdf: bool = False,
+                    cover_base: str = "cover_letter") -> str:
     score = listing["score"] if listing["score"] not in ("", None) else "n/a"
     cover_status = (
-        "cover_letter.pdf (editable source: cover_letter.md)" if cover_pdf
-        else "cover_letter.md (PDF rendering unavailable)" if letter
+        f"{cover_base}.pdf (editable source: {cover_base}.md)" if cover_pdf
+        else f"{cover_base}.md (PDF rendering unavailable)" if letter
         else "unavailable (LLM unavailable)"
     )
     lines = [
@@ -410,7 +419,7 @@ def _coverage_section(profile: dict, jd_keywords: list[str]) -> str:
 
 
 def _render_application_md(listing: dict, jd: str, letter: str | None,
-                           cover_pdf: bool = False) -> str:
+                           cover_pdf: bool = False, cover_base: str = "cover_letter") -> str:
     """Assemble the master application.md from all sections."""
     profile = _load_profile()
     voice = _read_optional(VOICE_MD)
@@ -419,7 +428,7 @@ def _render_application_md(listing: dict, jd: str, letter: str | None,
     jd_keywords = keywords.extract_jd_keywords(jd)
 
     sections = [
-        _header_section(listing, letter, cover_pdf),
+        _header_section(listing, letter, cover_pdf, cover_base),
         _snapshot_section(profile),
         _message_section(listing, jd, jd_keywords, voice, ctx, sources, profile),
         _star_section(listing, jd_keywords, voice, ctx, sources, profile),
@@ -453,6 +462,12 @@ def build_package(listing_id: str = "", company: str = "", title: str = "",
     pkg_dir = os.path.join(APPS_DIR, _slug(company, title))
     os.makedirs(pkg_dir, exist_ok=True)
 
+    # Name-labeled output files (e.g. Arnav_Shukla_Resume.pdf) — the convention
+    # recruiters/ATS expect over a generic 'resume.pdf'.
+    name_slug = _name_slug(_load_profile())
+    resume_name = f"{name_slug}_Resume.pdf"
+    cover_base = f"{name_slug}_Cover_Letter"
+
     with open(os.path.join(pkg_dir, "jd.txt"), "w") as f:
         f.write(jd)
 
@@ -461,27 +476,27 @@ def build_package(listing_id: str = "", company: str = "", title: str = "",
                                tailor_titles=tailor_titles, select_bullets=select_bullets,
                                reword=reword)
     if resume_src and os.path.exists(resume_src):
-        shutil.copyfile(resume_src, os.path.join(pkg_dir, "resume.pdf"))
+        shutil.copyfile(resume_src, os.path.join(pkg_dir, resume_name))
     else:
-        log.warning("no resume PDF to copy (tailor returned %r) — skipping resume.pdf", resume_src)
+        log.warning("no resume PDF to copy (tailor returned %r) — skipping %s", resume_src, resume_name)
 
     # Cover: may be None when the LLM is unavailable — write a file only on success.
     cover_pdf = False
     letter = cover.tailor_cover(company, title, jd, archetype)
     if letter:
-        with open(os.path.join(pkg_dir, "cover_letter.md"), "w") as f:
+        with open(os.path.join(pkg_dir, f"{cover_base}.md"), "w") as f:
             f.write(letter)
-        pdf_path = os.path.join(pkg_dir, "cover_letter.pdf")
+        pdf_path = os.path.join(pkg_dir, f"{cover_base}.pdf")
         cover_pdf = bool(cover.render_cover_pdf(
             letter, company, title, _load_profile(), pdf_path,
         ))
         if not cover_pdf:
-            log.warning("cover PDF rendering failed — keeping editable cover_letter.md only")
+            log.warning("cover PDF rendering failed — keeping editable %s.md only", cover_base)
     else:
         log.warning("no cover letter (LLM unavailable) — noted in application.md")
 
     with open(os.path.join(pkg_dir, "application.md"), "w") as f:
-        f.write(_render_application_md(listing, jd, letter, cover_pdf))
+        f.write(_render_application_md(listing, jd, letter, cover_pdf, cover_base))
 
     print(f"\n✓ application package -> {pkg_dir}")
     return pkg_dir
