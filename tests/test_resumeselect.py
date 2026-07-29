@@ -99,21 +99,20 @@ def test_select_activates_jd_relevant_commented_bullet():
     jd = "We need computer vision and object detection for perception."
     new_tex, changes = resumeselect.select(_TEX, jd)
 
-    # default budget = 2 currently-active bullets -> each experience keeps exactly 1.
+    # MIN_PER_ROLE=2 -> each experience shows 2 bullets (its active ML one + the top-scoring
+    # commented pool bullet, the computer-vision one).
     active = [it for it in resumeselect.parse_items(new_tex) if not it["commented"]]
-    assert len(active) == 2
-    # the computer-vision bullets out-score the (now commented) ML bullets and are active.
-    assert all("computer vision" in it["text"] for it in active)
-
-    actions = sorted(c["action"] for c in changes)
-    assert actions == ["activated", "activated", "deactivated", "deactivated"]
-    assert {c["company"] for c in changes} == {"INSPIRE Lab", "ChargeScape"}
-    assert all("computer vision" in c["text"]
-               for c in changes if c["action"] == "activated")
+    assert len(active) == 4
+    # both computer-vision pool bullets got activated (they out-score geospatial).
+    cv_active = [it for it in active if "computer vision" in it["text"]]
+    assert len(cv_active) == 2
+    activated = [c for c in changes if c["action"] == "activated"]
+    assert all("computer vision" in c["text"] for c in activated)
+    assert {c["company"] for c in activated} == {"INSPIRE Lab", "ChargeScape"}
 
 
 def test_select_respects_explicit_budget():
-    # budget 4 = the two per-experience minimums + 2 extra slots.
+    # budget 4 == the two per-experience minimums (MIN_PER_ROLE=2 each) -> 4 active.
     new_tex, _changes = resumeselect.select(_TEX, "computer vision geospatial", budget=4)
     active = sum(not it["commented"] for it in resumeselect.parse_items(new_tex))
     assert active == 4
@@ -133,14 +132,26 @@ def test_select_noop_when_no_commented_pool():
     assert changes == []
 
 
-def test_select_keeps_first_bullet_when_all_score_zero():
-    # unrelated JD -> every bullet scores 0; each experience keeps its canonical (first)
-    # active bullet, nothing flips.
+def test_select_keeps_min_bullets_when_all_score_zero():
+    # unrelated JD -> every bullet scores 0; each experience still shows MIN_PER_ROLE (2),
+    # taking its first two in document order (canonical + next).
     new_tex, changes = resumeselect.select(_TEX, "unrelated marketing finance role")
-    active = [it for it in resumeselect.parse_items(new_tex) if not it["commented"]]
-    assert len(active) == 2
-    assert new_tex == _TEX
-    assert changes == []
+    groups = resumeselect.group_by_experience(new_tex)
+    items = resumeselect.parse_items(new_tex)
+    for _company, idxs in groups:
+        assert sum(not items[i]["commented"] for i in idxs) == 2
+    # nothing deactivated (the two originally-active stay; one more per role activates).
+    assert all(c["action"] == "activated" for c in changes)
+
+
+def test_max_per_role_cap():
+    # one experience with 6 pool bullets that all score on the JD -> capped at 4.
+    tex = ("\\resumeSubheading{Acme}{2025}{ML Intern}{City}\n\\resumeItemListStart\n"
+           + "".join(f"  \\resumeItem{{model number {n} for prediction}}\n" for n in range(6))
+           + "\\resumeItemListEnd\n")
+    new_tex, _ = resumeselect.select(tex, "model prediction", budget=6)
+    active = sum(not it["commented"] for it in resumeselect.parse_items(new_tex))
+    assert active == resumeselect.MAX_PER_ROLE  # 4, not 6
 
 
 def test_select_toggle_only_touches_comment_prefix():
@@ -150,8 +161,6 @@ def test_select_toggle_only_touches_comment_prefix():
     orig = resumeselect.parse_items(_TEX)
     new = resumeselect.parse_items(new_tex)
     assert [it["text"] for it in orig] == [it["text"] for it in new]
-    # active-bullet count is preserved (default budget == input active count).
-    assert sum(not it["commented"] for it in new) == sum(not it["commented"] for it in orig)
 
 
 def test_select_empty_document_is_noop():

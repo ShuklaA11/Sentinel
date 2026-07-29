@@ -411,8 +411,9 @@ def test_select_bullets_is_opt_in_by_default():
 
 
 def _write_tex_with_pool(tmp_path) -> str:
-    # One experience with a two-bullet pool: an off-topic ACTIVE default plus a commented
-    # JD-relevant pool bullet. Budget = active count = 1, so a JD hit flips the pair.
+    # One experience with a three-bullet pool: an off-topic ACTIVE default plus two
+    # commented JD-relevant pool bullets. With MIN_PER_ROLE=2 the two computer-vision
+    # bullets win the slots and the off-topic default is deactivated.
     tex = (
         "\\begin{document}\n"
         "\\begin{center}\n"
@@ -423,6 +424,7 @@ def _write_tex_with_pool(tmp_path) -> str:
         "    {Undergraduate Researcher}{Austin, TX}\n"
         "\\resumeItem{Organized a campus bake sale for the student council}\n"
         "% \\resumeItem{Built a computer vision object detection pipeline}\n"
+        "% \\resumeItem{Trained a computer vision perception model for detection}\n"
         "\\end{document}\n"
     )
     path = tmp_path / "resume.tex"

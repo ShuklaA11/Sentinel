@@ -159,17 +159,25 @@ def score_item(text: str, jd_keywords: set) -> int:
     return sum(1 for kw in jd_keywords if keywords._pattern(kw).search(hay))
 
 
+MIN_PER_ROLE = 2  # every experience shows at least this many bullets (pool permitting)
+MAX_PER_ROLE = 4  # no experience shows more than this — keeps one role from dominating
+
+
 def _allocate(groups: list[tuple[str, list[int]]], max_score: list[int], budget: int) -> list[int]:
-    """Active-slot count per experience: 1 each (guarantee), remaining to highest max-score
-    experiences first, capped at each pool's size."""
+    """Active-slot count per experience, in [MIN_PER_ROLE, MAX_PER_ROLE] (clamped to pool
+    size). Each starts at its floor (min wins even over budget so no role looks sparse);
+    the remaining budget goes to the highest max-score experiences first, up to their cap."""
     k = len(groups)
-    alloc = [1] * k
-    remaining = max(0, budget - k)
-    # Highest per-experience max-score first; ties keep document (group) order.
+    pool = [len(idxs) for _c, idxs in groups]
+    lo = [min(MIN_PER_ROLE, p) for p in pool]
+    hi = [min(MAX_PER_ROLE, p) for p in pool]
+    alloc = lo[:]
+    remaining = budget - sum(lo)  # may be negative — the floors still hold (page fit is
+    # the tighten loop's job), so we simply skip the discretionary top-up below.
     for g in sorted(range(k), key=lambda g: -max_score[g]):
         if remaining <= 0:
             break
-        take = min(len(groups[g][1]) - alloc[g], remaining)
+        take = min(hi[g] - alloc[g], remaining)
         if take > 0:
             alloc[g] += take
             remaining -= take
