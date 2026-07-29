@@ -158,3 +158,50 @@ def test_select_empty_document_is_noop():
     new_tex, changes = resumeselect.select("no resume items here", "computer vision")
     assert new_tex == "no resume items here"
     assert changes == []
+
+
+# --- regression: real-resume structural bugs the live run exposed ---------------
+
+_SCAFFOLD_TEX = (
+    "\\resumeSubheading\n  {Acme}{2024}\n  {ML Intern}{NYC}\n"
+    "  \\resumeItemListStart\n"
+    "    \\resumeItem{Real active bullet on gradient boosting forecasting}\n"
+    "    % \\resumeItem{Real commented pool bullet on computer vision detection}\n"
+    "  \\resumeItemListEnd\n"
+    "% -----------Multiple Positions Heading (template example)-----------\n"
+    "%    \\resumeSubSubheading\n"
+    "%     {Software Engineer I}{Oct 2014 - Sep 2016}\n"
+    "%     \\resumeItemListStart\n"
+    "%        \\resumeItem{Apache Beam scaffolding that is NOT a real bullet}\n"
+    "%     \\resumeItemListEnd\n"
+)
+
+
+def test_commented_template_block_is_never_pool():
+    # a JD that matches the scaffolding text must NEVER activate it, and the line stays put.
+    new_tex, changes = resumeselect.select(_SCAFFOLD_TEX, "apache beam streaming pipelines", budget=2)
+    assert all("Apache Beam scaffolding" not in c["text"] for c in changes)
+    # whitespace-robust: the scaffolding item is still present AND still commented.
+    after = {it["text"]: it["commented"] for it in resumeselect.parse_items(new_tex)}
+    assert after["Apache Beam scaffolding that is NOT a real bullet"] is True
+    # the genuine commented pool bullet (inside the ACTIVE list) is still selectable.
+    cv_tex, cv_changes = resumeselect.select(_SCAFFOLD_TEX, "computer vision detection", budget=2)
+    assert any("computer vision" in c["text"] and c["action"] == "activated" for c in cv_changes)
+
+
+_PROJECT_TEX = (
+    "\\resumeSubheading\n  {Acme}{2024}\n  {ML Intern}{NYC}\n"
+    "  \\resumeItemListStart\n    \\resumeItem{acme work on demand forecasting}\n  \\resumeItemListEnd\n"
+    "\\resumeProjectHeading\n  {\\textbf{SciRAG}}{2026}\n"
+    "  \\resumeItemListStart\n    \\resumeItem{scirag retrieval augmented generation over papers}\n  \\resumeItemListEnd\n"
+)
+
+
+def test_project_headings_form_their_own_group():
+    groups = dict(resumeselect.group_by_experience(_PROJECT_TEX))
+    assert "Acme" in groups
+    assert "SciRAG" in groups           # project is its own group...
+    # ...and the project bullet is NOT lumped under the preceding experience.
+    acme_idx = groups["Acme"][0]
+    scirag_idx = groups["SciRAG"][0]
+    assert acme_idx != scirag_idx

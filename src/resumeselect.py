@@ -17,12 +17,17 @@ Guarantees:
 from __future__ import annotations
 
 import logging
+import re
 
 from . import keywords, roletitles
 
 log = logging.getLogger("resumeselect")
 
 MARKER = "\\resumeItem{"
+LIST_START = "\\resumeItemListStart"
+LIST_END = "\\resumeItemListEnd"
+PROJECT_HEADING = "\\resumeProjectHeading"
+_TEXTBF = re.compile(r"^\\textbf\{(.*)\}$")
 
 
 def _commented(tex: str, pos: int) -> bool:
@@ -35,16 +40,33 @@ def _commented(tex: str, pos: int) -> bool:
     return any(c == "%" and (i == 0 or seg[i - 1] != "\\") for i, c in enumerate(seg))
 
 
+def _in_commented_list(tex: str, item_start: int) -> bool:
+    """True when the \\resumeItem sits inside a COMMENTED \\resumeItemListStart block.
+
+    Such items are template scaffolding (e.g. the Sourabh-Bajaj 'Apache Beam' example) —
+    activating them would inject fake content, so they must never enter the pool. The
+    enclosing list is the nearest \\resumeItemListStart that isn't already closed by a
+    \\resumeItemListEnd before this item; if that start's line is commented, so is the block.
+    """
+    ls = tex.rfind(LIST_START, 0, item_start)
+    le = tex.rfind(LIST_END, 0, item_start)
+    if ls == -1 or ls < le:  # not clearly inside an open list -> don't exclude
+        return False
+    return _commented(tex, ls)
+
+
 def parse_items(tex: str) -> list[dict]:
     """Every \\resumeItem occurrence — INCLUDING commented ones (unlike tailor._extract_items).
 
-    Each dict is {text, start, end, commented, line_start} where:
+    Each dict is {text, start, end, commented, line_start, selectable} where:
       - text        : the {...} body (balanced braces)
       - start/end   : bracket the whole '\\resumeItem{...}' (or '% \\resumeItem{...}') span,
                       from the first non-space char on the line to just past the closing brace,
                       so the item can be rewritten wholesale
       - commented   : True when the line's first non-space char is an unescaped '%'
       - line_start  : index just after the preceding newline (start of the physical line)
+      - selectable  : False when the item lives in a commented list block (template
+                      scaffolding) — such items are never scored, grouped, or toggled
     """
     items: list[dict] = []
     i = 0
@@ -66,41 +88,63 @@ def parse_items(tex: str) -> list[dict]:
             "end": j,
             "commented": _commented(tex, marker),
             "line_start": line_start,
+            "selectable": not _in_commented_list(tex, marker),
         })
         i = j
     return items
 
 
-def group_by_experience(tex: str) -> list[tuple[str, list[int]]]:
-    """Group every \\resumeItem index under the \\resumeSubheading it falls beneath.
-
-    Uses roletitles.parse_subheadings positions as block boundaries: each item belongs to
-    the most recent subheading before it. Items before the first subheading (e.g. under
-    Projects) are KEPT under the synthetic key '_'. Returns (company, item_indices) blocks
-    in document order; separate subheadings stay separate even if their company repeats.
+def _boundaries(tex: str) -> list[tuple[int, str]]:
+    """Sorted (position, label) block boundaries: every ACTIVE \\resumeSubheading (label =
+    company) AND \\resumeProjectHeading (label = project name). Projects use a different
+    macro, so without this they'd wrongly fold into the preceding experience.
     """
-    subs = roletitles.parse_subheadings(tex)  # (company, title, title_start, title_end)
+    bounds = [(tstart, company) for company, _t, tstart, _te in roletitles.parse_subheadings(tex)]
+    i = tex.find(PROJECT_HEADING)
+    while i != -1:
+        if not _commented(tex, i):
+            g = roletitles._brace_group(tex, i + len(PROJECT_HEADING))
+            if g:
+                name = g[0].strip()
+                m = _TEXTBF.match(name)
+                bounds.append((i, m.group(1).strip() if m else name))
+        i = tex.find(PROJECT_HEADING, i + 1)
+    bounds.sort()
+    return bounds
+
+
+def group_by_experience(tex: str) -> list[tuple[str, list[int]]]:
+    """Group each SELECTABLE \\resumeItem index under the heading it falls beneath.
+
+    Boundaries come from both \\resumeSubheading and \\resumeProjectHeading (see
+    _boundaries), so projects form their own groups instead of folding into the last
+    experience. Items before the first heading are KEPT under the synthetic key '_'.
+    Non-selectable items (commented template scaffolding) are excluded entirely.
+    """
+    bounds = _boundaries(tex)
     items = parse_items(tex)
 
     def block_for(pos: int) -> int:
         block = -1
-        for k, (_c, _t, tstart, _te) in enumerate(subs):
-            if tstart < pos:
+        for k, (bpos, _label) in enumerate(bounds):
+            if bpos < pos:
                 block = k
             else:
-                break  # subs are in ascending position order
+                break  # boundaries are in ascending position order
         return block
 
     order: list[int] = []
     members: dict[int, list[int]] = {}
     for idx, it in enumerate(items):
+        if not it["selectable"]:
+            continue  # template scaffolding in a commented block — never a real bullet
         block = block_for(it["start"])
         if block not in members:
             members[block] = []
             order.append(block)
         members[block].append(idx)
 
-    return [("_" if b == -1 else subs[b][0], members[b]) for b in order]
+    return [("_" if b == -1 else bounds[b][1], members[b]) for b in order]
 
 
 def score_item(text: str, jd_keywords: set) -> int:
