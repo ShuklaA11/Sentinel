@@ -58,9 +58,20 @@ def _call_anthropic(client, prompt: str, model: str, max_tokens: int) -> str:
 
 
 def _call_openai(client, prompt: str, model: str, max_tokens: int) -> str:
+    # gpt-5 and the o-series are reasoning models: they reject the legacy `max_tokens`
+    # param (need `max_completion_tokens`) AND spend part of that budget on hidden
+    # reasoning tokens — too small a budget leaves nothing for the answer (empty text).
+    # So give reasoning models plenty of headroom; older chat models use `max_tokens`.
+    if model.startswith("gpt-5"):
+        # reasoning_effort='minimal' keeps reasoning tokens near zero so the answer
+        # actually fits the budget (default effort can consume the whole thing -> empty).
+        kwargs = {"max_completion_tokens": max(max_tokens, 8192), "reasoning_effort": "minimal"}
+    elif model.startswith(("o1", "o3", "o4")):
+        kwargs = {"max_completion_tokens": max(max_tokens, 8192)}
+    else:
+        kwargs = {"max_tokens": max_tokens}
     resp = client.chat.completions.create(
-        model=model, max_tokens=max_tokens,
-        messages=[{"role": "user", "content": prompt}],
+        model=model, messages=[{"role": "user", "content": prompt}], **kwargs,
     )
     return (resp.choices[0].message.content or "").strip()
 

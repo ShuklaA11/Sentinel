@@ -70,3 +70,45 @@ def test_is_unavailable_distinguishes_billing_from_transient():
     assert llm._is_unavailable(Exception("Your credit balance is too low")) is True
     assert llm._is_unavailable(Exception("insufficient_quota for this org")) is True
     assert llm._is_unavailable(Exception("Connection reset by peer")) is False
+
+
+class _RecordingClient:
+    """Captures the kwargs passed to chat.completions.create so we can assert the
+    per-model token/param selection in _call_openai without any network."""
+
+    def __init__(self):
+        self.kwargs = None
+        self.chat = self  # chat.completions.create -> self.completions.create
+        self.completions = self
+
+    def create(self, **kwargs):
+        self.kwargs = kwargs
+
+        class _Msg:  # minimal response shape: choices[0].message.content
+            content = "ok"
+
+        class _Choice:
+            message = _Msg()
+
+        class _Resp:
+            choices = [_Choice()]
+
+        return _Resp()
+
+
+def test_call_openai_uses_max_tokens_for_chat_models():
+    client = _RecordingClient()
+    llm._call_openai(client, "hi", "gpt-4o", 2048)
+    assert client.kwargs["max_tokens"] == 2048
+    assert "max_completion_tokens" not in client.kwargs
+    assert "reasoning_effort" not in client.kwargs
+
+
+def test_call_openai_uses_completion_tokens_and_minimal_reasoning_for_gpt5():
+    client = _RecordingClient()
+    llm._call_openai(client, "hi", "gpt-5", 2048)
+    # reasoning models reject max_tokens, need headroom, and must run minimal reasoning
+    # or they spend the whole budget thinking and return empty.
+    assert "max_tokens" not in client.kwargs
+    assert client.kwargs["max_completion_tokens"] >= 8192
+    assert client.kwargs["reasoning_effort"] == "minimal"
