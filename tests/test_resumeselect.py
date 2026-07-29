@@ -214,3 +214,38 @@ def test_project_headings_form_their_own_group():
     acme_idx = groups["Acme"][0]
     scirag_idx = groups["SciRAG"][0]
     assert acme_idx != scirag_idx
+
+
+def test_projects_get_fixed_bullet_count():
+    # an experience (2 bullets) + a project with 4 bullets: the project is pinned to
+    # PROJECT_BULLETS (3), while the experience floats in the 2-4 range.
+    tex = (
+        "\\resumeSubheading\n  {Acme}{2025}\n  {ML Intern}{City}\n"
+        "  \\resumeItemListStart\n"
+        "    \\resumeItem{acme forecasting work one}\n"
+        "    \\resumeItem{acme forecasting work two}\n  \\resumeItemListEnd\n"
+        "\\resumeProjectHeading\n  {\\textbf{SciRAG}}{2026}\n"
+        "  \\resumeItemListStart\n"
+        + "".join(f"    \\resumeItem{{scirag retrieval bullet {n}}}\n" for n in range(4))
+        + "  \\resumeItemListEnd\n"
+    )
+    new_tex, _ = resumeselect.select(tex, "retrieval forecasting", budget=6)
+    groups = resumeselect.group_by_experience(new_tex)
+    items = resumeselect.parse_items(new_tex)
+    counts = {label: sum(not items[i]["commented"] for i in idxs) for label, idxs in groups}
+    assert counts["SciRAG"] == resumeselect.PROJECT_BULLETS  # 3, not 4
+    assert counts["Acme"] == 2
+
+
+def test_parse_items_skips_preamble_macro_definitions():
+    # a \resumeItem{ inside a preamble \newcommand must NOT be parsed as a bullet — only
+    # items after \begin{document} count (else the selector could corrupt the template).
+    tex = (
+        "\\newcommand{\\resumeItem}[1]{\\item\\small{\\resumeItem{#1}}}\n"
+        "\\begin{document}\n"
+        "\\resumeSubheading{Acme}{2025}{ML Intern}{City}\n"
+        "\\resumeItem{a real body bullet}\n"
+        "\\end{document}\n"
+    )
+    items = resumeselect.parse_items(tex)
+    assert [it["text"] for it in items] == ["a real body bullet"]  # phantom '#1' excluded

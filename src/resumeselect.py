@@ -69,7 +69,10 @@ def parse_items(tex: str) -> list[dict]:
                       scaffolding) — such items are never scored, grouped, or toggled
     """
     items: list[dict] = []
-    i = 0
+    # Only scan the document body — the preamble defines macros like \resumeItem, and
+    # matching those \resumeItem{ patterns would parse a phantom '#1' bullet (and, worse,
+    # let the selector comment out a line inside the preamble). Mirrors tailor._extract_items.
+    i = max(tex.find("\\begin{document}"), 0)
     while True:
         marker = tex.find(MARKER, i)
         if marker == -1:
@@ -161,16 +164,36 @@ def score_item(text: str, jd_keywords: set) -> int:
 
 MIN_PER_ROLE = 2  # every experience shows at least this many bullets (pool permitting)
 MAX_PER_ROLE = 4  # no experience shows more than this — keeps one role from dominating
+PROJECT_BULLETS = 3  # projects (\resumeProjectHeading) show a fixed count, not the 2–4 range
 
 
-def _allocate(groups: list[tuple[str, list[int]]], max_score: list[int], budget: int) -> list[int]:
-    """Active-slot count per experience, in [MIN_PER_ROLE, MAX_PER_ROLE] (clamped to pool
-    size). Each starts at its floor (min wins even over budget so no role looks sparse);
-    the remaining budget goes to the highest max-score experiences first, up to their cap."""
+def _project_labels(tex: str) -> set[str]:
+    """Labels of \\resumeProjectHeading blocks — these groups get a fixed bullet count."""
+    labels: set[str] = set()
+    i = tex.find(PROJECT_HEADING)
+    while i != -1:
+        if not _commented(tex, i):
+            g = roletitles._brace_group(tex, i + len(PROJECT_HEADING))
+            if g:
+                m = _TEXTBF.match(g[0].strip())
+                labels.add(m.group(1).strip() if m else g[0].strip())
+        i = tex.find(PROJECT_HEADING, i + 1)
+    return labels
+
+
+def _allocate(groups: list[tuple[str, list[int]]], max_score: list[int], budget: int,
+              is_project: list[bool] | None = None) -> list[int]:
+    """Active-slot count per group. Experiences float in [MIN_PER_ROLE, MAX_PER_ROLE];
+    projects are pinned to PROJECT_BULLETS (clamped to pool size). Each starts at its floor
+    (floors win even over budget so no group looks sparse); the remaining budget goes to the
+    highest max-score experiences first, up to their cap (project counts are already fixed)."""
     k = len(groups)
+    is_project = is_project or [False] * k
     pool = [len(idxs) for _c, idxs in groups]
-    lo = [min(MIN_PER_ROLE, p) for p in pool]
-    hi = [min(MAX_PER_ROLE, p) for p in pool]
+    lo = [min(PROJECT_BULLETS, pool[g]) if is_project[g] else min(MIN_PER_ROLE, pool[g])
+          for g in range(k)]
+    hi = [min(PROJECT_BULLETS, pool[g]) if is_project[g] else min(MAX_PER_ROLE, pool[g])
+          for g in range(k)]
     alloc = lo[:]
     remaining = budget - sum(lo)  # may be negative — the floors still hold (page fit is
     # the tighten loop's job), so we simply skip the discretionary top-up below.
@@ -205,7 +228,9 @@ def select(tex: str, jd: str, budget: int | None = None) -> tuple[str, list[dict
         budget = sum(1 for it in items if not it["commented"])
 
     max_score = [max((scores[idx] for idx in idxs), default=0) for _c, idxs in groups]
-    alloc = _allocate(groups, max_score, budget)
+    proj = _project_labels(tex)
+    is_project = [label in proj for label, _idxs in groups]
+    alloc = _allocate(groups, max_score, budget, is_project)
 
     should_active = [False] * len(items)
     company_of: dict[int, str] = {}
