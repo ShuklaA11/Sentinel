@@ -41,6 +41,7 @@ ashby:
 - georgian
 - gritt
 - hcompany
+- heliux
 - heron-power
 - hiverge
 - homebase
@@ -48,17 +49,16 @@ ashby:
 - human-computer-lab
 - interplay
 - k-id
-- kineticsystems
 - kirin
 - kognitos
 - kos
 - mach
 - maxima
+- melius
 - melotech
 - meshy
 - mistral
 - modal
-- monogram
 - nationgraph
 - neocognition
 - netic
@@ -128,6 +128,7 @@ greenhouse:
 - docugami
 - drweng
 - eulerity
+- eventsandinterns
 - evolver
 - excelsportsmanagement
 - faire
@@ -149,7 +150,6 @@ greenhouse:
 - integra
 - integrainterns
 - janestreet
-- jobsatphamily
 - kensingtontours
 - later
 - lilasciences
@@ -179,6 +179,7 @@ greenhouse:
 - sevenresearch
 - sharkninjaoperatingllc
 - spacex
+- sparksoftcorporation
 - studiokraftonboard
 - technergetics
 - tenstorrentuniversity
@@ -189,7 +190,7 @@ greenhouse:
 - tribalscale
 - truveta
 - twosixtechnologies
-- vardaspace
+- uvimco
 - verkada
 - virtu
 - voloridgeinvestmentmanagement
@@ -199,8 +200,8 @@ greenhouse:
 lever:
 - acceldata
 - alertus
+- calstart
 - diversified-automation
-- ekimetrics
 - evrealty-us
 - field-ai
 - fluxergy-2
@@ -220,6 +221,7 @@ lever:
 - reply
 - shyftlabs
 - solopulseco
+- spotify
 - telesat
 - theinformationlab
 - tri
@@ -231,6 +233,7 @@ smartrecruiters:
 - 3sbusinesscorporationinc1
 - agtechnologies1
 - atriagroupllc
+- averydennison
 - barkbackllc
 - blinqlabs
 - boschgroup
@@ -259,6 +262,8 @@ smartrecruiters:
 - satechnologiesinc4
 - smithsgroup2
 - stemxpert1
+- turnertownsend
+- ubisoft2
 - usm2
 - veoliaenvironnementsa
 - westerndigital
