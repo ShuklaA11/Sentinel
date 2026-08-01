@@ -19,6 +19,7 @@ ashby:
 - centerfield
 - circleback
 - clera
+- colonist
 - context
 - creatify
 - ctgt
@@ -87,7 +88,6 @@ ashby:
 - reviserobotics
 - saronic
 - serval
-- simular
 - skydio
 - spacial
 - terranova
@@ -99,8 +99,8 @@ ashby:
 - vendelux
 - vital-lyfe
 - vmax
-- wealth-com
 - windborne-systems
+- zello
 - zuru
 bamboohr: []
 greenhouse:
@@ -140,12 +140,14 @@ greenhouse:
 - gemini
 - genevatrading
 - ginkgobioworks
+- goldenpetbrands
 - grvty
 - haizelabs
 - honehealth
 - horizonindustrieslimited
 - iherb
 - innodatainc
+- instalilyai
 - instead
 - integra
 - integrainterns
@@ -153,8 +155,8 @@ greenhouse:
 - kensingtontours
 - later
 - lilasciences
+- mavensecuritiesholdingltd
 - mcghealth
-- mcmastercarr
 - medicalinformaticsengineering
 - momentenergy
 - msfcareers
@@ -170,7 +172,6 @@ greenhouse:
 - radixuniversity
 - redwoodmaterials
 - rendezvousrobotics
-- rise8
 - roboforce
 - samayaai
 - samsungresearchamericainternship
@@ -178,6 +179,7 @@ greenhouse:
 - scm
 - sevenresearch
 - sharkninjaoperatingllc
+- skhynixmemorysolutionsamericainc
 - spacex
 - sparksoftcorporation
 - studiokraftonboard
@@ -221,7 +223,6 @@ lever:
 - reply
 - shyftlabs
 - solopulseco
-- spotify
 - telesat
 - theinformationlab
 - tri
