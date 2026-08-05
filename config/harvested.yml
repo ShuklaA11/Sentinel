@@ -38,7 +38,6 @@ ashby:
 - etched
 - ethglobal
 - fab2
-- faculty
 - firetiger
 - fluency
 - forus
@@ -91,19 +90,20 @@ ashby:
 - prior-labs
 - pylon-labs
 - quadrillion-labs
-- rapdev
 - reviserobotics
 - saronic
 - serval
 - skydio
 - spacial
 - sweatpals
+- tacit
 - terranova
 - tessera-labs
 - the-exploration-company
 - tilderesearch
 - tryroam
 - uncountable
+- valstad
 - veeda-labs
 - vega
 - vendelux
@@ -141,6 +141,7 @@ greenhouse:
 - digs
 - docugami
 - drweng
+- dvtrading
 - eulerity
 - eventsandinterns
 - evolver
@@ -160,6 +161,7 @@ greenhouse:
 - horizonindustrieslimited
 - hyannisportresearch
 - incidentiq
+- inizio
 - instalilyai
 - instead
 - integra
@@ -192,12 +194,12 @@ greenhouse:
 - scm
 - sevenresearch
 - sharkninjaoperatingllc
+- simpletechnologysolutions
 - skhynixmemorysolutionsamericainc
 - spacex
 - technergetics
 - tenstorrentuniversity
 - togetherai
-- torcrobotics
 - toshibaglobalcommercesolutions
 - transmarketgroup
 - tribalscale
@@ -205,6 +207,7 @@ greenhouse:
 - twosixtechnologies
 - uvimco
 - verkada
+- vikingglobalinvestors
 - virtu
 - voloridgeinvestmentmanagement
 - walleyecapital-external-students
@@ -219,7 +222,6 @@ lever:
 - field-ai
 - fluxergy-2
 - go-cloudforce
-- great-gray-group
 - hermeus
 - ifm-us
 - intropic
@@ -239,6 +241,7 @@ lever:
 - waabi
 - weride
 - xsolla
+- zoox
 smartrecruiters:
 - averydennison
 - barkbackllc
