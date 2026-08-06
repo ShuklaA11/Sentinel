@@ -91,6 +91,7 @@ ashby:
 - pylon-labs
 - quadrillion-labs
 - reviserobotics
+- rho
 - saronic
 - serval
 - skydio
@@ -118,7 +119,6 @@ ashby:
 bamboohr: []
 greenhouse:
 - 10alabs
-- accuweather
 - andurilindustries
 - aperaaiinc
 - appian
@@ -142,6 +142,7 @@ greenhouse:
 - docugami
 - drweng
 - dvtrading
+- emergingtalent
 - eulerity
 - eventsandinterns
 - evolver
@@ -185,7 +186,6 @@ greenhouse:
 - point72
 - postman
 - prophet
-- queracomputinginc
 - radixuniversity
 - redwoodmaterials
 - rendezvousrobotics
@@ -204,9 +204,7 @@ greenhouse:
 - transmarketgroup
 - tribalscale
 - truveta
-- twosixtechnologies
 - uvimco
-- verkada
 - vikingglobalinvestors
 - virtu
 - voloridgeinvestmentmanagement
@@ -247,8 +245,8 @@ smartrecruiters:
 - barkbackllc
 - blinqlabs
 - boschgroup
+- canva
 - codeage
-- computerfutures3
 - dexterra
 - eurofins
 - hirevue
