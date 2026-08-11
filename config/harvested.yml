@@ -27,7 +27,6 @@ ashby:
 - cuspai
 - deepgram
 - dexmate
-- ditto
 - droyd
 - dryft
 - egra
@@ -72,7 +71,6 @@ ashby:
 - neocognition
 - netic
 - niural
-- nory-co
 - npx
 - ntt-data-aivista
 - odin-dynamics
@@ -95,7 +93,6 @@ ashby:
 - serval
 - skydio
 - spacial
-- standinsurance
 - sweatpals
 - tacit
 - terminal
@@ -117,11 +114,11 @@ ashby:
 - zello
 - zettabyte-space
 - zuru
-bamboohr: []
+bamboohr:
+- mujin
 greenhouse:
 - 10alabs
 - andurilindustries
-- aperaaiinc
 - appian
 - apptronik
 - aquaticcapitalmanagement
@@ -131,6 +128,7 @@ greenhouse:
 - axontalentcommunity
 - axq
 - blackedgecapital
+- bluelabsanalyticsinc
 - botauto
 - brevium
 - celonis
@@ -183,12 +181,14 @@ greenhouse:
 - neuralink
 - newsbreak
 - octaura
+- ohio
 - optiverprivate
 - orennia
 - pdtpartners
 - point72
 - postman
 - prophet
+- queracomputinginc
 - radixuniversity
 - redwoodmaterials
 - rendezvousrobotics
@@ -204,7 +204,6 @@ greenhouse:
 - tenstorrentuniversity
 - thenuclearcompany
 - togetherai
-- toshibaglobalcommercesolutions
 - transmarketgroup
 - tribalscale
 - truveta
@@ -222,7 +221,6 @@ lever:
 - belvederetrading
 - calstart
 - diversified-automation
-- ekohealth
 - evrealty-us
 - field-ai
 - fluxergy-2
@@ -242,7 +240,6 @@ lever:
 - tri
 - voltus
 - waabi
-- weride
 - xsolla
 - zoox
 smartrecruiters:
@@ -252,7 +249,6 @@ smartrecruiters:
 - boschgroup
 - canva
 - codeage
-- dexterra
 - eurofins
 - infinitequant
 - infojiniinc1
