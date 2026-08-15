@@ -2,6 +2,7 @@
 # Mostly startups. Merged into the poll on top of companies.yml.
 ashby:
 - 1x
+- abridge
 - adaption
 - afterquery
 - anthelioncap
@@ -31,6 +32,7 @@ ashby:
 - dryft
 - egra
 - ellipsislabs
+- epianeuro
 - eragon
 - espa
 - etched
@@ -54,6 +56,8 @@ ashby:
 - homebase
 - hubs
 - human-computer-lab
+- hypercubic
+- inherent
 - interplay
 - junior
 - k-id
@@ -95,13 +99,13 @@ ashby:
 - spacial
 - sweatpals
 - tacit
-- terminal
 - terranova
 - tessera-labs
 - the-exploration-company
 - tilderesearch
 - tryroam
 - uncountable
+- unify
 - valstad
 - veeda-labs
 - vega
@@ -127,6 +131,7 @@ greenhouse:
 - appian
 - apptronik
 - aquaticcapitalmanagement
+- arevonenergyimpltest
 - argmax
 - asteraearlycareer2026
 - astranis
@@ -151,13 +156,13 @@ greenhouse:
 - eulerity
 - eventsandinterns
 - evolver
-- excelsportsmanagement
 - faire
 - fccincinnati
 - figureai
 - fiveringsllc
 - flowtraders
 - fourhands
+- freeformfuturecorp
 - gemini
 - genevatrading
 - ginkgobioworks
@@ -172,7 +177,6 @@ greenhouse:
 - integra
 - integrainterns
 - janestreet
-- kensingtontours
 - later
 - lilasciences
 - mavensecuritiesholdingltd
@@ -235,6 +239,7 @@ lever:
 - magnetforensics
 - make-rain
 - multiplylabs
+- pentagrp
 - plus-2
 - reply
 - shyftlabs
