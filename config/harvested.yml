@@ -3,6 +3,7 @@
 ashby:
 - 1x
 - abridge
+- abundant
 - adaption
 - afterquery
 - anthelioncap
@@ -49,7 +50,6 @@ ashby:
 - genmd
 - georgian
 - gritt
-- gumloop
 - hcompany
 - heliux
 - heron-power
@@ -74,9 +74,11 @@ ashby:
 - mistral
 - modal
 - nationgraph
+- navi
 - neocognition
 - netic
 - niural
+- normalcomputing
 - npx
 - ntt-data-aivista
 - odin-dynamics
@@ -107,8 +109,6 @@ ashby:
 - uncountable
 - unify
 - valstad
-- veeda-labs
-- vega
 - vendelux
 - verne
 - vital-lyfe
@@ -119,11 +119,13 @@ ashby:
 - zettabyte-space
 - zuru
 bamboohr:
+- alleghenycounty
 - bga
 - calpionplutus
 - mujin
 - specteraerospace
 - tnuck
+- upike
 greenhouse:
 - 10alabs
 - andurilindustries
@@ -146,6 +148,7 @@ greenhouse:
 - cresta
 - cssmerge
 - ctccampusboard
+- detroitlions
 - didi
 - digs
 - docugami
@@ -164,18 +167,19 @@ greenhouse:
 - freeformfuturecorp
 - gardacp
 - gemini
+- generalmatter
 - genevatrading
 - ginkgobioworks
 - haizelabs
 - honehealth
 - hyannisportresearch
 - incidentiq
-- inizio
 - instalilyai
 - instead
 - integra
 - integrainterns
 - janestreet
+- kensingtontours
 - later
 - lilasciences
 - mavensecuritiesholdingltd
@@ -206,11 +210,9 @@ greenhouse:
 - sevenresearch
 - sharkninjaoperatingllc
 - skhynixmemorysolutionsamericainc
-- snorkelai
 - spacex
 - tenstorrentuniversity
 - thenuclearcompany
-- togetherai
 - toshibaglobalcommercesolutions
 - transmarketgroup
 - tribalscale
@@ -231,6 +233,7 @@ lever:
 - belvederetrading
 - calstart
 - diversified-automation
+- espace
 - evrealty-us
 - field-ai
 - fluxergy-2
@@ -245,7 +248,6 @@ lever:
 - pelmorex
 - pentagrp
 - plus-2
-- reply
 - shyftlabs
 - solopulseco
 - tri
@@ -254,7 +256,6 @@ lever:
 - zoox
 smartrecruiters:
 - aerovect
-- augsburguniversity-minneapolismn
 - averydennison
 - barkbackllc
 - blinqlabs
@@ -283,7 +284,6 @@ smartrecruiters:
 - northwesternmutual
 - redbull
 - regdeskinc
-- renesaselectronics
 - respecinc
 - rrsgroup
 - sightcall
