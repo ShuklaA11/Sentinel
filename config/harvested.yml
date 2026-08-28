@@ -2,7 +2,6 @@
 # Mostly startups. Merged into the poll on top of companies.yml.
 ashby:
 - 1x
-- abridge
 - abundant
 - afterquery
 - ambrook
@@ -19,6 +18,8 @@ ashby:
 - beaconsoftware
 - bild-ai
 - binance
+- bland
+- blockhouse
 - bree
 - centerfield
 - circleback
@@ -32,7 +33,6 @@ ashby:
 - dexmate
 - droyd
 - dryft
-- egra
 - eightsleep
 - ellipsislabs
 - epianeuro
@@ -98,7 +98,6 @@ ashby:
 - prior-labs
 - pylon-labs
 - quadrillion-labs
-- realmalliance
 - reviserobotics
 - rho
 - rivet
@@ -107,6 +106,7 @@ ashby:
 - spacial
 - sweatpals
 - tacit
+- telus-digital
 - terranova
 - tessera-labs
 - the
@@ -244,11 +244,12 @@ greenhouse:
 lever:
 - acceldata
 - alertus
+- anavationllc
 - belvederetrading
 - calstart
 - catalist
+- cesiumastro
 - diversified-automation
-- economicmodeling
 - espace
 - evr
 - evrealty-us
