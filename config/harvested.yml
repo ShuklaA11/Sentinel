@@ -82,10 +82,8 @@ ashby:
 - netic
 - niural
 - northwoodspace
-- npx
 - ntt-data-aivista
 - odin-dynamics
-- oligo
 - opusclip
 - output
 - persona
@@ -94,6 +92,7 @@ ashby:
 - phonic
 - pika
 - pivotrobotics
+- pluralis-research
 - poshmark
 - prior-labs
 - pylon-labs
@@ -103,6 +102,7 @@ ashby:
 - rho
 - rivet
 - serval
+- sierra
 - skydio
 - spacial
 - sweatpals
@@ -121,7 +121,9 @@ ashby:
 - vital-lyfe
 - vmax
 - voleon
+- wealthsimple
 - weave
+- whatnot
 - windborne-systems
 - yotta
 - zello
@@ -149,6 +151,7 @@ greenhouse:
 - audaxgroup
 - axontalentcommunity
 - axq
+- baltimoreorioles
 - blackedgecapital
 - bluelabsanalyticsinc
 - bluestaq
@@ -184,6 +187,7 @@ greenhouse:
 - glossgenius
 - haizelabs
 - honehealth
+- hpiq
 - hyannisportresearch
 - incidentiq
 - instalilyai
@@ -191,6 +195,7 @@ greenhouse:
 - integra
 - integrainterns
 - janestreet
+- k2spacecorporation
 - kodiak
 - later
 - lilasciences
@@ -207,7 +212,6 @@ greenhouse:
 - phoenixcontact
 - point72
 - postman
-- queracomputinginc
 - radixuniversity
 - redwoodmaterials
 - rendezvousrobotics
@@ -228,7 +232,6 @@ greenhouse:
 - transmarketgroup
 - tribalscale
 - trueanomalyinc
-- truveta
 - vardaspace
 - verkada
 - vikingglobalinvestors
@@ -247,7 +250,6 @@ lever:
 - calstart
 - catalist
 - diversified-automation
-- espace
 - evr
 - evrealty-us
 - fluxergy-2
@@ -256,6 +258,7 @@ lever:
 - ifm-us
 - intropic
 - kepler
+- machinalabs
 - make-rain
 - multiplylabs
 - nomagic
