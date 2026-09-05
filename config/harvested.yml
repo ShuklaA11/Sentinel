@@ -84,7 +84,6 @@ ashby:
 - niural
 - northwoodspace
 - ntt-data-aivista
-- oceanus
 - odys-aviation
 - opusclip
 - output
@@ -150,6 +149,7 @@ bamboohr:
 greenhouse:
 - 10alabs
 - albedo
+- amarok
 - andurilindustries
 - appian
 - apptronik
@@ -164,6 +164,7 @@ greenhouse:
 - blackedgecapital
 - bluelabsanalyticsinc
 - botauto
+- brave
 - bti36021
 - celonis
 - chicagotradingcampus
@@ -190,6 +191,7 @@ greenhouse:
 - freeformfuturecorp
 - fspco-op012325
 - gardacp
+- garnerhealth
 - generalmatter
 - genevatrading
 - ginkgobioworks
@@ -197,6 +199,7 @@ greenhouse:
 - honehealth
 - hpiq
 - hyannisportresearch
+- idmeuniversityrecruiting
 - instalilyai
 - instead
 - integra
@@ -232,17 +235,17 @@ greenhouse:
 - sage49
 - samayaai
 - samsungresearchamericainternship
+- scaleai
+- schonfeld
 - scm
 - sevenresearch
 - skhynixmemorysolutionsamericainc
 - skillzinc
-- solidpower
 - spacex
 - syskahennessy
 - tenstorrentuniversity
 - testnisc
 - thenuclearcompany
-- thetradedesk
 - transmarketgroup
 - tribalscale
 - truveta
@@ -318,6 +321,7 @@ smartrecruiters:
 - laxir1
 - leger2
 - llnl
+- loram1
 - luxemediallc
 - nbcuniversal3
 - northwesternmutual
@@ -328,6 +332,7 @@ smartrecruiters:
 - sightcall
 - skyward1
 - smithsgroup2
+- solidigm
 - syngentagroup
 - universityhealthnetwork
 - vwhcapitalmanagementlp
