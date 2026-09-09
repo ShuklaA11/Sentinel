@@ -2,8 +2,8 @@
 # Mostly startups. Merged into the poll on top of companies.yml.
 ashby:
 - 1x
-- abundant
 - afterquery
+- allen-control-systems
 - ambrook
 - ami
 - anthelioncap
@@ -17,6 +17,7 @@ ashby:
 - auctor
 - base-power
 - beaconsoftware
+- bedrock-robotics
 - bild-ai
 - binance
 - bland
@@ -25,6 +26,7 @@ ashby:
 - cheiron
 - circleback
 - composio
+- conductorai
 - constellationspace
 - contoro
 - creatify
@@ -37,7 +39,6 @@ ashby:
 - dryft
 - eightsleep
 - ellipsislabs
-- epianeuro
 - eragon
 - espa
 - etched
@@ -86,6 +87,7 @@ ashby:
 - northwoodspace
 - ntt-data-aivista
 - odys-aviation
+- oneapp
 - opusclip
 - output
 - periodic-labs
@@ -102,17 +104,20 @@ ashby:
 - quadrillion-labs
 - qualified-health-pbc
 - ramielcapital
-- rapdev
 - realmalliance
 - reflect-orbital
 - remarcable-inc
+- retell-ai
+- revel
 - rho
 - rivet
+- semgrep
 - serval
 - sierra
 - skydio
 - spacial
 - sweatpals
+- talos-trading
 - telus-digital
 - terranova
 - tessera-labs
@@ -131,6 +136,7 @@ ashby:
 - voleon
 - wealthsimple
 - weave
+- whatnot
 - windborne-systems
 - yotta
 - zello
@@ -139,9 +145,9 @@ ashby:
 - zuru
 bamboohr:
 - alleghenycounty
+- asuresoftware
 - calpionplutus
 - fullbay
-- marqueebrands
 - mujin
 - ruekertmielke
 - specteraerospace
@@ -166,6 +172,7 @@ greenhouse:
 - botauto
 - brave
 - bti36021
+- chaosindustries
 - chicagotradingcampus
 - clarityinnovates
 - cloudflare
@@ -179,8 +186,8 @@ greenhouse:
 - docugami
 - drweng
 - dvtrading
+- eudia
 - eulerity
-- evolver
 - faradayfuture
 - fccincinnati
 - fgsglobal
@@ -189,12 +196,12 @@ greenhouse:
 - flowtraders
 - freeformfuturecorp
 - fspco-op012325
+- gallup
 - gardacp
 - garnerhealth
 - generalmatter
 - genevatrading
 - ginkgobioworks
-- haizelabs
 - honehealth
 - hpiq
 - hyannisportresearch
@@ -229,6 +236,7 @@ greenhouse:
 - radixuniversity
 - redwoodmaterials
 - rendezvousrobotics
+- rfsmart
 - riversidenaturalfoodsltd
 - roboforce
 - sage49
@@ -250,7 +258,9 @@ greenhouse:
 - truveta
 - vardaspace
 - vaxcyte
+- vercel
 - verkada
+- viamrobotics
 - vikingglobalinvestors
 - virtu
 - voloridgeinvestmentmanagement
@@ -282,8 +292,10 @@ lever:
 - make-rain
 - mirego
 - multiplylabs
+- neighbor
 - nomagic
 - pentagrp
+- protective
 - ravl_io
 - redsox
 - salesdemo-jr
@@ -322,11 +334,12 @@ smartrecruiters:
 - llnl
 - loram1
 - luxemediallc
+- m3usa
 - nbcuniversal3
 - northwesternmutual
-- redbull
 - regdeskinc
 - respecinc
+- rrsgroup
 - shawbrook
 - sightcall
 - skyward1
