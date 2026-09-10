@@ -2,6 +2,7 @@
 # Mostly startups. Merged into the poll on top of companies.yml.
 ashby:
 - 1x
+- abundant
 - afterquery
 - allen-control-systems
 - ambrook
@@ -15,6 +16,7 @@ ashby:
 - astera
 - atomicsemi
 - auctor
+- barnes
 - base-power
 - beaconsoftware
 - bedrock-robotics
@@ -26,7 +28,6 @@ ashby:
 - cheiron
 - circleback
 - composio
-- conductorai
 - constellationspace
 - contoro
 - creatify
@@ -69,7 +70,6 @@ ashby:
 - junior
 - k-id
 - kastle
-- kirin
 - kognitos
 - kos
 - maxima
@@ -82,12 +82,10 @@ ashby:
 - nationgraph
 - neocognition
 - netic
-- niantic-spatial
 - niural
 - northwoodspace
 - ntt-data-aivista
 - odys-aviation
-- oneapp
 - opusclip
 - output
 - periodic-labs
@@ -111,7 +109,9 @@ ashby:
 - revel
 - rho
 - rivet
+- saronic
 - semgrep
+- seqholdings
 - serval
 - sierra
 - skydio
@@ -145,7 +145,6 @@ ashby:
 - zuru
 bamboohr:
 - alleghenycounty
-- asuresoftware
 - calpionplutus
 - fullbay
 - mujin
@@ -156,6 +155,7 @@ greenhouse:
 - 10alabs
 - albedo
 - amarok
+- amperesand
 - andurilindustries
 - appian
 - apptronik
@@ -172,7 +172,6 @@ greenhouse:
 - botauto
 - brave
 - bti36021
-- chaosindustries
 - chicagotradingcampus
 - clarityinnovates
 - cloudflare
@@ -188,12 +187,12 @@ greenhouse:
 - dvtrading
 - eudia
 - eulerity
+- evolver
 - faradayfuture
 - fccincinnati
 - fgsglobal
 - figureai
 - fiveringsllc
-- flowtraders
 - freeformfuturecorp
 - fspco-op012325
 - gallup
@@ -215,6 +214,7 @@ greenhouse:
 - k2spacecorporation
 - kodiak
 - later
+- lexingtonmedical
 - lilasciences
 - lunarenergy
 - mavensecuritiesholdingltd
@@ -226,7 +226,7 @@ greenhouse:
 - newsbreak
 - nisc
 - optiverprivate
-- orennia
+- pacificfusion
 - pdtpartners
 - perpay
 - phoenixcontact
@@ -239,6 +239,7 @@ greenhouse:
 - rfsmart
 - riversidenaturalfoodsltd
 - roboforce
+- rocketlab
 - sage49
 - samayaai
 - samsungresearchamericainternship
@@ -247,7 +248,7 @@ greenhouse:
 - scm
 - sevenresearch
 - skhynixmemorysolutionsamericainc
-- skillzinc
+- smartlyio
 - spacex
 - syskahennessy
 - tenstorrentuniversity
@@ -278,14 +279,18 @@ lever:
 - belvederetrading
 - calstart
 - cesiumastro
+- cimgroup
+- crestoperations
 - diversified-automation
 - dynamiccatholic
 - evr
 - evrealty-us
 - fluxergy-2
 - go-cloudforce
+- gomaterials
 - hermeus
 - ifm-us
+- immuta
 - intropic
 - kepler
 - machinalabs
@@ -299,8 +304,10 @@ lever:
 - ravl_io
 - redsox
 - salesdemo-jr
+- shieldai
 - shyftlabs
 - solopulseco
+- spawglass
 - tri
 - tutorintelligence
 - voltus
@@ -336,11 +343,12 @@ smartrecruiters:
 - luxemediallc
 - m3usa
 - nbcuniversal3
+- netcompany1
 - northwesternmutual
+- pilotcompany
 - regdeskinc
 - respecinc
 - rrsgroup
-- shawbrook
 - sightcall
 - skyward1
 - smithsgroup2
