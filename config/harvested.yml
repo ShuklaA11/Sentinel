@@ -45,6 +45,7 @@ ashby:
 - etched
 - ethglobal
 - exa
+- exegy
 - fab2
 - firetiger
 - forus
@@ -65,7 +66,7 @@ ashby:
 - human-computer-lab
 - hypercubic
 - incident
-- inherent
+- inferact
 - interplay
 - junior
 - k-id
@@ -116,6 +117,7 @@ ashby:
 - sierra
 - skydio
 - spacial
+- swarmaero
 - sweatpals
 - talos-trading
 - telus-digital
@@ -185,7 +187,6 @@ greenhouse:
 - docugami
 - drweng
 - dvtrading
-- eudia
 - eulerity
 - evolver
 - faradayfuture
@@ -203,6 +204,7 @@ greenhouse:
 - ginkgobioworks
 - honehealth
 - hpiq
+- hudl
 - hyannisportresearch
 - idmeuniversityrecruiting
 - instalilyai
@@ -215,6 +217,7 @@ greenhouse:
 - kodiak
 - later
 - lexingtonmedical
+- lightmatter
 - lilasciences
 - lunarenergy
 - mavensecuritiesholdingltd
@@ -251,8 +254,10 @@ greenhouse:
 - smartlyio
 - spacex
 - syskahennessy
+- tanium
 - tenstorrentuniversity
 - testnisc
+- themjcos
 - thenuclearcompany
 - transmarketgroup
 - tribalscale
@@ -264,6 +269,7 @@ greenhouse:
 - viamrobotics
 - vikingglobalinvestors
 - virtu
+- visiersolutionsinc
 - voloridgeinvestmentmanagement
 - walleyecapital-external-students
 - whitewatermidstream
@@ -275,11 +281,9 @@ lever:
 - acceldata
 - alertus
 - altaml
-- anavationllc
 - belvederetrading
 - calstart
 - cesiumastro
-- cimgroup
 - crestoperations
 - diversified-automation
 - dynamiccatholic
@@ -316,7 +320,6 @@ lever:
 - zoox
 smartrecruiters:
 - abbvie
-- acumatica
 - aerovect
 - averydennison
 - axleinformaticsllc
@@ -335,9 +338,9 @@ smartrecruiters:
 - infinitequant
 - interco
 - jobsforhumanity
+- knobelsdorffenterprises
 - kostalgroup
 - laxir1
-- leger2
 - llnl
 - loram1
 - luxemediallc
@@ -353,9 +356,9 @@ smartrecruiters:
 - skyward1
 - smithsgroup2
 - solidigm
-- syngentagroup
 - universityhealthnetwork
 - vwhcapitalmanagementlp
+- wellmarkinc
 - westerndigital
 - williamsracing
 - winsupply1
