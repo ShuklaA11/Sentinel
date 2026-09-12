@@ -2,6 +2,7 @@
 # Mostly startups. Merged into the poll on top of companies.yml.
 ashby:
 - 1x
+- abridge
 - abundant
 - afterquery
 - allen-control-systems
@@ -27,6 +28,7 @@ ashby:
 - centerfield
 - cheiron
 - circleback
+- commure
 - composio
 - constellationspace
 - contoro
@@ -65,6 +67,7 @@ ashby:
 - hubs
 - human-computer-lab
 - hypercubic
+- ibotta
 - incident
 - inferact
 - interplay
@@ -76,6 +79,7 @@ ashby:
 - maxima
 - maximor
 - maxinsights
+- megazone
 - melius
 - meshy
 - mistral
@@ -147,6 +151,7 @@ ashby:
 - zuru
 bamboohr:
 - alleghenycounty
+- armstrongfluidtechnology
 - calpionplutus
 - fullbay
 - mujin
@@ -155,7 +160,6 @@ bamboohr:
 - tnuck
 greenhouse:
 - 10alabs
-- albedo
 - amarok
 - amperesand
 - andurilindustries
@@ -168,12 +172,14 @@ greenhouse:
 - audaxgroup
 - axontalentcommunity
 - axq
+- baidu
 - baltimoreorioles
 - blackedgecapital
 - bluelabsanalyticsinc
 - botauto
 - brave
 - bti36021
+- businessolverinvitationonly
 - chicagotradingcampus
 - clarityinnovates
 - cloudflare
@@ -187,6 +193,7 @@ greenhouse:
 - docugami
 - drweng
 - dvtrading
+- eudia
 - eulerity
 - evolver
 - faradayfuture
@@ -315,6 +322,7 @@ lever:
 - tri
 - tutorintelligence
 - voltus
+- xcimer
 - xpansiv
 - xsolla
 - zoox
@@ -332,6 +340,7 @@ smartrecruiters:
 - customshow
 - encephaloinvestments
 - eurofins
+- fortunebrands
 - gdmsi
 - huckadventures
 - inbulkscorp
@@ -351,11 +360,11 @@ smartrecruiters:
 - pilotcompany
 - regdeskinc
 - respecinc
-- rrsgroup
 - sightcall
 - skyward1
 - smithsgroup2
 - solidigm
+- ttp1
 - universityhealthnetwork
 - vwhcapitalmanagementlp
 - wellmarkinc
