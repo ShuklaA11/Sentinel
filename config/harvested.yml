@@ -26,6 +26,7 @@ ashby:
 - bland
 - bree
 - centerfield
+- chartahealth
 - cheiron
 - circleback
 - commure
@@ -35,6 +36,7 @@ ashby:
 - creatify
 - ctgt
 - cuspai
+- cyvl
 - dedalus-labs
 - deepgram
 - dexmate
@@ -49,14 +51,13 @@ ashby:
 - exa
 - exegy
 - fab2
+- fanvue
 - firetiger
 - forus
-- frontier-health
 - genmd
 - georgian
 - graymatter-robotics
 - gritt
-- gumloop
 - h3x-technologies
 - hadrian-automation
 - hcompany
@@ -91,6 +92,7 @@ ashby:
 - northwoodspace
 - ntt-data-aivista
 - odys-aviation
+- opengov
 - opusclip
 - output
 - periodic-labs
@@ -120,6 +122,8 @@ ashby:
 - sierra
 - skydio
 - spacial
+- spaice-tech
+- superhuman
 - swarmaero
 - sweatpals
 - talos-trading
@@ -143,6 +147,7 @@ ashby:
 - weave
 - whatnot
 - windborne-systems
+- withpace
 - yotta
 - zello
 - zettabyte-space
@@ -152,11 +157,10 @@ bamboohr:
 - alleghenycounty
 - armstrongfluidtechnology
 - calpionplutus
-- fullbay
 - mujin
+- nexthopai
 - ruekertmielke
 - specteraerospace
-- tnuck
 greenhouse:
 - 10alabs
 - amarok
@@ -168,6 +172,7 @@ greenhouse:
 - argmax
 - asteraearlycareer2026
 - astranis
+- athinkingape
 - audaxgroup
 - axontalentcommunity
 - axq
@@ -190,6 +195,7 @@ greenhouse:
 - didi
 - digs
 - docugami
+- doordashcanada
 - drweng
 - dvtrading
 - eudia
@@ -218,6 +224,7 @@ greenhouse:
 - integra
 - integrainterns
 - internshiplist2000
+- ionq
 - janestreet
 - k2spacecorporation
 - klaviyocampus
@@ -229,13 +236,16 @@ greenhouse:
 - lunarenergy
 - mavensecuritiesholdingltd
 - medicalinformaticsengineering
+- mill
 - morsecorpcoop
 - msfcareers
 - mwinternshipprogram
+- nationallifeinsurancecompany
 - neuralink
 - newsbreak
 - nisc
 - optiverprivate
+- orennia
 - pacificfusion
 - pdtpartners
 - perpay
@@ -257,6 +267,8 @@ greenhouse:
 - schonfeld
 - scm
 - sevenresearch
+- sharkninjaoperatingllc
+- singlestore
 - skhynixmemorysolutionsamericainc
 - smartlyio
 - spacex
@@ -281,6 +293,7 @@ greenhouse:
 - walleyecapital-external-students
 - whitewatermidstream
 - workato
+- workshop
 - xairatherapeutics
 - xantium
 - xpengmotors
@@ -296,6 +309,7 @@ lever:
 - crestoperations
 - diversified-automation
 - dynamiccatholic
+- eqbank
 - evr
 - evrealty-us
 - fluxergy-2
@@ -316,7 +330,10 @@ lever:
 - protective
 - ravl_io
 - redsox
+- reply
+- rigetti
 - salesdemo-jr
+- sep
 - shieldai
 - shyftlabs
 - solopulseco
@@ -362,6 +379,7 @@ smartrecruiters:
 - northwesternmutual
 - pilotcompany
 - regdeskinc
+- renesaselectronics
 - respecinc
 - sightcall
 - sikaag
@@ -371,6 +389,7 @@ smartrecruiters:
 - ttp1
 - universityhealthnetwork
 - vwhcapitalmanagementlp
+- wabtec
 - wellmarkinc
 - westerndigital
 - williamsracing
