@@ -37,6 +37,7 @@ ashby:
 - ctgt
 - cuspai
 - cyvl
+- decagon
 - dedalus-labs
 - deepgram
 - dexmate
@@ -83,10 +84,10 @@ ashby:
 - maxinsights
 - megazone
 - melius
+- mercor
 - meshy
 - mistral
 - modal
-- nationgraph
 - neocognition
 - netic
 - niural
@@ -96,10 +97,12 @@ ashby:
 - opengov
 - opusclip
 - output
+- overviewenergy
 - persona
 - phoebe-work
 - phonely
 - phonic
+- physicalintelligence
 - pika
 - pluralis-research
 - poshmark
@@ -132,7 +135,6 @@ ashby:
 - telus-digital
 - terranova
 - tessera-labs
-- the
 - the-exploration-company
 - tilderesearch
 - tryroam
@@ -150,7 +152,6 @@ ashby:
 - windborne-systems
 - withpace
 - yotta
-- zello
 - zettabyte-space
 - zip
 - zuru
@@ -165,6 +166,7 @@ bamboohr:
 - specteraerospace
 greenhouse:
 - 10alabs
+- aegworldwide
 - amarok
 - amperesand
 - andurilindustries
@@ -190,8 +192,10 @@ greenhouse:
 - businessolverinvitationonly
 - chicagotradingcampus
 - clarityinnovates
+- clockworksystems
 - cloudflare
 - compeerfinancial
+- covar
 - cresta
 - cssmerge
 - ctccampusboard
@@ -203,6 +207,8 @@ greenhouse:
 - drweng
 - duolingounirecruitment
 - dvtrading
+- emergentlabsinc
+- eqtcorporation
 - eudia
 - eulerity
 - evolver
@@ -219,6 +225,7 @@ greenhouse:
 - generalmatter
 - genevatrading
 - ginkgobioworks
+- haizelabs
 - hometapjobs
 - honehealth
 - hpiq
@@ -230,6 +237,7 @@ greenhouse:
 - integra
 - integrainterns
 - internshiplist2000
+- intersystems
 - janestreet
 - k2spacecorporation
 - klaviyocampus
@@ -238,13 +246,13 @@ greenhouse:
 - lexingtonmedical
 - lightmatter
 - lilasciences
-- lunarenergy
 - mavensecuritiesholdingltd
 - medicalinformaticsengineering
 - mill
 - morsecorpcoop
 - msfcareers
 - mwinternshipprogram
+- nanopathinc
 - nationallifeinsurancecompany
 - neuralink
 - newsbreak
@@ -256,10 +264,10 @@ greenhouse:
 - perpay
 - phoenixcontact
 - point72
-- postman
 - queracomputinginc
 - radixuniversity
 - redwoodmaterials
+- relaypro
 - rendezvousrobotics
 - rfsmart
 - riversidenaturalfoodsltd
@@ -325,6 +333,7 @@ lever:
 - immuta
 - intropic
 - kepler
+- kitware
 - machinalabs
 - make-rain
 - mirego
@@ -382,6 +391,7 @@ smartrecruiters:
 - northwesternmutual
 - pilotcompany
 - regdeskinc
+- renesaselectronics
 - respecinc
 - sightcall
 - sikaag
@@ -389,9 +399,10 @@ smartrecruiters:
 - smithsgroup2
 - solidigm
 - ttp1
+- vusiongroupsa
 - vwhcapitalmanagementlp
+- wabashvalleypoweralliance
 - wabtec
 - wellmarkinc
 - westerndigital
-- williamsracing
 - winsupply1
