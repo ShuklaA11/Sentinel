@@ -38,6 +38,7 @@ ashby:
 - ctgt
 - cuspai
 - cyvl
+- datologyai
 - decagon
 - dedalus-labs
 - deepgram
@@ -53,6 +54,7 @@ ashby:
 - exa
 - exegy
 - fab2
+- fable
 - fanvue
 - firetiger
 - forus
@@ -148,7 +150,6 @@ ashby:
 - vital-lyfe
 - vmax
 - voleon
-- wealthsimple
 - weave
 - whatnot
 - windborne-systems
@@ -224,6 +225,7 @@ greenhouse:
 - gallup
 - gardacp
 - garnerhealth
+- gemini
 - generalmatter
 - genevatrading
 - ginkgobioworks
@@ -250,6 +252,7 @@ greenhouse:
 - lilasciences
 - mavensecuritiesholdingltd
 - medicalinformaticsengineering
+- metoxinternationalinc
 - mill
 - morsecorpcoop
 - msfcareers
@@ -292,8 +295,10 @@ greenhouse:
 - tanium
 - tenstorrentuniversity
 - testnisc
+- thebrattlegroup
 - themjcos
 - thenuclearcompany
+- togetherai
 - transmarketgroup
 - tribalscale
 - truveta
@@ -315,6 +320,7 @@ greenhouse:
 - xpengmotors
 lever:
 - acceldata
+- achievers
 - acronaviation
 - alertus
 - altaml
@@ -394,7 +400,6 @@ smartrecruiters:
 - northwesternmutual
 - pilotcompany
 - regdeskinc
-- renesaselectronics
 - respecinc
 - sightcall
 - sikaag
