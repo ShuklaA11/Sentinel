@@ -58,11 +58,13 @@ ashby:
 - fanvue
 - firetiger
 - forus
+- g2
 - gecko-robotics
 - genmd
 - georgian
 - graymatter-robotics
 - gritt
+- grow-therapy
 - h3x-technologies
 - hadrian-automation
 - hcompany
@@ -82,6 +84,7 @@ ashby:
 - kastle
 - kognitos
 - kos
+- leantechniques
 - maximor
 - maxinsights
 - megazone
@@ -122,8 +125,8 @@ ashby:
 - remarcable-inc
 - revel
 - rho
+- rhoda-ai
 - rilla
-- rivet
 - rundoo
 - saronic
 - semgrep
@@ -163,6 +166,7 @@ bamboohr:
 - armstrongfluidtechnology
 - calpionplutus
 - lunaroutpost
+- marqueebrands
 - mujin
 - nexthopai
 - ruekertmielke
@@ -170,7 +174,6 @@ bamboohr:
 greenhouse:
 - 10alabs
 - aegworldwide
-- amarok
 - amperesand
 - andurilindustries
 - aperaaiinc
@@ -217,7 +220,6 @@ greenhouse:
 - evolver
 - faradayfuture
 - fccincinnati
-- fgsglobal
 - figureai
 - fiveringsllc
 - freeformfuturecorp
@@ -230,7 +232,6 @@ greenhouse:
 - genevatrading
 - ginkgobioworks
 - haizelabs
-- headlandstechnologiesllc
 - hometapjobs
 - honehealth
 - hpiq
@@ -336,7 +337,6 @@ lever:
 - eqbank
 - evr
 - evrealty-us
-- fluxergy-2
 - go-cloudforce
 - gomaterials
 - hermeus
@@ -397,7 +397,6 @@ smartrecruiters:
 - luxemediallc
 - m3usa
 - nbcuniversal3
-- netcompany1
 - northwesternmutual
 - pilotcompany
 - regdeskinc
