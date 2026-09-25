@@ -26,8 +26,8 @@ ashby:
 - bland
 - bracket-bot
 - bree
+- brightstar-ai
 - centerfield
-- chartahealth
 - cheiron
 - circleback
 - collinear-ai
@@ -49,6 +49,7 @@ ashby:
 - dryft
 - eightsleep
 - ellipsislabs
+- envoy
 - eragon
 - espa
 - etched
@@ -62,6 +63,7 @@ ashby:
 - forus
 - g2
 - gecko-robotics
+- genesis-molecular-ai
 - genmd
 - georgian
 - graymatter-robotics
@@ -137,6 +139,7 @@ ashby:
 - serval
 - sierra
 - skydio
+- snowflake
 - spacial
 - spaice-tech
 - superhuman
@@ -176,7 +179,9 @@ bamboohr:
 - specteraerospace
 greenhouse:
 - 10alabs
+- accuweather
 - aegworldwide
+- aevexaerospace
 - amperesand
 - andurilindustries
 - aperaaiinc
@@ -200,8 +205,10 @@ greenhouse:
 - businessolverinvitationonly
 - chicagotradingcampus
 - clarityinnovates
+- clevelandguardiansbops
 - clockworksystems
 - cloudflare
+- cnssummerassociates
 - compeerfinancial
 - covar
 - cresta
@@ -213,9 +220,11 @@ greenhouse:
 - docugami
 - doordashcanada
 - drweng
+- drwuniversityjobs
 - duolingounirecruitment
 - dvtrading
 - emergentlabsinc
+- eqtcorporation
 - eudia
 - eulerity
 - evolver
@@ -232,9 +241,11 @@ greenhouse:
 - gemini
 - generalmatter
 - genevatrading
+- geocgi
 - ginkgobioworks
 - graphcore
 - haizelabs
+- hevenaerotech
 - hometapjobs
 - honehealth
 - hpiq
@@ -279,7 +290,6 @@ greenhouse:
 - relaypro
 - rendezvousrobotics
 - rfsmart
-- riversidenaturalfoodsltd
 - roboforce
 - rocketlab
 - rothesaygraduates
@@ -319,6 +329,7 @@ greenhouse:
 - whitewatermidstream
 - workato
 - workshop
+- wurljobs
 - xairatherapeutics
 - xantium
 - xpengmotors
@@ -361,18 +372,17 @@ lever:
 - shieldai
 - shyftlabs
 - solopulseco
-- spawglass
 - standtogether
 - tri
 - tutorintelligence
 - voltus
 - xcimer
-- xpansiv
 - xsolla
 - zoox
 smartrecruiters:
 - abbvie
 - aerovect
+- aristanetworks
 - averydennison
 - axleinformaticsllc
 - barkbackllc
@@ -390,6 +400,7 @@ smartrecruiters:
 - inbulkscorp
 - infinitequant
 - interco
+- intuitive
 - jobsforhumanity
 - keenfinity
 - knobelsdorffenterprises
@@ -403,6 +414,7 @@ smartrecruiters:
 - northwesternmutual
 - pilotcompany
 - regdeskinc
+- renesaselectronics
 - respecinc
 - resultant
 - sightcall
