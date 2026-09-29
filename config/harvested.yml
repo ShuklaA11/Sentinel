@@ -59,7 +59,6 @@ ashby:
 - fable
 - fanvue
 - firetiger
-- flint
 - forus
 - g2
 - gecko-robotics
@@ -82,7 +81,6 @@ ashby:
 - incident
 - inferact
 - interplay
-- k-id
 - kastle
 - kognitos
 - kos
@@ -119,10 +117,8 @@ ashby:
 - pressw
 - primer
 - prior-labs
-- pylon-labs
 - quadrillion-labs
 - qualified-health-pbc
-- qumulo
 - ramielcapital
 - realmalliance
 - reflect-orbital
@@ -177,7 +173,6 @@ bamboohr:
 - specteraerospace
 greenhouse:
 - 10alabs
-- aegworldwide
 - aevexaerospace
 - amperesand
 - andurilindustries
@@ -190,7 +185,6 @@ greenhouse:
 - astranis
 - athinkingape
 - audaxgroup
-- axontalentcommunity
 - axq
 - baidu
 - baltimoreorioles
@@ -224,7 +218,6 @@ greenhouse:
 - dvtrading
 - efficientcomputer
 - emergentlabsinc
-- eqtcorporation
 - eudia
 - eulerity
 - evolver
@@ -232,7 +225,6 @@ greenhouse:
 - fccincinnati
 - figureai
 - fiveringsllc
-- flowtraders
 - freeformfuturecorp
 - fspco-op012325
 - gallup
@@ -242,11 +234,11 @@ greenhouse:
 - gemini
 - generalmatter
 - genevatrading
+- gitai
 - graphcore
 - haizelabs
 - hevenaerotech
 - hometapjobs
-- honehealth
 - hpiq
 - hudl
 - hyannisportresearch
@@ -266,7 +258,6 @@ greenhouse:
 - lilasciences
 - mavensecuritiesholdingltd
 - medicalinformaticsengineering
-- mercury
 - mill
 - momentenergy
 - morsecorpcoop
@@ -412,6 +403,7 @@ smartrecruiters:
 - northwesternmutual
 - pilotcompany
 - regdeskinc
+- renesaselectronics
 - respecinc
 - resultant
 - sightcall
