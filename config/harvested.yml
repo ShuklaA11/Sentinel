@@ -2,7 +2,6 @@
 # Mostly startups. Merged into the poll on top of companies.yml.
 ashby:
 - 1x
-- abridge
 - abundant
 - afterquery
 - allen-control-systems
@@ -40,6 +39,7 @@ ashby:
 - ctgt
 - cuspai
 - cyvl
+- dailypay
 - decagon
 - dedalus-labs
 - deepgram
@@ -59,6 +59,7 @@ ashby:
 - fable
 - fanvue
 - firetiger
+- flint
 - forus
 - g2
 - gecko-robotics
@@ -81,6 +82,7 @@ ashby:
 - incident
 - inferact
 - interplay
+- k-id
 - kastle
 - kognitos
 - kos
@@ -105,20 +107,23 @@ ashby:
 - opusclip
 - output
 - overviewenergy
-- pebl
+- perchwell
 - persona
 - phoebe-work
 - phonely
 - phonic
 - physicalintelligence
 - pika
+- plot
 - pluralis-research
 - poshmark
 - pressw
 - primer
 - prior-labs
+- pylon-labs
 - quadrillion-labs
 - qualified-health-pbc
+- qumulo
 - ramielcapital
 - realmalliance
 - reflect-orbital
@@ -134,7 +139,6 @@ ashby:
 - serval
 - sierra
 - skydio
-- snowflake
 - spacial
 - spaice-tech
 - superhuman
@@ -174,6 +178,7 @@ bamboohr:
 greenhouse:
 - 10alabs
 - aevexaerospace
+- amca
 - amperesand
 - andurilindustries
 - aperaaiinc
@@ -183,7 +188,6 @@ greenhouse:
 - assuredguaranty
 - asteraearlycareer2026
 - astranis
-- athinkingape
 - audaxgroup
 - axq
 - baidu
@@ -218,6 +222,8 @@ greenhouse:
 - dvtrading
 - efficientcomputer
 - emergentlabsinc
+- enova
+- eqtcorporation
 - eudia
 - eulerity
 - evolver
@@ -237,6 +243,7 @@ greenhouse:
 - gitai
 - graphcore
 - haizelabs
+- haven
 - hevenaerotech
 - hometapjobs
 - hpiq
@@ -285,7 +292,6 @@ greenhouse:
 - rocketlab
 - sage49
 - samayaai
-- samsungresearchamericainternship
 - scaleai
 - schonfeld
 - scm
@@ -294,6 +300,7 @@ greenhouse:
 - singlestore
 - skhynixmemorysolutionsamericainc
 - smartlyio
+- sonyinteractiveentertainmentglobal
 - spacex
 - syskahennessy
 - tanium
@@ -313,7 +320,6 @@ greenhouse:
 - viamrobotics
 - vikingglobalinvestors
 - virtu
-- visiersolutionsinc
 - voloridgeinvestmentmanagement
 - walleyecapital-external-students
 - whitewatermidstream
@@ -329,7 +335,6 @@ lever:
 - achievers
 - acronaviation
 - alertus
-- altaml
 - anavationllc
 - belvederetrading
 - cesiumastro
@@ -366,7 +371,6 @@ lever:
 - tri
 - tutorintelligence
 - xcimer
-- xsolla
 - zoox
 smartrecruiters:
 - abbvie
@@ -406,13 +410,13 @@ smartrecruiters:
 - renesaselectronics
 - respecinc
 - resultant
+- sgs
 - sightcall
 - skyward1
 - smithsgroup2
 - solidigm
 - ttp1
 - vusiongroupsa
-- vwhcapitalmanagementlp
 - wabashvalleypoweralliance
 - wabtec
 - wellmarkinc
