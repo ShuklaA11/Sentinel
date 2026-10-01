@@ -2,6 +2,7 @@
 # Mostly startups. Merged into the poll on top of companies.yml.
 ashby:
 - 1x
+- abridge
 - abundant
 - afterquery
 - allen-control-systems
@@ -25,10 +26,10 @@ ashby:
 - bracket-bot
 - bree
 - brightstar-ai
-- centerfield
 - chartahealth
 - cheiron
 - circleback
+- claylabs
 - collinear-ai
 - composio
 - conductorai
@@ -40,6 +41,7 @@ ashby:
 - cuspai
 - cyvl
 - dailypay
+- dandy
 - decagon
 - dedalus-labs
 - deepgram
@@ -48,6 +50,7 @@ ashby:
 - dryft
 - eightsleep
 - ellipsislabs
+- ema
 - envoy
 - eragon
 - espa
@@ -61,7 +64,6 @@ ashby:
 - firetiger
 - flint
 - forus
-- g2
 - gecko-robotics
 - genmd
 - georgian
@@ -117,7 +119,6 @@ ashby:
 - plot
 - pluralis-research
 - poshmark
-- pressw
 - primer
 - prior-labs
 - pylon-labs
@@ -129,7 +130,6 @@ ashby:
 - reflect-orbital
 - remarcable-inc
 - revel
-- rho
 - rhoda-ai
 - rilla
 - rundoo
@@ -177,6 +177,7 @@ bamboohr:
 - specteraerospace
 greenhouse:
 - 10alabs
+- 21shares
 - aevexaerospace
 - amca
 - amperesand
@@ -200,9 +201,9 @@ greenhouse:
 - brevium
 - bti36021
 - businessolverinvitationonly
+- capstoneinvestmentadvisors
 - chicagotradingcampus
 - clarityinnovates
-- clevelandguardiansbops
 - clockworksystems
 - cloudflare
 - cnssummerassociates
@@ -240,6 +241,7 @@ greenhouse:
 - gemini
 - generalmatter
 - genevatrading
+- genscript
 - gitai
 - graphcore
 - haizelabs
@@ -262,13 +264,13 @@ greenhouse:
 - kodiak
 - later
 - lightmatter
-- lilasciences
 - mavensecuritiesholdingltd
 - medicalinformaticsengineering
 - mill
 - momentenergy
 - morsecorpcoop
 - msfcareers
+- muonspace
 - mwinternshipprogram
 - nanopathinc
 - nationallifeinsurancecompany
@@ -332,7 +334,6 @@ greenhouse:
 - ziprecruiter
 lever:
 - acceldata
-- achievers
 - acronaviation
 - alertus
 - anavationllc
@@ -358,6 +359,7 @@ lever:
 - mirego
 - multiplylabs
 - neighbor
+- patchmypc
 - pentagrp
 - protective
 - ravl_io
@@ -370,6 +372,7 @@ lever:
 - standtogether
 - tri
 - tutorintelligence
+- wepclinical
 - xcimer
 - zoox
 smartrecruiters:
@@ -385,6 +388,7 @@ smartrecruiters:
 - clinicalink
 - codeage
 - customshow
+- dpdgroupuk1
 - encephaloinvestments
 - eurofins
 - fortunebrands
@@ -407,7 +411,6 @@ smartrecruiters:
 - northwesternmutual
 - pilotcompany
 - regdeskinc
-- renesaselectronics
 - respecinc
 - resultant
 - sgs
@@ -418,7 +421,6 @@ smartrecruiters:
 - ttp1
 - vusiongroupsa
 - wabashvalleypoweralliance
-- wabtec
 - wellmarkinc
 - westerndigital
 - winsupply1
