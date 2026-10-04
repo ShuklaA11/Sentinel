@@ -41,7 +41,6 @@ ashby:
 - ctgt
 - cuspai
 - cyvl
-- dailypay
 - decagon
 - dedalus-labs
 - deepgram
@@ -50,7 +49,6 @@ ashby:
 - eightsleep
 - ellipsislabs
 - ema
-- envoy
 - eragon
 - espa
 - etched
@@ -61,7 +59,6 @@ ashby:
 - fable
 - fanvue
 - firetiger
-- flint
 - forus
 - gecko-robotics
 - genmd
@@ -81,7 +78,6 @@ ashby:
 - homebase
 - hubs
 - human-computer-lab
-- humanoid
 - hypercubic
 - ibotta
 - incident
@@ -103,6 +99,7 @@ ashby:
 - neocognition
 - netic
 - niural
+- normalcomputing
 - northwoodspace
 - npx
 - ntt-data-aivista
@@ -111,7 +108,6 @@ ashby:
 - opengov
 - opusclip
 - output
-- overviewenergy
 - perchwell
 - persona
 - phoebe-work
@@ -123,18 +119,15 @@ ashby:
 - pluralis-research
 - poshmark
 - primer
-- prior-labs
 - pylon-labs
 - quadrillion-labs
 - qualified-health-pbc
-- qumulo
-- ramielcapital
 - range
 - realmalliance
 - reflect-orbital
 - remarcable-inc
 - revel
-- rhoda-ai
+- reviserobotics
 - rilla
 - rundoo
 - saronic
@@ -143,7 +136,6 @@ ashby:
 - serval
 - sierra
 - skydio
-- solink
 - spacial
 - spaice-tech
 - superhuman
@@ -233,7 +225,6 @@ greenhouse:
 - efficientcomputer
 - emergentlabsinc
 - enova
-- eqtcorporation
 - eudia
 - eulerity
 - evolver
@@ -247,7 +238,6 @@ greenhouse:
 - gardacp
 - garnerhealth
 - gassouth
-- gcmgrosvenor
 - gemini
 - generalmatter
 - genevatrading
@@ -286,7 +276,6 @@ greenhouse:
 - neuralink
 - newsbreak
 - nisc
-- optiverprivate
 - orennia
 - pacificfusion
 - pdtpartners
@@ -340,7 +329,6 @@ greenhouse:
 - workshop
 - wurljobs
 - xai
-- xairatherapeutics
 - xantium
 - xpengmotors
 - ziprecruiter
@@ -373,7 +361,6 @@ lever:
 - neighbor
 - pentagrp
 - protective
-- ravl_io
 - rigetti
 - salesdemo-jr
 - sep
@@ -382,6 +369,7 @@ lever:
 - shyftlabs
 - solopulseco
 - standtogether
+- thea
 - tri
 - tutorintelligence
 - wepclinical
@@ -412,7 +400,6 @@ smartrecruiters:
 - intuitive
 - jobsforhumanity
 - keenfinity
-- knobelsdorffenterprises
 - kostalgroup
 - laxir1
 - llnl
@@ -432,7 +419,6 @@ smartrecruiters:
 - ttp1
 - vusiongroupsa
 - wabashvalleypoweralliance
-- wabtec
 - wellmarkinc
 - westerndigital
 - winsupply1
