@@ -43,11 +43,13 @@ ashby:
 - cuspai
 - cyvl
 - dailypay
+- dandy
 - decagon
 - dedalus-labs
 - deepgram
 - dexmate
 - droyd
+- dryft
 - eightsleep
 - ellipsislabs
 - ema
@@ -59,7 +61,6 @@ ashby:
 - exa
 - exegy
 - fab2
-- fable
 - fanvue
 - firetiger
 - flint
@@ -101,11 +102,11 @@ ashby:
 - modal
 - neocognition
 - netic
+- niantic-spatial
 - niural
 - normalcomputing
 - northwoodspace
 - npx
-- ntt-data-aivista
 - odys-aviation
 - oneapp
 - opengov
@@ -131,9 +132,11 @@ ashby:
 - realmalliance
 - reflect-orbital
 - remarcable-inc
+- revel
 - reviserobotics
 - rhoda-ai
 - rilla
+- rivet
 - rundoo
 - saronic
 - semgrep
@@ -211,11 +214,13 @@ greenhouse:
 - capstoneinvestmentadvisors
 - chicagotradingcampus
 - clarityinnovates
+- clenera
 - clevelandguardiansbops
 - clockworksystems
 - cloudflare
 - cnssummerassociates
 - compeerfinancial
+- courierhealth
 - covar
 - cresta
 - cssmerge
@@ -227,10 +232,12 @@ greenhouse:
 - docugami
 - doordashcanada
 - drweng
+- drwuniversityjobs
 - duolingounirecruitment
 - dvtrading
 - efficientcomputer
 - emergentlabsinc
+- engineersgate
 - enova
 - eqtcorporation
 - eudia
@@ -272,6 +279,7 @@ greenhouse:
 - k2spacecorporation
 - khanacademy
 - klaviyocampus
+- knowbe4
 - kodiak
 - later
 - lightmatter
@@ -294,6 +302,7 @@ greenhouse:
 - phoenixcontact
 - point72
 - profluent
+- purestorage
 - queracomputinginc
 - radixuniversity
 - redwoodmaterials
@@ -310,6 +319,7 @@ greenhouse:
 - schonfeld
 - scm
 - sevenresearch
+- sigmacomputing
 - signifyd95
 - singlestore
 - skhynixmemorysolutionsamericainc
@@ -371,7 +381,6 @@ lever:
 - mirego
 - multiplylabs
 - neighbor
-- pentagrp
 - protective
 - rigetti
 - salesdemo-jr
