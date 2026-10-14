@@ -27,6 +27,7 @@ ashby:
 - blp-digital
 - bobyard
 - bracket-bot
+- brainco
 - bree
 - brightstar-ai
 - chartahealth
@@ -67,7 +68,6 @@ ashby:
 - forus
 - gecko-robotics
 - georgian
-- goodlord
 - govsignals
 - graymatter-robotics
 - gritt
@@ -118,6 +118,7 @@ ashby:
 - opusclip
 - output
 - pangramlabs
+- pebl
 - perchwell
 - persona
 - phoebe-work
@@ -131,7 +132,6 @@ ashby:
 - primer
 - pylon-labs
 - quadrillion-labs
-- qualified-health-pbc
 - qumulo
 - range
 - realmalliance
@@ -141,7 +141,6 @@ ashby:
 - reviserobotics
 - rhoda-ai
 - rilla
-- rivet
 - rundoo
 - saronic
 - semgrep
@@ -174,7 +173,6 @@ ashby:
 - withpace
 - yotta
 - zettabyte-space
-- zip
 - zuru
 bamboohr:
 - armstrongfluidtechnology
@@ -182,6 +180,7 @@ bamboohr:
 - lunaroutpost
 - marqueebrands
 - nexthopai
+- profoundmedical
 - ruekertmielke
 - specteraerospace
 greenhouse:
@@ -203,6 +202,7 @@ greenhouse:
 - astranis
 - atoms
 - audaxgroup
+- axontalentcommunity
 - axq
 - baidu
 - baltimoreorioles
@@ -247,6 +247,7 @@ greenhouse:
 - fccincinnati
 - figureai
 - fiveringsllc
+- flowtraders
 - foundenergy
 - freeformfuturecorp
 - fspco-op012325
@@ -261,6 +262,7 @@ greenhouse:
 - genscript
 - gitai
 - gleanwork
+- groma
 - guidepointsecurity
 - haizelabs
 - harbingermotors
@@ -303,7 +305,6 @@ greenhouse:
 - perpay
 - phoenixcontact
 - point72
-- pointc
 - profluent
 - purestorage
 - queracomputinginc
@@ -332,7 +333,7 @@ greenhouse:
 - solutions
 - sonyinteractiveentertainmentglobal
 - spacex
-- stackadapt-confidential
+- stateaffairs
 - syskahennessy
 - tanium
 - tenet3
@@ -392,6 +393,7 @@ lever:
 - multiplylabs
 - neighbor
 - protective
+- rhombus-systems
 - rigetti
 - salesdemo-jr
 - sep
@@ -444,6 +446,7 @@ smartrecruiters:
 - regdeskinc
 - renesaselectronics
 - resultant
+- servicenow
 - sgs
 - sightcall
 - skyward1
