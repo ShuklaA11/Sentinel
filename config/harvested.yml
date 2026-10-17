@@ -6,6 +6,7 @@ ashby:
 - abridge
 - abundant
 - afterquery
+- agzen
 - allen-control-systems
 - ambrook
 - ami
@@ -16,6 +17,7 @@ ashby:
 - aptura
 - architect
 - armadin
+- assorthealth
 - astera
 - atomicsemi
 - auctor
@@ -43,7 +45,6 @@ ashby:
 - ctgt
 - cuspai
 - cyvl
-- dailypay
 - dandy
 - decagon
 - dedalus-labs
@@ -67,6 +68,7 @@ ashby:
 - firetiger
 - flint
 - forus
+- fsh
 - gecko-robotics
 - georgian
 - goodlord
@@ -114,7 +116,6 @@ ashby:
 - npx
 - odys-aviation
 - oneapp
-- opengov
 - opusclip
 - output
 - pangramlabs
@@ -136,7 +137,6 @@ ashby:
 - range
 - realmalliance
 - reflect-orbital
-- remarcable-inc
 - revel
 - reviserobotics
 - rhoda-ai
@@ -180,7 +180,6 @@ bamboohr:
 - calpionplutus
 - lunaroutpost
 - nexthopai
-- profoundmedical
 - specteraerospace
 greenhouse:
 - 10alabs
@@ -253,7 +252,6 @@ greenhouse:
 - gallup
 - gardacp
 - garnerhealth
-- gassouth
 - gcmgrosvenor
 - gemini
 - generalmatter
@@ -282,7 +280,6 @@ greenhouse:
 - judihealth
 - k2spacecorporation
 - kensingtontours
-- khanacademy
 - klaviyocampus
 - kodiak
 - later
@@ -374,6 +371,7 @@ lever:
 - atomcomputing
 - azul
 - belvederetrading
+- bhvr
 - brooksrunning
 - cesiumastro
 - cfsenergy
@@ -393,11 +391,11 @@ lever:
 - intropic
 - kepler
 - kitware
-- machinalabs
 - magnetforensics
 - make-rain
 - multiplylabs
 - neighbor
+- pattern
 - protective
 - researchinnovations
 - rhombus-systems
@@ -414,6 +412,7 @@ lever:
 - tri
 - tutorintelligence
 - viget
+- waabi
 - xcimer
 - zoox
 smartrecruiters:
@@ -423,8 +422,6 @@ smartrecruiters:
 - aristanetworks
 - averydennison
 - axleinformaticsllc
-- barkbackllc
-- blinqlabs
 - boschgroup
 - canva
 - captechconsulting
