@@ -38,6 +38,7 @@ ashby:
 - circleback
 - claylabs
 - clera
+- clickhouse
 - collinear-ai
 - composio
 - conductorai
@@ -57,7 +58,6 @@ ashby:
 - eightsleep
 - ellipsislabs
 - ema
-- envoy
 - eragon
 - espa
 - etched
@@ -90,8 +90,10 @@ ashby:
 - human-computer-lab
 - hypercubic
 - ibotta
+- illumio
 - incident
 - inferact
+- integrate
 - interplay
 - k-id
 - kastle
@@ -104,6 +106,7 @@ ashby:
 - melius
 - mercor
 - meshy
+- metamorphic
 - meter
 - mistral
 - modal
@@ -135,6 +138,7 @@ ashby:
 - qumulo
 - range
 - realmalliance
+- red-gate
 - reflect-orbital
 - revel
 - reviserobotics
@@ -151,8 +155,8 @@ ashby:
 - spacial
 - spaice-tech
 - spaitial
+- steel
 - stradahq
-- sweatpals
 - talos-trading
 - telus-digital
 - tensorwave
@@ -178,8 +182,10 @@ ashby:
 bamboohr:
 - armstrongfluidtechnology
 - calpionplutus
+- geospectrum
 - lunaroutpost
 - nexthopai
+- pictonmahoney
 - specteraerospace
 greenhouse:
 - 10alabs
@@ -231,6 +237,7 @@ greenhouse:
 - digs
 - docugami
 - doordashcanada
+- drivewealth
 - drweng
 - drwuniversityjobs
 - duolingounirecruitment
@@ -260,12 +267,13 @@ greenhouse:
 - genscript
 - gitai
 - gleanwork
+- gofundme
+- graphcore
 - gravitonresearchcapital
 - groma
 - guidepointsecurity
 - haizelabs
 - harbingermotors
-- haven
 - heygen
 - hometapjobs
 - horizonindustrieslimited
@@ -333,7 +341,6 @@ greenhouse:
 - smartlyio
 - snorkelai
 - solutions
-- sonyinteractiveentertainmentglobal
 - spacex
 - stateaffairs
 - syskahennessy
@@ -353,7 +360,6 @@ greenhouse:
 - vaxcyte
 - vercel
 - verkada
-- vestmark
 - viamrobotics
 - vikingglobalinvestors
 - virtu
@@ -390,6 +396,7 @@ lever:
 - go-cloudforce
 - gomaterials
 - hermeus
+- humble-robotics
 - ifm-us
 - immuta
 - intropic
@@ -404,7 +411,6 @@ lever:
 - protective
 - researchinnovations
 - rhombus-systems
-- rigetti
 - runlaminar
 - salesdemo-jr
 - sep
@@ -443,6 +449,7 @@ smartrecruiters:
 - keenfinity
 - kostalgroup
 - laxir1
+- linkedin3
 - llnl
 - luxemediallc
 - m3usa
@@ -451,11 +458,9 @@ smartrecruiters:
 - paconsulting
 - pilotcompany
 - regdeskinc
-- resultant
 - servicenow
 - sgs
 - sightcall
-- skyward1
 - smithsgroup2
 - solidigm
 - syngentagroup
