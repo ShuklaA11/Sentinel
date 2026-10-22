@@ -23,7 +23,6 @@ ashby:
 - auctor
 - barnes
 - base-power
-- beaconsoftware
 - bedrock-robotics
 - bild-ai
 - blp-digital
@@ -45,6 +44,7 @@ ashby:
 - constellationspace
 - cowboyspace
 - creatify
+- crusoe
 - ctgt
 - cuspai
 - cyvl
@@ -81,7 +81,6 @@ ashby:
 - hadrian-automation
 - happyrobot
 - harvey
-- hcompany
 - heliux
 - heron-power
 - hiverge
@@ -106,6 +105,7 @@ ashby:
 - melius
 - mercor
 - meshy
+- metalenz
 - metamorphic
 - meter
 - mistral
@@ -113,11 +113,12 @@ ashby:
 - neocognition
 - netic
 - niural
-- northwoodspace
+- nox-metals
 - npx
 - nubank
 - odys-aviation
 - oneapp
+- openart
 - opusclip
 - output
 - pangramlabs
@@ -157,6 +158,7 @@ ashby:
 - spaitial
 - steel
 - stradahq
+- tacit
 - talos-trading
 - telus-digital
 - tensorwave
@@ -173,6 +175,7 @@ ashby:
 - vital-lyfe
 - vmax
 - voleon
+- walrusfi
 - whatnot
 - windborne-systems
 - withpace
@@ -180,7 +183,6 @@ ashby:
 - zettabyte-space
 - zuru
 bamboohr:
-- armstrongfluidtechnology
 - calpionplutus
 - geospectrum
 - lunaroutpost
@@ -189,7 +191,6 @@ bamboohr:
 - specteraerospace
 greenhouse:
 - 10alabs
-- 21shares
 - advancedspace
 - aevexaerospace
 - amca
@@ -219,6 +220,7 @@ greenhouse:
 - brave
 - braze
 - brevium
+- brunswickgroup
 - businessolverinvitationonly
 - capstoneinvestmentadvisors
 - chicagotradingcampus
@@ -354,6 +356,7 @@ greenhouse:
 - thenewyorktimes
 - thenuclearcompany
 - togetherai
+- trace3
 - transmarketgroup
 - tribalscale
 - vardaspace
@@ -377,7 +380,7 @@ greenhouse:
 lever:
 - acceldata
 - acronaviation
-- alertus
+- analyticpartners
 - anavationllc
 - atomcomputing
 - azul
@@ -404,6 +407,7 @@ lever:
 - kitware
 - magnetforensics
 - make-rain
+- massschoolbuildings
 - multiplylabs
 - neighbor
 - parallelwireless
@@ -423,6 +427,7 @@ lever:
 - tri
 - viget
 - waabi
+- wisdomtree
 - xcimer
 - zoox
 smartrecruiters:
@@ -437,6 +442,7 @@ smartrecruiters:
 - captechconsulting
 - clinicalink
 - customshow
+- edf-uk
 - encephaloinvestments
 - eurofins
 - fortunebrands
@@ -448,7 +454,6 @@ smartrecruiters:
 - intuitive
 - keenfinity
 - kostalgroup
-- laxir1
 - linkedin3
 - llnl
 - luxemediallc
