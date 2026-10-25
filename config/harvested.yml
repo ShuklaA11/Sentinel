@@ -2,7 +2,6 @@
 # Mostly startups. Merged into the poll on top of companies.yml.
 ashby:
 - 1password
-- abridge
 - abundant
 - afterquery
 - agzen
@@ -17,7 +16,6 @@ ashby:
 - architect
 - armadin
 - assorthealth
-- astera
 - atomicsemi
 - auctor
 - barnes
@@ -35,7 +33,6 @@ ashby:
 - cheiron
 - circleback
 - claylabs
-- clera
 - clickhouse
 - collinear-ai
 - composio
@@ -43,14 +40,12 @@ ashby:
 - constellationspace
 - cowboyspace
 - creatify
-- crusoe
 - ctgt
 - cuspai
 - cyvl
 - dandy
 - decagon
 - dedalus-labs
-- deepgram
 - dexmate
 - droyd
 - dryft
@@ -60,7 +55,6 @@ ashby:
 - eragon
 - espa
 - etched
-- ethglobal
 - exa
 - exegy
 - fab2
@@ -82,17 +76,12 @@ ashby:
 - harvey
 - heliux
 - heron-power
-- hex
 - hiverge
-- homebase
 - hubs
 - human-computer-lab
-- hypercubic
 - ibotta
-- illumio
 - incident
 - inferact
-- integrate
 - interplay
 - kastle
 - kognitos
@@ -131,7 +120,6 @@ ashby:
 - pika
 - plot
 - pluralis-research
-- poshmark
 - primer
 - pylon-labs
 - quadrillion-labs
@@ -147,7 +135,6 @@ ashby:
 - rundoo
 - sardine
 - saronic
-- scout-ai
 - semgrep
 - seqholdings
 - serval
@@ -193,9 +180,7 @@ bamboohr:
 - specteraerospace
 greenhouse:
 - 10alabs
-- advancedspace
 - aevexaerospace
-- aidashinc
 - amca
 - amendconsulting
 - amperesand
@@ -329,7 +314,6 @@ greenhouse:
 - queracomputinginc
 - radixuniversity
 - relaypro
-- rendezvousrobotics
 - rfsmart
 - roboforce
 - rocketlab
@@ -338,13 +322,11 @@ greenhouse:
 - sage49
 - scaleai
 - schonfeld
-- scm
 - sevenresearch
 - sharkninjaoperatingllc
 - sigmacomputing
 - signifyd95
 - singlestore
-- skhynixmemorysolutionsamericainc
 - smartlyio
 - snorkelai
 - solutions
@@ -373,7 +355,6 @@ greenhouse:
 - vikingglobalinvestors
 - virtu
 - voloridgeinvestmentmanagement
-- voyagertechnologiesinc
 - walleyecapital-external-students
 - wfclainc
 - whitewatermidstream
@@ -447,7 +428,6 @@ smartrecruiters:
 - axleinformaticsllc
 - bertelsmann-jobs
 - boschgroup
-- canva
 - captechconsulting
 - clinicalink
 - customshow
@@ -479,7 +459,6 @@ smartrecruiters:
 - solidigm
 - syngentagroup
 - ttp1
-- veoliaenvironnementsa
 - vusiongroupsa
 - wellmarkinc
 - westerndigital
