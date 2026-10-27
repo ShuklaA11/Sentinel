@@ -11,12 +11,12 @@ ashby:
 - amplify
 - antares
 - anthelioncap
-- apex-technology-inc
 - applied
 - architect
 - armadin
 - atomicsemi
 - auctor
+- aurora-operations-inc
 - barnes
 - base-power
 - bedrock-robotics
@@ -68,13 +68,12 @@ ashby:
 - graymatter-robotics
 - gritt
 - grow-therapy
-- h3x-technologies
 - hadrian-automation
 - happyrobot
-- harvey
 - heliux
 - heron-power
 - hiverge
+- hiya
 - hubs
 - human-computer-lab
 - ibotta
@@ -98,7 +97,9 @@ ashby:
 - modal
 - neocognition
 - netic
+- niantic-spatial
 - niural
+- normalcomputing
 - nox-metals
 - npx
 - nubank
@@ -134,7 +135,6 @@ ashby:
 - sardine
 - saronic
 - semgrep
-- seqholdings
 - serval
 - sierra
 - skydio
@@ -149,7 +149,6 @@ ashby:
 - telus-digital
 - tensorwave
 - terranova
-- tessera-labs
 - the-exploration-company
 - tilderesearch
 - tracelabs
@@ -189,7 +188,6 @@ greenhouse:
 - arcboatcompany
 - arcesiumllc
 - argmax
-- assuredguaranty
 - asteraearlycareer2026
 - asteraearlycareer2027
 - astranis
@@ -247,7 +245,6 @@ greenhouse:
 - freestonecapitalmanagement
 - fspco-op012325
 - gallup
-- gardacp
 - garnerhealth
 - gcmgrosvenor
 - gemini
@@ -258,13 +255,13 @@ greenhouse:
 - gleanwork
 - gofundme
 - graphcore
-- grassrootsanalytics
 - gravitonresearchcapital
 - groma
 - guidepointsecurity
 - haizelabs
 - harbingermotors
 - heygen
+- hivefinancialsystems
 - horizonindustrieslimited
 - hpiq
 - hyannisportresearch
@@ -287,6 +284,7 @@ greenhouse:
 - later
 - legendcareers
 - lightmatter
+- lilasciences
 - mavensecuritiesholdingltd
 - memx
 - mill
@@ -303,8 +301,10 @@ greenhouse:
 - opensesame
 - orennia
 - pacificfusion
+- parallel
 - pdtpartners
 - perpay
+- phaidra
 - phoenixcontact
 - point72
 - profluent
@@ -332,7 +332,6 @@ greenhouse:
 - stateaffairs
 - studiokraftonboard
 - syskahennessy
-- systemstechnologyresearch
 - tanium
 - tenet3
 - tenstorrentuniversity
@@ -375,7 +374,6 @@ lever:
 - bosonai
 - brooksrunning
 - cesiumastro
-- cfsenergy
 - colibrigroup
 - crestoperations
 - dynamiccatholic
@@ -403,6 +401,7 @@ lever:
 - researchinnovations
 - runlaminar
 - salesdemo-jr
+- saviynt
 - sep
 - shieldai
 - shopback-2
