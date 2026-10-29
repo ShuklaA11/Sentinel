@@ -69,6 +69,7 @@ ashby:
 - fsh
 - gecko-robotics
 - generalmagic
+- genesis-molecular-ai
 - georgian
 - govsignals
 - graymatter-robotics
@@ -91,6 +92,7 @@ ashby:
 - interplay
 - ixianrobotics
 - kastle
+- keyrock
 - kognitos
 - kos
 - laminar-jobs
@@ -165,6 +167,7 @@ ashby:
 - spaitial
 - steel
 - stradahq
+- subtotal
 - sycamore
 - tacit
 - talos-trading
@@ -173,6 +176,7 @@ ashby:
 - terranova
 - tessera-labs
 - the-exploration-company
+- the-robotics-company
 - tilderesearch
 - tracelabs
 - tryroam
@@ -186,9 +190,11 @@ ashby:
 - vmax
 - voleon
 - walrusfi
+- webfx
 - whatnot
 - windborne-systems
 - withpace
+- worldengine
 - xterra
 - yotta
 - zettabyte-space
@@ -198,13 +204,13 @@ bamboohr:
 - calpionplutus
 - geospectrum
 - lunaroutpost
-- nomadgcs
 - pictonmahoney
 - specteraerospace
 greenhouse:
 - 10alabs
 - acluinternships
 - aevexaerospace
+- akunacapitaloci
 - amca
 - amendconsulting
 - amperesand
@@ -233,6 +239,7 @@ greenhouse:
 - brevium
 - businessolverinvitationonly
 - capstoneinvestmentadvisors
+- castelioncorporation
 - chicagotradingcampus
 - clarityinnovates
 - clockworksystems
@@ -267,6 +274,7 @@ greenhouse:
 - foundenergy
 - freeformfuturecorp
 - fspco-op012325
+- ftsp27co-ops
 - gallup
 - garnerhealth
 - gcmgrosvenor
@@ -278,6 +286,7 @@ greenhouse:
 - gleanwork
 - gofundme
 - graphcore
+- graphcore-early-careers
 - gravitonresearchcapital
 - groma
 - guidepointsecurity
@@ -287,6 +296,7 @@ greenhouse:
 - hivefinancialsystems
 - horizonindustrieslimited
 - hpiq
+- hpsinterns
 - hyannisportresearch
 - idmeuniversityrecruiting
 - insomniac
@@ -321,6 +331,7 @@ greenhouse:
 - neuralink
 - newsbreak
 - nisc
+- nyisocoops
 - opensesame
 - orennia
 - pacificfusion
@@ -335,15 +346,18 @@ greenhouse:
 - queracomputinginc
 - radixuniversity
 - relaypro
+- rendezvousrobotics
 - rfsmart
 - roboforce
 - rocketlab
 - rothesaygraduates
 - ruggedrobotics
 - sage49
+- samsungresearchamericainternship
 - samsungsemiconductor
 - scaleai
 - schonfeld
+- scmaea
 - sevenresearch
 - sharkninjaoperatingllc
 - sigmacomputing
@@ -354,6 +368,7 @@ greenhouse:
 - spacex
 - stateaffairs
 - studiokraftonboard
+- sxinternships
 - syskahennessy
 - tanium
 - tenet3
@@ -368,6 +383,7 @@ greenhouse:
 - trace3
 - transmarketgroup
 - tribalscale
+- usafacts
 - vardaspace
 - vercel
 - verkada
@@ -441,7 +457,6 @@ lever:
 - upscale-ai
 - viget
 - waabi
-- wisdomtree
 - zoox
 smartrecruiters:
 - abbvie
@@ -462,10 +477,10 @@ smartrecruiters:
 - huckadventures
 - inbulkscorp
 - infinitequant
-- interco
 - intuitive
 - keenfinity
 - kostalgroup
+- legalandgeneral
 - linkedin3
 - llnl
 - luxemediallc
