@@ -49,7 +49,6 @@ ashby:
 - decagon
 - dedalus-labs
 - dexmate
-- dmodel
 - drivewealth
 - droyd
 - dryft
@@ -63,15 +62,14 @@ ashby:
 - f7d8749a-72d6-407c-bf98-292ea630c73a
 - fab2
 - fanvue
-- firetiger
 - flint
 - forus
 - fsh
 - gecko-robotics
 - generalmagic
 - genesis-molecular-ai
+- geniusai
 - georgian
-- govsignals
 - graymatter-robotics
 - gritt
 - grow-therapy
@@ -91,7 +89,6 @@ ashby:
 - integrate
 - interplay
 - ixianrobotics
-- kastle
 - keyrock
 - kognitos
 - kos
@@ -119,6 +116,7 @@ ashby:
 - nubank
 - odys-aviation
 - old-mission-capital
+- olix
 - oneapp
 - onerobot
 - openart
@@ -191,6 +189,7 @@ ashby:
 - voleon
 - walrusfi
 - webfx
+- westmag
 - whatnot
 - windborne-systems
 - withpace
@@ -209,6 +208,7 @@ bamboohr:
 greenhouse:
 - 10alabs
 - acluinternships
+- advancedspace
 - aevexaerospace
 - akunacapitaloci
 - amca
@@ -224,6 +224,7 @@ greenhouse:
 - asteraearlycareer2026
 - asteraearlycareer2027
 - astranis
+- astronicscorporation
 - atoms
 - axontalentcommunity
 - axq
@@ -232,14 +233,18 @@ greenhouse:
 - bettermentcampusrecruiting
 - bgeinc
 - bgeinccampus
+- bitgowinter2027
 - botauto
 - bracebridgecapital
 - brave
 - braze
 - brevium
 - businessolverinvitationonly
+- c3ascend
 - capstoneinvestmentadvisors
 - castelioncorporation
+- centerforstrategicandinternationalstudiesinc
+- charlesriveranalytics90
 - chicagotradingcampus
 - clarityinnovates
 - clockworksystems
@@ -247,15 +252,18 @@ greenhouse:
 - compeerfinancial
 - courierhealth
 - covar
+- crystaldynamics
 - cssmerge
 - ctccampusboard
 - datacor
 - didi
 - digs
+- divcowest
 - docugami
 - doordashcanada
 - drivewealth
 - drweng
+- drwfr
 - drwuniversityjobs
 - duolingounirecruitment
 - dvtrading
@@ -276,6 +284,7 @@ greenhouse:
 - fspco-op012325
 - ftsp27co-ops
 - gallup
+- gardacp
 - garnerhealth
 - gcmgrosvenor
 - gemini
@@ -283,7 +292,6 @@ greenhouse:
 - genevatrading
 - genscript
 - gitai
-- gleanwork
 - gofundme
 - graphcore
 - graphcore-early-careers
@@ -292,6 +300,7 @@ greenhouse:
 - guidepointsecurity
 - haizelabs
 - harbingermotors
+- hasbro
 - heygen
 - hivefinancialsystems
 - horizonindustrieslimited
@@ -304,10 +313,10 @@ greenhouse:
 - instead
 - integra
 - integrainterns
+- internrecruiting
 - internshiplist2000
 - intersystems
 - inversionspace
-- ivalua
 - janestreet
 - judihealth
 - k2spacecorporation
@@ -318,6 +327,8 @@ greenhouse:
 - legendcareers
 - lightmatter
 - lilasciences
+- lunarenergy
+- mantari
 - mavensecuritiesholdingltd
 - memx
 - mill
@@ -328,14 +339,18 @@ greenhouse:
 - mwinternshipprogram
 - nanopathinc
 - nationallifeinsurancecompany
+- ncinoearlytalent
 - neuralink
 - newsbreak
 - nisc
 - nyisocoops
+- nyisointernships
+- oneethos
 - opensesame
 - orennia
 - pacificfusion
 - parallel
+- pathrobotics
 - pdtpartners
 - perpay
 - phaidra
@@ -343,6 +358,8 @@ greenhouse:
 - point72
 - profluent
 - purestorage
+- quantiq
+- quberesearchandtechnologies
 - queracomputinginc
 - radixuniversity
 - relaypro
@@ -363,10 +380,14 @@ greenhouse:
 - sigmacomputing
 - signifyd95
 - singlestore
+- sitimecorporation
+- skhynixmemorysolutionsamericainc
 - snorkelai
 - solutions
+- spaceium
 - spacex
 - stateaffairs
+- stratolaunch
 - studiokraftonboard
 - sxinternships
 - syskahennessy
@@ -379,10 +400,12 @@ greenhouse:
 - themjcos
 - thenewyorktimes
 - thenuclearcompany
+- tobogganlabs
 - togetherai
 - trace3
 - transmarketgroup
 - tribalscale
+- twosixtechnologies
 - usafacts
 - vardaspace
 - vercel
@@ -391,6 +414,7 @@ greenhouse:
 - vikingglobalinvestors
 - virtu
 - voloridgeinvestmentmanagement
+- voyagertechnologiesinc
 - walleyecapital-external-students
 - wfclainc
 - whitewatermidstream
@@ -409,6 +433,7 @@ lever:
 - atomcomputing
 - azul
 - belvederetrading
+- bhvr
 - bosonai
 - brooksrunning
 - camstex
@@ -416,6 +441,7 @@ lever:
 - cfsenergy
 - colibrigroup
 - crestoperations
+- diversified-automation
 - dynamiccatholic
 - ekimetrics
 - eqbank
@@ -431,6 +457,7 @@ lever:
 - intropic
 - kepler
 - kitware
+- loftorbital
 - magnetforensics
 - make-rain
 - massschoolbuildings
@@ -460,6 +487,7 @@ lever:
 - zoox
 smartrecruiters:
 - abbvie
+- aecom2
 - aerovect
 - aristanetworks
 - averydennison
@@ -477,6 +505,7 @@ smartrecruiters:
 - huckadventures
 - inbulkscorp
 - infinitequant
+- interco
 - intuitive
 - keenfinity
 - kostalgroup
