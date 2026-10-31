@@ -16,7 +16,6 @@ ashby:
 - armadin
 - atomicsemi
 - auctor
-- aurora-operations-inc
 - axiommath
 - barnes
 - base-power
@@ -48,6 +47,7 @@ ashby:
 - cyvl
 - decagon
 - dedalus-labs
+- designrulesco
 - dexmate
 - drivewealth
 - droyd
@@ -65,6 +65,7 @@ ashby:
 - flint
 - forus
 - fsh
+- gearset
 - gecko-robotics
 - generalmagic
 - genesis-molecular-ai
@@ -108,6 +109,7 @@ ashby:
 - modal
 - neocognition
 - netic
+- nexttoken
 - niantic-spatial
 - niural
 - normalcomputing
@@ -159,6 +161,7 @@ ashby:
 - sierra
 - skyband
 - skydio
+- snowflake
 - solink
 - spacial
 - spaice-tech
@@ -169,13 +172,13 @@ ashby:
 - sycamore
 - tacit
 - talos-trading
+- teamworks
 - telus-digital
 - tensorwave
 - terranova
 - tessera-labs
 - the-exploration-company
 - the-robotics-company
-- tilderesearch
 - tracelabs
 - tryroam
 - uncountable
@@ -196,7 +199,6 @@ ashby:
 - worldengine
 - xterra
 - yotta
-- zettabyte-space
 - zuru
 - zus-health
 bamboohr:
@@ -210,6 +212,7 @@ greenhouse:
 - acluinternships
 - advancedspace
 - aevexaerospace
+- aidashinc
 - akunacapitaloci
 - amca
 - amendconsulting
@@ -230,7 +233,6 @@ greenhouse:
 - axq
 - baidu
 - baltimoreorioles
-- bettermentcampusrecruiting
 - bgeinc
 - bgeinccampus
 - bitgowinter2027
@@ -242,6 +244,7 @@ greenhouse:
 - businessolverinvitationonly
 - c3ascend
 - capstoneinvestmentadvisors
+- cartesiansystems
 - castelioncorporation
 - centerforstrategicandinternationalstudiesinc
 - charlesriveranalytics90
@@ -249,6 +252,7 @@ greenhouse:
 - clarityinnovates
 - clockworksystems
 - cloudflare
+- co-op_intern
 - compeerfinancial
 - courierhealth
 - covar
@@ -259,6 +263,7 @@ greenhouse:
 - didi
 - digs
 - divcowest
+- divergent
 - docugami
 - doordashcanada
 - drivewealth
@@ -276,6 +281,8 @@ greenhouse:
 - exoduspoint
 - faire
 - faradayfuture
+- farmersmutualhailinsurancecompany
+- fccincinnati
 - figureai
 - fiveringsllc
 - flowtraders
@@ -300,7 +307,6 @@ greenhouse:
 - guidepointsecurity
 - haizelabs
 - harbingermotors
-- hasbro
 - heygen
 - hivefinancialsystems
 - horizonindustrieslimited
@@ -329,17 +335,14 @@ greenhouse:
 - lilasciences
 - lunarenergy
 - mantari
-- mavensecuritiesholdingltd
-- memx
 - mill
 - momentenergy
+- morph
 - morsecorpcoop
 - msfcareers
 - muonspace
 - mwinternshipprogram
-- nanopathinc
 - nationallifeinsurancecompany
-- ncinoearlytalent
 - neuralink
 - newsbreak
 - nisc
@@ -350,13 +353,14 @@ greenhouse:
 - orennia
 - pacificfusion
 - parallel
-- pathrobotics
 - pdtpartners
 - perpay
 - phaidra
 - phoenixcontact
 - point72
+- pretiuminternships2027
 - profluent
+- protagonist
 - purestorage
 - quantiq
 - quberesearchandtechnologies
@@ -375,6 +379,7 @@ greenhouse:
 - scaleai
 - schonfeld
 - scmaea
+- sesco
 - sevenresearch
 - sharkninjaoperatingllc
 - sigmacomputing
@@ -402,6 +407,7 @@ greenhouse:
 - thenuclearcompany
 - tobogganlabs
 - togetherai
+- tpgcareers
 - trace3
 - transmarketgroup
 - tribalscale
@@ -413,6 +419,7 @@ greenhouse:
 - viamrobotics
 - vikingglobalinvestors
 - virtu
+- vmax
 - voloridgeinvestmentmanagement
 - voyagertechnologiesinc
 - walleyecapital-external-students
@@ -447,6 +454,7 @@ lever:
 - eqbank
 - evr
 - field-ai
+- fireworkhq
 - futo-org
 - genbio
 - go-cloudforce
@@ -472,13 +480,13 @@ lever:
 - runlaminar
 - salesdemo-jr
 - saviynt
-- sep
 - shieldai
 - shopback-2
 - shyftlabs
 - simberobotics
 - solopulseco
 - standtogether
+- stradaeducation
 - thea
 - tri
 - upscale-ai
@@ -517,6 +525,7 @@ smartrecruiters:
 - nbcuniversal3
 - paconsulting
 - pilotcompany
+- pyrotek3
 - regdeskinc
 - renesaselectronics
 - servicenow
