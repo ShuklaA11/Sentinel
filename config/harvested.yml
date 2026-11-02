@@ -21,7 +21,6 @@ ashby:
 - base-power
 - bedrock-robotics
 - bild-ai
-- blp-digital
 - bobyard
 - bracket-bot
 - brainco
@@ -176,7 +175,6 @@ ashby:
 - telus-digital
 - tensorwave
 - terranova
-- tessera-labs
 - the-exploration-company
 - the-robotics-company
 - tracelabs
@@ -328,6 +326,7 @@ greenhouse:
 - k2spacecorporation
 - kensingtontours
 - klaviyocampus
+- knowbe4
 - kodiak
 - later
 - legendcareers
@@ -352,6 +351,7 @@ greenhouse:
 - orennia
 - pacificfusion
 - parallel
+- paretocaptiveservicesllc
 - pdtpartners
 - perpay
 - phaidra
