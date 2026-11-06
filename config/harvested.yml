@@ -7,10 +7,10 @@ ashby:
 - afterquery
 - agzen
 - allen-control-systems
-- ami
 - amplify
 - antares
 - anthelioncap
+- apex-technology-inc
 - applied
 - architect
 - ariesglobal
@@ -83,6 +83,7 @@ ashby:
 - hex
 - hiverge
 - hiya
+- hoyoverse
 - hubs
 - human-computer-lab
 - hyphenate
@@ -91,6 +92,7 @@ ashby:
 - integrate
 - interplay
 - ixianrobotics
+- k-id
 - keyrock
 - kognitos
 - kos
@@ -113,8 +115,8 @@ ashby:
 - netic
 - nexttoken
 - niural
+- nooks
 - normalcomputing
-- nox-metals
 - npx
 - nubank
 - odys-aviation
@@ -153,7 +155,6 @@ ashby:
 - rhoda-ai
 - rilla
 - rundoo
-- sardine
 - saronic
 - scout-ai
 - semgrep
@@ -176,6 +177,7 @@ ashby:
 - the-exploration-company
 - the-robotics-company
 - tracelabs
+- trajectory
 - tryroam
 - uncountable
 - valon
@@ -234,7 +236,6 @@ greenhouse:
 - bracebridgecapital
 - brave
 - braze
-- businessolverinvitationonly
 - c3ascend
 - capstoneinvestmentadvisors
 - cartesiansystems
@@ -268,7 +269,6 @@ greenhouse:
 - eudia
 - eulerity
 - evolver
-- exoduspoint
 - faire
 - faradayfuture
 - farmersmutualhailinsurancecompany
@@ -324,6 +324,7 @@ greenhouse:
 - legendcareers
 - lightmatter
 - lilasciences
+- lumbermens
 - lunarenergy
 - mill
 - momentenergy
@@ -377,17 +378,14 @@ greenhouse:
 - singlestore
 - sitimecorporation
 - skhynixmemorysolutionsamericainc
-- snorkelai
 - solutions
 - spaceium
 - spacex
-- stateaffairs
 - stratolaunch
 - studiokraftonboard
 - sxinternships
 - syskahennessy
 - tanium
-- tenet3
 - tenstorrentuniversity
 - testnisc
 - thealleninstitute
@@ -462,7 +460,6 @@ lever:
 - massschoolbuildings
 - multiplylabs
 - neighbor
-- nuvacore
 - parallelwireless
 - pattern
 - protective
@@ -487,6 +484,7 @@ lever:
 - zoox
 smartrecruiters:
 - abbvie
+- acumatica
 - aecom2
 - aerovect
 - aristanetworks
@@ -497,7 +495,6 @@ smartrecruiters:
 - captechconsulting
 - clinicalink
 - customshow
-- edf-uk
 - encephaloinvestments
 - eurofins
 - fortunebrands
@@ -517,6 +514,7 @@ smartrecruiters:
 - nbcuniversal3
 - paconsulting
 - pilotcompany
+- redwingshoecompany
 - regdeskinc
 - renesaselectronics
 - servicenow
