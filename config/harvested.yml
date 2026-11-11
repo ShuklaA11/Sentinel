@@ -63,11 +63,11 @@ ashby:
 - espa
 - etched
 - exa
-- f40d14d9-07f4-403d-802b-37453deccf0a
 - f7d8749a-72d6-407c-bf98-292ea630c73a
 - fab2
 - fanvue
 - flint
+- formulary
 - forus
 - fsh
 - gearset
@@ -78,7 +78,6 @@ ashby:
 - georgian
 - graymatter-robotics
 - gritt
-- grow-therapy
 - hadrian-automation
 - happyrobot
 - heliux
@@ -154,7 +153,6 @@ ashby:
 - qumulo
 - range
 - realmalliance
-- red-gate
 - reflect-orbital
 - regent
 - relling
@@ -167,9 +165,11 @@ ashby:
 - scout-ai
 - semgrep
 - serval
+- shield
 - sierra
 - skyband
 - skydio
+- snowflake
 - solink
 - spacial
 - spaice-tech
@@ -199,7 +199,6 @@ ashby:
 - vmax
 - voleon
 - walrusfi
-- westmag
 - whatnot
 - withpace
 - worldengine
@@ -215,6 +214,7 @@ bamboohr:
 greenhouse:
 - 10alabs
 - acluinternships
+- addepar1
 - aevexaerospace
 - aidashinc
 - akunacapitaloci
@@ -231,7 +231,6 @@ greenhouse:
 - asteraearlycareer2026
 - asteraearlycareer2027
 - astranis
-- astronicscorporation
 - atoms
 - axontalentcommunity
 - axq
@@ -301,11 +300,13 @@ greenhouse:
 - graphcore-early-careers
 - gravitonresearchcapital
 - groma
+- gsacapital
 - haizelabs
 - harbingermotors
 - hearst
 - heygen
 - hivefinancialsystems
+- hootsuite
 - horizonindustrieslimited
 - hpiq
 - hyannisportresearch
@@ -324,12 +325,12 @@ greenhouse:
 - k2spacecorporation
 - kasa
 - kensingtontours
-- klaviyocampus
 - kodiak
 - later
 - legendcareers
 - lightmatter
 - lilasciences
+- lumbermens
 - lunarenergy
 - mill
 - momentenergy
@@ -416,7 +417,6 @@ greenhouse:
 - voloridgeinvestmentmanagement
 - voyagertechnologiesinc
 - walleyecapital-external-students
-- wfclainc
 - whitewatermidstream
 - wikimedia
 - workshop
@@ -449,7 +449,6 @@ lever:
 - hermeus
 - humble-robotics
 - ifm-us
-- immuta
 - intropic
 - kabam
 - kepler
@@ -459,6 +458,7 @@ lever:
 - make-rain
 - massschoolbuildings
 - matchgroup
+- matillion
 - multiplylabs
 - neighbor
 - parallelwireless
@@ -525,7 +525,7 @@ smartrecruiters:
 - springventuregroup1
 - syngentagroup
 - ttp1
-- vusiongroupsa
+- veoliaenvironnementsa
 - wabtec
 - wellmarkinc
 - westerndigital
