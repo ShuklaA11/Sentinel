@@ -26,7 +26,6 @@ ashby:
 - bild-ai
 - bobyard
 - bracket-bot
-- brainco
 - bree
 - bridgeneurotech
 - brightstar-ai
@@ -38,11 +37,11 @@ ashby:
 - circleback
 - clasp
 - claylabs
-- clickhouse
 - collinear-ai
 - composio
 - conductorai
 - constellationspace
+- conveo
 - cowboyspace
 - creatify
 - ctgt
@@ -135,6 +134,7 @@ ashby:
 - opusclip
 - output
 - pangramlabs
+- parabola-io
 - parspec
 - patreon
 - persona
@@ -160,11 +160,11 @@ ashby:
 - reviserobotics
 - rhoda-ai
 - rilla
-- rundoo
 - saronic
 - scout-ai
 - semgrep
 - serval
+- sfdata
 - shield
 - sierra
 - skyband
@@ -198,7 +198,6 @@ ashby:
 - vital-lyfe
 - vmax
 - voleon
-- walrusfi
 - whatnot
 - withpace
 - worldengine
@@ -210,6 +209,7 @@ bamboohr:
 - geospectrum
 - lunaroutpost
 - pictonmahoney
+- ruekertmielke
 - specteraerospace
 greenhouse:
 - 10alabs
@@ -245,6 +245,7 @@ greenhouse:
 - braze
 - c3ascend
 - capstoneinvestmentadvisors
+- cariadinc
 - cartesiansystems
 - castelioncorporation
 - centerforstrategicandinternationalstudiesinc
@@ -317,7 +318,6 @@ greenhouse:
 - integra
 - integrainterns
 - internrecruiting
-- internshiplist2000
 - inversionspace
 - janestreet
 - jomboymedia
@@ -339,6 +339,7 @@ greenhouse:
 - msfcareers
 - muonspace
 - mwinternshipprogram
+- nasdaq
 - nationallifeinsurancecompany
 - neuralink
 - newsbreak
@@ -396,7 +397,6 @@ greenhouse:
 - testnisc
 - thealleninstitute
 - thebrattlegroup
-- themjcos
 - thenewyorktimes
 - thenuclearcompany
 - tobogganlabs
@@ -408,7 +408,6 @@ greenhouse:
 - twosixtechnologies
 - usafacts
 - vardaspace
-- vaticlabs
 - vercel
 - verkada
 - viamrobotics
@@ -419,6 +418,7 @@ greenhouse:
 - walleyecapital-external-students
 - whitewatermidstream
 - wikimedia
+- woolpert
 - workshop
 - xai
 - xantium
@@ -482,12 +482,11 @@ lever:
 - upscale-ai
 - viget
 - waabi
+- wepclinical
 - xcimer
 - zoox
 smartrecruiters:
-- abbvie
 - acumatica
-- aecom2
 - aerovect
 - aristanetworks
 - averydennison
