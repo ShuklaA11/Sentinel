@@ -24,9 +24,9 @@ ashby:
 - base-power
 - bedrock-robotics
 - bild-ai
+- blp-digital
 - bobyard
 - bracket-bot
-- bree
 - bridgeneurotech
 - brightstar-ai
 - build-ai
@@ -80,7 +80,6 @@ ashby:
 - heron-power
 - hex
 - hiverge
-- hiya
 - horizon3ai
 - hoyoverse
 - hubs
@@ -157,6 +156,7 @@ ashby:
 - regent
 - reliable-robotics
 - relling
+- remanence
 - revel
 - reviserobotics
 - rhoda-ai
@@ -170,7 +170,6 @@ ashby:
 - sierra
 - skyband
 - skydio
-- solink
 - spacial
 - spaice-tech
 - spaitial
@@ -206,11 +205,28 @@ ashby:
 - yotta
 - zus-health
 bamboohr:
+- alloptions
+- angelhost
+- birdseyeaccount
 - calpionplutus
+- canyonaeroconnect
+- cetci
+- ecmtek
+- fpwa
+- fsp
 - geospectrum
+- ipconfigure
 - lunaroutpost
+- northstarearthandspace
 - pictonmahoney
+- prometheusgroup
+- punchcut
+- rcoc
+- securitymetrics
+- sedarotech
 - specteraerospace
+- surepoint
+- xradar
 greenhouse:
 - 10alabs
 - acluinternships
@@ -237,7 +253,6 @@ greenhouse:
 - baltimoreorioles
 - bgeinc
 - bgeinccampus
-- bitgowinter2027
 - botauto
 - bracebridgecapital
 - brave
@@ -275,7 +290,9 @@ greenhouse:
 - eudia
 - eulerity
 - evolver
+- exoduspoint
 - faire
+- familyoffice
 - fanaticscollectibles
 - faradayfuture
 - farmersmutualhailinsurancecompany
@@ -304,6 +321,7 @@ greenhouse:
 - haizelabs
 - harbingermotors
 - hearst
+- hexarmor
 - heygen
 - hivefinancialsystems
 - horizonindustrieslimited
@@ -315,7 +333,6 @@ greenhouse:
 - instead
 - integra
 - integrainterns
-- internrecruiting
 - inversionspace
 - janestreet
 - jomboymedia
@@ -349,7 +366,6 @@ greenhouse:
 - oneethos
 - opensesame
 - orennia
-- pacificfusion
 - parallel
 - paretocaptiveservicesllc
 - pdtpartners
@@ -384,7 +400,6 @@ greenhouse:
 - singlestore
 - sitimecorporation
 - skhynixmemorysolutionsamericainc
-- solutions
 - spaceium
 - spacex
 - stackav
@@ -427,7 +442,6 @@ lever:
 - acronaviation
 - analyticpartners
 - anavationllc
-- azul
 - belvederetrading
 - bosonai
 - brooksrunning
@@ -436,6 +450,7 @@ lever:
 - cfsenergy
 - crestoperations
 - diversified-automation
+- duetti
 - dynamiccatholic
 - ekimetrics
 - eqbank
@@ -461,7 +476,8 @@ lever:
 - parallelwireless
 - pattern
 - pivotal
-- protective
+- questanalytics
+- researchinnovations
 - rosaiclabs
 - runlaminar
 - salesdemo-jr
@@ -472,6 +488,7 @@ lever:
 - solopulseco
 - standtogether
 - stradaeducation
+- syntax
 - thea
 - tri
 - upscale-ai
@@ -506,7 +523,6 @@ smartrecruiters:
 - m3usa
 - nbcuniversal3
 - paconsulting
-- pyrotek3
 - redbull
 - redwingshoecompany
 - regdeskinc
