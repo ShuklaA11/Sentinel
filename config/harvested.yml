@@ -22,6 +22,7 @@ ashby:
 - axiommath
 - barnes
 - base-power
+- basis-research
 - bedrock-robotics
 - bild-ai
 - blp-digital
@@ -41,6 +42,7 @@ ashby:
 - constellationspace
 - conveo
 - cowboyspace
+- crusoe
 - ctgt
 - cuspai
 - cyvl
@@ -62,6 +64,7 @@ ashby:
 - f40d14d9-07f4-403d-802b-37453deccf0a
 - f7d8749a-72d6-407c-bf98-292ea630c73a
 - fab2
+- faculty-fellowship
 - fanvue
 - flint
 - formulary
@@ -90,7 +93,6 @@ ashby:
 - instil
 - integrate
 - interplay
-- ixianrobotics
 - k-id
 - keyrock
 - kognitos
@@ -104,13 +106,13 @@ ashby:
 - logiqal
 - mach9
 - machinacognita
+- maticrobots
 - maxinsights
 - megazone
 - mercor
 - meshy
 - metalenz
 - metamorphic
-- meter
 - mistral
 - modal
 - mossrobotics
@@ -134,6 +136,7 @@ ashby:
 - opusclip
 - output
 - pangramlabs
+- parabola-io
 - parspec
 - patreon
 - persona
@@ -186,11 +189,11 @@ ashby:
 - the-robotics-company
 - tonicai
 - tracelabs
+- trainline
 - trajectory
 - tryroam
 - uipath
 - uncountable
-- valon
 - valstad
 - veeda-ai
 - vendelux
@@ -198,6 +201,7 @@ ashby:
 - vital-lyfe
 - vmax
 - voleon
+- warp-sciences
 - whatnot
 - withpace
 - worldengine
@@ -211,6 +215,7 @@ bamboohr:
 - calpionplutus
 - canyonaeroconnect
 - cetci
+- csmc
 - ecmtek
 - fpwa
 - fsp
@@ -219,12 +224,11 @@ bamboohr:
 - lunaroutpost
 - northstarearthandspace
 - pictonmahoney
-- prometheusgroup
 - punchcut
 - rcoc
-- securitymetrics
 - sedarotech
 - specteraerospace
+- ssicorporate
 - surepoint
 - xradar
 greenhouse:
@@ -248,6 +252,7 @@ greenhouse:
 - asteraearlycareer2027
 - astranis
 - atoms
+- attainpartners
 - axq
 - baidu
 - baltimoreorioles
@@ -292,7 +297,6 @@ greenhouse:
 - evolver
 - exoduspoint
 - faire
-- familyoffice
 - fanaticscollectibles
 - faradayfuture
 - farmersmutualhailinsurancecompany
@@ -309,7 +313,6 @@ greenhouse:
 - garnerhealth
 - gcmgrosvenor
 - gemini
-- generalmatter
 - genevatrading
 - genscript
 - gofundme
@@ -319,10 +322,8 @@ greenhouse:
 - groma
 - gsacapital
 - haizelabs
-- harbingermotors
 - hearst
 - hexarmor
-- heygen
 - hivefinancialsystems
 - horizonindustrieslimited
 - hpiq
@@ -345,7 +346,6 @@ greenhouse:
 - lightmatter
 - lilasciences
 - lumbermens
-- lunarenergy
 - mill
 - minitab
 - momentenergy
@@ -384,7 +384,6 @@ greenhouse:
 - rfsmart
 - roboforce
 - rocketlab
-- rothesaygraduates
 - ruggedrobotics
 - samsungresearchamericainternship
 - samsungsemiconductor
@@ -414,7 +413,6 @@ greenhouse:
 - thenewyorktimes
 - thenuclearcompany
 - tobogganlabs
-- togetherai
 - toshibaglobalcommercesolutions
 - trace3
 - transmarketgroup
@@ -454,6 +452,7 @@ lever:
 - dynamiccatholic
 - ekimetrics
 - eqbank
+- exowatt
 - field-ai
 - fireworkhq
 - futo-org
@@ -506,6 +505,7 @@ smartrecruiters:
 - boschgroup
 - captechconsulting
 - carlisle
+- cityofcampbellriver
 - clinicalink
 - customshow
 - encephaloinvestments
