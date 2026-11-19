@@ -2,6 +2,7 @@
 # Mostly startups. Merged into the poll on top of companies.yml.
 ashby:
 - 42dot
+- abridge
 - abundant
 - afterquery
 - agzen
@@ -61,7 +62,6 @@ ashby:
 - espa
 - etched
 - exa
-- f40d14d9-07f4-403d-802b-37453deccf0a
 - f7d8749a-72d6-407c-bf98-292ea630c73a
 - fab2
 - faculty-fellowship
@@ -95,6 +95,7 @@ ashby:
 - interplay
 - k-id
 - keyrock
+- kira
 - kognitos
 - kos
 - laminar-jobs
@@ -106,6 +107,7 @@ ashby:
 - logiqal
 - mach9
 - machinacognita
+- makermaker
 - maticrobots
 - maxinsights
 - megazone
@@ -123,7 +125,6 @@ ashby:
 - niural
 - nooks
 - normalcomputing
-- northwoodspace
 - npx
 - nubank
 - odys-aviation
@@ -192,7 +193,6 @@ ashby:
 - trainline
 - trajectory
 - tryroam
-- uipath
 - uncountable
 - valstad
 - veeda-ai
@@ -242,7 +242,6 @@ greenhouse:
 - amendconsulting
 - amperesand
 - andurilindustries
-- aperaaiinc
 - appian
 - aquaticcapitalmanagement
 - arcboatcompany
@@ -292,7 +291,6 @@ greenhouse:
 - emergentlabsinc
 - enova
 - eqtcorporation
-- eudia
 - eulerity
 - evolver
 - exoduspoint
@@ -339,12 +337,11 @@ greenhouse:
 - jomboymedia
 - judihealth
 - kasa
-- kensingtontours
-- klaviyocampus
 - later
 - legendcareers
 - lightmatter
 - lilasciences
+- lucidsoftware
 - lumbermens
 - mill
 - minitab
@@ -391,6 +388,7 @@ greenhouse:
 - schonfeld
 - scmaea
 - scoutmotors
+- scoutspace
 - sesco
 - sevenresearch
 - sharkninjaoperatingllc
@@ -417,6 +415,7 @@ greenhouse:
 - trace3
 - transmarketgroup
 - tribalscale
+- truveta
 - twosixtechnologies
 - usafacts
 - vardaspace
@@ -431,6 +430,7 @@ greenhouse:
 - wikimedia
 - woolpert
 - workshop
+- workstream
 - xai
 - xantium
 - xpengmotors
@@ -503,7 +503,6 @@ smartrecruiters:
 - axleinformaticsllc
 - bertelsmann-jobs
 - boschgroup
-- captechconsulting
 - carlisle
 - cityofcampbellriver
 - clinicalink
@@ -523,6 +522,7 @@ smartrecruiters:
 - m3usa
 - nbcuniversal3
 - paconsulting
+- pyrotek3
 - redbull
 - redwingshoecompany
 - regdeskinc
@@ -534,7 +534,6 @@ smartrecruiters:
 - springventuregroup1
 - syngentagroup
 - ttp1
-- veoliaenvironnementsa
 - wabtec
 - wellmarkinc
 - westerndigital
