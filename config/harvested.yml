@@ -52,7 +52,6 @@ ashby:
 - dedalus-labs
 - designrulesco
 - dexmate
-- drivewealth
 - droyd
 - dryft
 - eightsleep
@@ -119,7 +118,6 @@ ashby:
 - modal
 - mossrobotics
 - neocognition
-- netic
 - nexttoken
 - nexus-cognitive
 - niural
@@ -128,7 +126,6 @@ ashby:
 - npx
 - nubank
 - odys-aviation
-- old-mission-capital
 - oneapp
 - onepot
 - onerobot
@@ -174,13 +171,13 @@ ashby:
 - sierra
 - skyband
 - skydio
+- snowflake
 - spacial
 - spaice-tech
 - spaitial
 - steel
 - stradahq
 - subtotal
-- sycamore
 - tacit
 - talos-trading
 - teamworks
@@ -192,8 +189,8 @@ ashby:
 - tracelabs
 - trainline
 - trajectory
+- trener-robotics
 - tryroam
-- uncountable
 - valstad
 - veeda-ai
 - vendelux
@@ -210,26 +207,34 @@ ashby:
 - zus-health
 bamboohr:
 - alloptions
+- amii
 - angelhost
+- avnan
 - birdseyeaccount
 - calpionplutus
 - canyonaeroconnect
 - cetci
 - csmc
 - ecmtek
+- efifoundation
+- euna
+- flare
 - fpwa
 - fsp
 - geospectrum
 - ipconfigure
 - lunaroutpost
+- mariastechnology
 - northstarearthandspace
+- ottawatourism
 - pictonmahoney
 - punchcut
 - rcoc
+- rexa
 - sedarotech
+- smule
 - specteraerospace
 - ssicorporate
-- surepoint
 - xradar
 greenhouse:
 - 10alabs
@@ -242,6 +247,7 @@ greenhouse:
 - amendconsulting
 - amperesand
 - andurilindustries
+- aon3d
 - appian
 - aquaticcapitalmanagement
 - arcboatcompany
@@ -250,6 +256,7 @@ greenhouse:
 - asteraearlycareer2026
 - asteraearlycareer2027
 - astranis
+- astronicscorporation
 - atoms
 - attainpartners
 - axq
@@ -280,12 +287,12 @@ greenhouse:
 - ctccampusboard
 - datacor
 - deeplocal
+- deliveroo
 - didi
 - divergent
 - doordashcanada
 - drivewealth
 - drweng
-- drwfr
 - duolingounirecruitment
 - dvtrading
 - emergentlabsinc
@@ -295,6 +302,7 @@ greenhouse:
 - evolver
 - exoduspoint
 - faire
+- familyoffice
 - fanaticscollectibles
 - faradayfuture
 - farmersmutualhailinsurancecompany
@@ -326,6 +334,7 @@ greenhouse:
 - horizonindustrieslimited
 - hpiq
 - hyannisportresearch
+- icapitalnetwork
 - idmeuniversityrecruiting
 - insomniac
 - instalilyai
@@ -393,7 +402,6 @@ greenhouse:
 - sevenresearch
 - sharkninjaoperatingllc
 - sigmacomputing
-- signifyd95
 - singlestore
 - sitimecorporation
 - skhynixmemorysolutionsamericainc
@@ -428,7 +436,6 @@ greenhouse:
 - walleyecapital-external-students
 - whitewatermidstream
 - wikimedia
-- woolpert
 - workshop
 - workstream
 - xai
@@ -491,7 +498,6 @@ lever:
 - thea
 - tri
 - upscale-ai
-- viget
 - waabi
 - xcimer
 - zoox
@@ -534,6 +540,7 @@ smartrecruiters:
 - springventuregroup1
 - syngentagroup
 - ttp1
+- veoliaenvironnementsa
 - wabtec
 - wellmarkinc
 - westerndigital
