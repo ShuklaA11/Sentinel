@@ -15,6 +15,7 @@ ashby:
 - architect
 - ariesglobal
 - armadin
+- astera
 - astro-mechanica
 - atalanta
 - atomicsemi
@@ -23,6 +24,7 @@ ashby:
 - axiommath
 - barnes
 - base-power
+- baseten
 - basis-research
 - bedrock-robotics
 - bild-ai
@@ -45,7 +47,6 @@ ashby:
 - cowboyspace
 - crusoe
 - ctgt
-- cuspai
 - cyvl
 - dandy
 - decagon
@@ -214,6 +215,7 @@ bamboohr:
 - calpionplutus
 - canyonaeroconnect
 - cetci
+- convverge
 - csmc
 - ecmtek
 - efifoundation
@@ -232,9 +234,11 @@ bamboohr:
 - rcoc
 - rexa
 - sedarotech
+- silverlogic
 - smule
 - specteraerospace
 - ssicorporate
+- vaticoutsourcing
 - xradar
 greenhouse:
 - 10alabs
@@ -247,7 +251,6 @@ greenhouse:
 - amendconsulting
 - amperesand
 - andurilindustries
-- aon3d
 - appian
 - aquaticcapitalmanagement
 - arcboatcompany
@@ -256,14 +259,15 @@ greenhouse:
 - asteraearlycareer2026
 - asteraearlycareer2027
 - astranis
-- astronicscorporation
 - atoms
 - attainpartners
+- axontalentcommunity
 - axq
 - baidu
 - baltimoreorioles
 - bgeinc
 - bgeinccampus
+- biohub
 - botauto
 - bracebridgecapital
 - brave
@@ -336,7 +340,6 @@ greenhouse:
 - hyannisportresearch
 - icapitalnetwork
 - idmeuniversityrecruiting
-- insomniac
 - instalilyai
 - instead
 - integra
@@ -352,6 +355,7 @@ greenhouse:
 - lilasciences
 - lucidsoftware
 - lumbermens
+- method
 - mill
 - minitab
 - momentenergy
@@ -416,7 +420,6 @@ greenhouse:
 - testnisc
 - thealleninstitute
 - thebrattlegroup
-- thenewyorktimes
 - thenuclearcompany
 - tobogganlabs
 - toshibaglobalcommercesolutions
@@ -436,8 +439,10 @@ greenhouse:
 - walleyecapital-external-students
 - whitewatermidstream
 - wikimedia
+- woolpert
 - workshop
 - workstream
+- wurljobs
 - xai
 - xantium
 - xpengmotors
@@ -458,6 +463,7 @@ lever:
 - duetti
 - dynamiccatholic
 - ekimetrics
+- epwealth
 - eqbank
 - exowatt
 - field-ai
@@ -466,7 +472,6 @@ lever:
 - genbio
 - go-cloudforce
 - hermeus
-- humble-robotics
 - ifm-us
 - intropic
 - kabam
@@ -476,7 +481,7 @@ lever:
 - magnetforensics
 - make-rain
 - matchgroup
-- matillion
+- momsmeals
 - multiplylabs
 - neighbor
 - parallelwireless
@@ -533,6 +538,7 @@ smartrecruiters:
 - redwingshoecompany
 - regdeskinc
 - renesaselectronics
+- resultant
 - servicenow
 - sgs
 - sightcall
